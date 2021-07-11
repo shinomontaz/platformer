@@ -1,0 +1,9 @@
+{
+    "TestFlag":true,
+
+    "Assets": "assets",
+    "Width": 640,
+    "Height": 480,
+    "PlayerCfg": "player.json",
+    "WorldCfg": "world.json"
+}

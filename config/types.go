@@ -1,12 +1,12 @@
 package config
 
 type Main struct {
-	TestFlag  bool   `json:"TestFlag"`
-	Assets    string `json:"Assets"`
-	Width     int    `json:"Width"`
-	Height    int    `json:"Height"`
-	PlayerCfg string `json:"PlayerCfg"`
-	WorldCfg  string `json:"WorldCfg"`
+	TestFlag  bool    `json:"TestFlag"`
+	Assets    string  `json:"Assets"`
+	Width     float64 `json:"Width"`
+	Height    float64 `json:"Height"`
+	PlayerCfg string  `json:"PlayerCfg"`
+	WorldCfg  string  `json:"WorldCfg"`
 }
 
 type Player struct {
@@ -15,16 +15,16 @@ type Player struct {
 		File   string `json:"file"`
 		Frames []int  `json:"frames"`
 	} `json:"anims"`
-	Width  int `json:"width"`
-	Height int `json:"height"`
-	Mass   int `json:"mass"`
-	Walk   int `json:"walk"`
-	Run    int `json:"run"`
+	Width  float64 `json:"width"`
+	Height float64 `json:"height"`
+	Mass   int     `json:"mass"`
+	Walk   float64 `json:"walk"`
+	Run    float64 `json:"run"`
 }
 
 type World struct {
-	Platforms [][]int `json:"platforms"`
-	Width     int     `json:"width"`
-	Heigth    int     `json:"heigth"`
-	Gravity   int     `json:"gravity"`
+	Platforms [][]float64 `json:"platforms"`
+	Width     float64     `json:"width"`
+	Heigth    float64     `json:"heigth"`
+	Gravity   float64     `json:"gravity"`
 }

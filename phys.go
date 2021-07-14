@@ -18,9 +18,9 @@ func (p *phys) update(dt float64, move pixel.Vec, platforms []platform) {
 	// apply controls
 	switch {
 	case move.X < 0:
-		p.vel.X = -gp.runSpeed
+		p.vel.X = -p.runSpeed
 	case move.X > 0:
-		p.vel.X = +gp.runSpeed
+		p.vel.X = +p.runSpeed
 	default:
 		p.vel.X = 0
 	}

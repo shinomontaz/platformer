@@ -10,6 +10,7 @@ import (
 
 const (
 	WALKING = iota
+	RUNNING
 	JUMPING
 	STANDING
 	FIRING
@@ -76,8 +77,10 @@ func (h *Hero) Update(dt float64) {
 		newState = JUMPING
 	case h.phys.vel.Len() == 0:
 		newState = STANDING
-	case h.phys.vel.Len() > 0:
+	case h.phys.vel.Len() == h.phys.walkSpeed:
 		newState = WALKING
+	case h.phys.vel.Len() == h.phys.runSpeed:
+		newState = RUNNING
 	}
 
 	// make state transision
@@ -95,6 +98,10 @@ func (h *Hero) Update(dt float64) {
 		i := int(math.Floor(h.counter / 0.1)) // MAGIC CONST!
 		h.frame = h.anims["walk"].frames[i%len(h.anims["walk"].frames)]
 		h.sheet = h.anims["walk"].sheet
+	case RUNNING:
+		i := int(math.Floor(h.counter / 0.1)) // MAGIC CONST!
+		h.frame = h.anims["run"].frames[i%len(h.anims["run"].frames)]
+		h.sheet = h.anims["run"].sheet
 	case JUMPING:
 		speed := h.phys.vel.Y
 		i := int((-speed/h.phys.jumpSpeed + 1) / 2 * float64(len(h.anims["jump"].frames)))
@@ -130,7 +137,7 @@ func (h *Hero) draw(t pixel.Target) {
 			h.phys.rect.W()/h.sprite.Frame().W(),
 			h.phys.rect.H()/h.sprite.Frame().H(),
 		)).
-		ScaledXY(pixel.ZV, pixel.V(-h.dir, 1)).
+		ScaledXY(pixel.ZV, pixel.V(h.dir, 1)).
 		Moved(h.phys.rect.Center()),
 	)
 }

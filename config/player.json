@@ -64,6 +64,6 @@
     "width": 48,
     "height": 48,
     "mass": 100,
-    "walk": 5,
-    "run": 10
+    "walk": 50,
+    "run": 100
 }

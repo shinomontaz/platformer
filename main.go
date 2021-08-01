@@ -32,7 +32,11 @@ func gameLoop() {
 
 	win.SetSmooth(true)
 
-	//	world := NewWorld(WIDTH, HEIGTH, hero.getPos())
+	world := NewWorld(config.WorldConfig.Width, config.WorldConfig.Heigth)
+	for _, p := range config.WorldConfig.Platforms {
+		world.platforms = append(world.platforms, NewPlatform(pixel.R(p[0], p[1], p[2], p[3]).Moved(win.Bounds().Center())))
+	}
+
 	ctrl := PlayerController{}
 
 	phys := phys{
@@ -40,6 +44,7 @@ func gameLoop() {
 		runSpeed:  config.PlayerConfig.Run,
 		walkSpeed: config.PlayerConfig.Walk,
 		ground:    true,
+		gravity:   config.WorldConfig.Gravity,
 	}
 
 	hero := Hero{
@@ -54,11 +59,6 @@ func gameLoop() {
 	}
 
 	phys.rect = phys.rect.Moved(win.Bounds().Center())
-
-	// pltfms := make([]*platform, 0)
-	// for _, p := range config.WorldConfig.Platforms {
-	// 	pltfms = append(pltfms, NewPlatform(pixel.R(p[0], p[1], p[2], p[3])))
-	// }
 
 	var (
 		//		camPos    = pixel.ZV
@@ -80,9 +80,9 @@ func gameLoop() {
 
 		// win.SetMatrix(cam)
 		ctrl.Update(win) // - here we capture control signals, so physics receive input from controller
-		phys.update(dt, ctrl.vec, nil)
+		phys.update(dt, ctrl.vec, world.platforms)
 		//		(dt float64, move pixel.Vec, platforms []platform)
-		//		world.Draw(win, hero.getPos(), camPos)
+		world.Draw(win)
 		hero.Update(dt)
 		hero.draw(win)
 

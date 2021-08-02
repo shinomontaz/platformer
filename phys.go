@@ -40,6 +40,10 @@ func (p *phys) update(dt float64, move pixel.Vec, platforms []*platform) {
 
 	// apply gravity and velocity
 	p.vel.Y -= p.gravity
+	if math.Abs(move.Y) == 1 { // jump
+		p.vel.Y = p.jumpSpeed
+	}
+
 	p.rect = p.rect.Moved(p.vel.Scaled(dt))
 
 	// check collisions against each platform

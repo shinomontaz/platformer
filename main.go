@@ -43,6 +43,7 @@ func gameLoop() {
 		rect:      pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height),
 		runSpeed:  config.PlayerConfig.Run,
 		walkSpeed: config.PlayerConfig.Walk,
+		jumpSpeed: config.WorldConfig.Gravity * 20,
 		ground:    true,
 		gravity:   config.WorldConfig.Gravity,
 	}
@@ -81,6 +82,7 @@ func gameLoop() {
 		// win.SetMatrix(cam)
 		ctrl.Update(win) // - here we capture control signals, so physics receive input from controller
 		phys.update(dt, ctrl.vec, world.platforms)
+		ctrl.SetGround(phys.ground)
 		//		(dt float64, move pixel.Vec, platforms []platform)
 		world.Draw(win)
 		hero.Update(dt)

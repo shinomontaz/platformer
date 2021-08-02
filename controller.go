@@ -6,11 +6,20 @@ import (
 )
 
 type PlayerController struct {
-	vec pixel.Vec
+	vec    pixel.Vec
+	ground bool
+}
+
+func (pc *PlayerController) SetGround(g bool) {
+	pc.ground = g
 }
 
 func (pc *PlayerController) Update(win *pixelgl.Window) {
 	pc.vec = pixel.ZV
+	if !pc.ground {
+		return
+	}
+
 	if win.Pressed(pixelgl.KeyRightControl) {
 	} else if win.Pressed(pixelgl.KeyLeftShift) {
 		if win.Pressed(pixelgl.KeyLeft) {
@@ -24,7 +33,8 @@ func (pc *PlayerController) Update(win *pixelgl.Window) {
 		} else if win.Pressed(pixelgl.KeyRight) {
 			pc.vec.X += 2.0
 		}
-	} else if win.Pressed(pixelgl.KeyUp) {
+	}
+	if win.Pressed(pixelgl.KeyUp) {
 		pc.vec.Y++
 	}
 }

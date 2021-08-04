@@ -16,9 +16,6 @@ func (pc *PlayerController) SetGround(g bool) {
 
 func (pc *PlayerController) Update(win *pixelgl.Window) {
 	pc.vec = pixel.ZV
-	if !pc.ground {
-		return
-	}
 
 	if win.Pressed(pixelgl.KeyRightControl) {
 	} else if win.Pressed(pixelgl.KeyLeftShift) {
@@ -34,6 +31,11 @@ func (pc *PlayerController) Update(win *pixelgl.Window) {
 			pc.vec.X += 2.0
 		}
 	}
+
+	if !pc.ground {
+		return
+	}
+
 	if win.Pressed(pixelgl.KeyUp) {
 		pc.vec.Y++
 	}

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"math"
 	"time"
 
 	"platformer/config"
@@ -43,7 +44,7 @@ func gameLoop() {
 		rect:      pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height),
 		runSpeed:  config.PlayerConfig.Run,
 		walkSpeed: config.PlayerConfig.Walk,
-		jumpSpeed: config.WorldConfig.Gravity * 20,
+		jumpSpeed: config.WorldConfig.Gravity * 50,
 		ground:    true,
 		gravity:   config.WorldConfig.Gravity,
 	}
@@ -62,7 +63,7 @@ func gameLoop() {
 	phys.rect = phys.rect.Moved(win.Bounds().Center())
 
 	var (
-		//		camPos    = pixel.ZV
+		camPos    = pixel.ZV
 		frames    = 0
 		second    = time.Tick(time.Second)
 		frametime = time.Tick(120 * time.Millisecond)
@@ -76,10 +77,12 @@ func gameLoop() {
 		last = time.Now()
 		win.Clear(rgba)
 
-		// camPos = pixel.Lerp(camPos, hero.getPos(), 1-math.Pow(1.0/128, dt))
-		// cam := pixel.IM.Moved(camPos)
+		pos := hero.getPos()
 
-		// win.SetMatrix(cam)
+		camPos = pixel.Lerp(camPos, pixel.Vec{X: -pos.X, Y: -pos.Y}, 1-math.Pow(1.0/128, dt))
+		cam := pixel.IM.Moved(camPos)
+
+		win.SetMatrix(cam)
 		ctrl.Update(win) // - here we capture control signals, so physics receive input from controller
 		phys.update(dt, ctrl.vec, world.platforms)
 		ctrl.SetGround(phys.ground)

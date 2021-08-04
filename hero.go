@@ -123,7 +123,7 @@ func (h *Hero) Update(dt float64) {
 		}
 	}
 
-	h.pos = h.pos.Add(pixel.Vec{h.phys.vel.X, h.phys.vel.Y})
+	h.pos = h.pos.Add(h.phys.vel.Scaled(dt))
 }
 
 func (h *Hero) draw(t pixel.Target) {

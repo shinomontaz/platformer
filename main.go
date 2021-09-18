@@ -19,7 +19,6 @@ func init() {
 }
 
 func gameLoop() {
-	fmt.Println(config.WorldConfig)
 	cfg := pixelgl.WindowConfig{
 		Title:  "platformer",
 		Bounds: pixel.R(0, 0, config.WorldConfig.Width, config.WorldConfig.Heigth),
@@ -60,7 +59,8 @@ func gameLoop() {
 		hero.SetAnim(anim.Name, anim.File, anim.Frames)
 	}
 
-	phys.rect = phys.rect.Moved(win.Bounds().Center())
+	initialCenter := win.Bounds().Center()
+	phys.rect = phys.rect.Moved(initialCenter)
 
 	var (
 		camPos    = pixel.ZV
@@ -78,8 +78,8 @@ func gameLoop() {
 		win.Clear(rgba)
 
 		pos := hero.getPos()
+		camPos = pixel.Lerp(camPos, initialCenter.Add(pixel.Vec{X: -pos.X, Y: -pos.Y}), 1-math.Pow(1.0/128, dt))
 
-		camPos = pixel.Lerp(camPos, pixel.Vec{X: -pos.X, Y: -pos.Y}, 1-math.Pow(1.0/128, dt))
 		cam := pixel.IM.Moved(camPos)
 
 		win.SetMatrix(cam)

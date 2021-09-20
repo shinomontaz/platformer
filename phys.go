@@ -44,17 +44,22 @@ func (p *phys) update(dt float64, move pixel.Vec, platforms []*platform) {
 
 	// check collisions against each platform
 	p.ground = false
-	if p.vel.Y <= 0 {
+	if p.vel.Y != 0 {
 		for _, pl := range platforms {
 			if p.rect.Max.X <= pl.rect.Min.X || p.rect.Min.X >= pl.rect.Max.X {
 				continue
 			}
-			if p.rect.Min.Y > pl.rect.Max.Y || p.rect.Min.Y < pl.rect.Max.Y+p.vel.Y*dt {
+			if p.rect.Min.Y > pl.rect.Max.Y || p.rect.Max.Y < pl.rect.Max.Y {
 				continue
 			}
+			if p.vel.Y < 0 {
+				p.rect = p.rect.Moved(pixel.V(0, pl.rect.Max.Y-p.rect.Min.Y))
+				p.ground = true
+			} else {
+				p.rect = p.rect.Moved(pixel.V(0, pl.rect.Min.Y-p.rect.Max.Y))
+				//				p.vel.Y = -p.vel.Y
+			}
 			p.vel.Y = 0
-			p.rect = p.rect.Moved(pixel.V(0, pl.rect.Max.Y-p.rect.Min.Y))
-			p.ground = true
 		}
 	}
 

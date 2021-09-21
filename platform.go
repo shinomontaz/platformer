@@ -37,7 +37,11 @@ again:
 	return pixel.RGB(r/len, g/len, b/len)
 }
 
-func (p *platform) draw(imd *imdraw.IMDraw) {
+func (p *platform) Rect() *pixel.Rect {
+	return &p.rect
+}
+
+func (p *platform) Draw(imd *imdraw.IMDraw) {
 	imd.Color = p.color
 	imd.Push(p.rect.Min, p.rect.Max)
 	imd.Rectangle(0)

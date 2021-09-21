@@ -17,7 +17,19 @@ type phys struct {
 	//	ctrl      IController
 }
 
-func (p *phys) update(dt float64, move pixel.Vec, platforms []*platform) {
+func (p *phys) Intersects(obj Objecter) bool {
+	rect := obj.Rect()
+	if p.rect.Max.X <= rect.Min.X || p.rect.Min.X >= rect.Max.X {
+		return false
+	}
+	if p.rect.Min.Y > rect.Max.Y || p.rect.Max.Y < rect.Max.Y {
+		return false
+	}
+
+	return true
+}
+
+func (p *phys) update(dt float64, move pixel.Vec, objs []Objecter) {
 	// apply controls
 	switch {
 	case math.Abs(move.X) == 1:
@@ -45,18 +57,18 @@ func (p *phys) update(dt float64, move pixel.Vec, platforms []*platform) {
 	// check collisions against each platform
 	p.ground = false
 	if p.vel.Y != 0 {
-		for _, pl := range platforms {
-			if p.rect.Max.X <= pl.rect.Min.X || p.rect.Min.X >= pl.rect.Max.X {
+		for _, obj := range objs {
+			if !p.Intersects(obj) {
 				continue
 			}
-			if p.rect.Min.Y > pl.rect.Max.Y || p.rect.Max.Y < pl.rect.Max.Y {
-				continue
-			}
+
+			rect := obj.Rect()
+
 			if p.vel.Y < 0 {
-				p.rect = p.rect.Moved(pixel.V(0, pl.rect.Max.Y-p.rect.Min.Y))
+				p.rect = p.rect.Moved(pixel.V(0, rect.Max.Y-p.rect.Min.Y))
 				p.ground = true
 			} else {
-				p.rect = p.rect.Moved(pixel.V(0, pl.rect.Min.Y-p.rect.Max.Y))
+				p.rect = p.rect.Moved(pixel.V(0, rect.Min.Y-p.rect.Max.Y))
 				//				p.vel.Y = -p.vel.Y
 			}
 			p.vel.Y = 0

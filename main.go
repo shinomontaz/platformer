@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image/color"
 	"math"
+	"math/rand"
 	"time"
 
 	"platformer/config"
@@ -16,6 +17,8 @@ func init() {
 	// create world
 	// create physics
 	// create hero
+
+	rand.Seed(time.Now().UTC().UnixNano())
 }
 
 func gameLoop() {
@@ -89,7 +92,7 @@ func gameLoop() {
 		world.Update(currBounds)
 		ctrl.Update(win) // - here we capture control signals, so physics receive input from controller
 		phys.update(dt, ctrl.vec, world.Objects())
-		hero.Update(dt)
+		hero.Update(dt, ctrl.cmd)
 
 		ctrl.SetGround(phys.ground)
 

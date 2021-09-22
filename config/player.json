@@ -36,7 +36,7 @@
         "frames": [4, 0, 4]
     },
     {
-        "name": "attack",
+        "name": "attack1",
         "file":"assets/character/graverobber/GraveRobber_attack1.png",
         "frames": [6, 0, 6]
     },

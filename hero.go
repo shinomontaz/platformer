@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"image/png"
 	"math"
+	"math/rand"
 	"os"
 
 	"github.com/faiface/pixel"
@@ -18,6 +20,11 @@ const (
 	DEAD
 )
 
+const (
+	NOACTION = iota
+	STRIKE
+)
+
 type Anim struct {
 	sheet  pixel.Picture
 	frames []pixel.Rect
@@ -30,11 +37,12 @@ type Hero struct {
 	state   int
 	counter float64
 
-	sheet  pixel.Picture
-	frame  pixel.Rect
-	sprite *pixel.Sprite
-	anims  map[string]*Anim
-	dir    float64
+	sheet      pixel.Picture
+	frame      pixel.Rect
+	sprite     *pixel.Sprite
+	anims      map[string]*Anim
+	dir        float64
+	attackCode string
 }
 
 func (h *Hero) SetAnim(name, file string, frames []int) error {
@@ -60,6 +68,8 @@ func (h *Hero) SetAnim(name, file string, frames []int) error {
 		frames: frs[frames[1]:frames[2]],
 	}
 
+	h.attackCode = "attack1"
+
 	return nil
 }
 
@@ -67,7 +77,7 @@ func (h *Hero) getPos() pixel.Vec {
 	return h.pos
 }
 
-func (h *Hero) Update(dt float64) {
+func (h *Hero) Update(dt float64, cmd int) {
 	// detect state
 	h.counter += dt
 
@@ -75,6 +85,8 @@ func (h *Hero) Update(dt float64) {
 	switch {
 	case !h.phys.ground:
 		newState = JUMPING
+	case cmd == STRIKE:
+		newState = FIRING
 	case h.phys.vel.Len() == 0:
 		newState = STANDING
 	case h.phys.vel.Len() == h.phys.walkSpeed:
@@ -113,6 +125,13 @@ func (h *Hero) Update(dt float64) {
 		}
 		h.frame = h.anims["jump"].frames[i]
 		h.sheet = h.anims["jump"].sheet
+	case FIRING:
+		i := int(math.Floor(h.counter / 0.1)) // h.counter stands for frame rate change in animation
+		if i == 0 || i%len(h.anims[h.attackCode].frames) == 0 {
+			h.attackCode = h.selectAttack(h.phys.vel)
+		}
+		h.frame = h.anims[h.attackCode].frames[i%len(h.anims[h.attackCode].frames)]
+		h.sheet = h.anims[h.attackCode].sheet
 	}
 
 	if h.phys.vel.X != 0 {
@@ -126,6 +145,13 @@ func (h *Hero) Update(dt float64) {
 	//	h.pos = h.phys.rect.Center()
 	h.pos = h.phys.rect.Min
 
+}
+
+func (h *Hero) selectAttack(move pixel.Vec) string {
+	if move.Len() == 0 {
+		return fmt.Sprintf("attack%d", rand.Intn(2)+1)
+	}
+	return "attack3"
 }
 
 func (h *Hero) draw(t pixel.Target) {

@@ -62,6 +62,7 @@ func (p *phys) update(dt float64, move pixel.Vec, objs []Objecter) {
 				continue
 			}
 
+			// Handle collision
 			rect := obj.Rect()
 
 			if p.vel.Y < 0 {

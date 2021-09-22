@@ -61,6 +61,7 @@ func gameLoop() {
 
 	initialCenter := win.Bounds().Center()
 	phys.rect = phys.rect.Moved(initialCenter)
+	currBounds := cfg.Bounds
 
 	var (
 		camPos    = pixel.ZV
@@ -71,6 +72,7 @@ func gameLoop() {
 
 	last := time.Now()
 	rgba := color.RGBA{205, 231, 244, 1}
+	fmt.Println(cfg.Bounds)
 
 	for !win.Closed() {
 		dt := time.Since(last).Seconds()
@@ -78,14 +80,13 @@ func gameLoop() {
 		win.Clear(rgba)
 
 		pos := hero.getPos()
-		currCenter := initialCenter.Add(pixel.Vec{X: -pos.X, Y: -pos.Y})
-		camPos = pixel.Lerp(camPos, currCenter, 1-math.Pow(1.0/128, dt))
-
+		camPos = pixel.Lerp(camPos, initialCenter.Sub(pos), 1-math.Pow(1.0/128, dt))
 		cam := pixel.IM.Moved(camPos)
 
 		win.SetMatrix(cam)
+		currBounds = cfg.Bounds.Moved(initialCenter.Sub(pos).Scaled(-1))
 
-		world.Update(cfg.Bounds.Moved(currCenter))
+		world.Update(currBounds)
 		ctrl.Update(win) // - here we capture control signals, so physics receive input from controller
 		phys.update(dt, ctrl.vec, world.Objects())
 		hero.Update(dt)

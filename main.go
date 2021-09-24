@@ -39,6 +39,9 @@ func gameLoop() {
 	for _, p := range config.WorldConfig.Platforms {
 		world.platforms = append(world.platforms, NewPlatform(pixel.R(p[0], p[1], p[2], p[3]).Moved(win.Bounds().Center())))
 	}
+	for _, e := range config.WorldConfig.Enemies {
+		world.enemies = append(world.enemies, NewEnemy(*e, config.WorldConfig))
+	}
 
 	ctrl := PlayerController{}
 
@@ -75,7 +78,6 @@ func gameLoop() {
 
 	last := time.Now()
 	rgba := color.RGBA{205, 231, 244, 1}
-	fmt.Println(cfg.Bounds)
 
 	for !win.Closed() {
 		dt := time.Since(last).Seconds()
@@ -90,6 +92,10 @@ func gameLoop() {
 		currBounds = cfg.Bounds.Moved(initialCenter.Sub(pos).Scaled(-1))
 
 		world.Update(currBounds)
+		for _, e := range world.enemies {
+			e.p.update(dt, pixel.ZV, world.Objects())
+			e.a.Update(dt, NOACTION)
+		}
 		ctrl.Update(win) // - here we capture control signals, so physics receive input from controller
 		phys.update(dt, ctrl.vec, world.Objects())
 		hero.Update(dt, ctrl.cmd)

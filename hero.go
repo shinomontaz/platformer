@@ -15,6 +15,7 @@ const (
 	RUNNING
 	JUMPING
 	STANDING
+	IDLE
 	FIRING
 	DYING
 	DEAD
@@ -95,14 +96,29 @@ func (h *Hero) Update(dt float64, cmd int) {
 		newState = RUNNING
 	}
 
-	// make state transision
+	if h.state == IDLE { // make idle animation
+		newState = IDLE
+	}
+	if h.counter > 5.0 && h.state == STANDING && (newState == h.state || newState == STANDING) { // make idle animation
+		newState = IDLE
+	}
 
+	// make state transision
 	if h.state != newState {
 		h.state = newState
 		h.counter = 0
 	}
 
 	switch h.state {
+	case IDLE:
+		i := int(math.Floor(h.counter / 0.1)) // MAGIC CONST!
+
+		if i > len(h.anims["idle"].frames) {
+			h.state = STANDING
+		}
+
+		h.frame = h.anims["idle"].frames[i%len(h.anims["idle"].frames)]
+		h.sheet = h.anims["idle"].sheet
 	case STANDING:
 		h.frame = h.anims["stand"].frames[0]
 		h.sheet = h.anims["stand"].sheet

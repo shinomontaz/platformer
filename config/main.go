@@ -34,6 +34,19 @@ func init() {
 	byteValue, _ = ioutil.ReadAll(fworld)
 	json.Unmarshal(byteValue, &WorldConfig)
 
+	fenemy, err := os.Open("config/player2.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer fenemy.Close()
+
+	// install enemies config
+	var EnemyConfig Player
+	byteValue, _ = ioutil.ReadAll(fenemy)
+	json.Unmarshal(byteValue, &EnemyConfig)
+	for _, e := range WorldConfig.Enemies {
+		e.Anims = &EnemyConfig.Anims
+	}
 	fplayer, err := os.Open(fmt.Sprintf("config/%s", MainConfig.PlayerCfg))
 	if err != nil {
 		log.Fatal(err)

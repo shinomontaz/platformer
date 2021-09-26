@@ -160,7 +160,9 @@ func (h *Hero) Update(dt float64, cmd int) {
 
 	//	h.pos = h.phys.rect.Center()
 	h.pos = h.phys.rect.Min
+	//	h.rect = h.rect.Moved(pixel.Vec{h.phys.rect.Center().X - h.phys.rect.W()/2, h.phys.rect.Center().Y - h.phys.rect.H()/2})
 
+	h.rect = pixel.R(h.phys.rect.Center().X-h.phys.rect.W()/2, h.phys.rect.Center().Y-h.phys.rect.H()/2, h.phys.rect.Center().X-h.phys.rect.W()/2+h.rect.W(), h.phys.rect.Center().Y-h.phys.rect.H()/2+h.rect.H())
 }
 
 func (h *Hero) selectAttack(move pixel.Vec) string {
@@ -178,12 +180,17 @@ func (h *Hero) draw(t pixel.Target) {
 	h.sprite.Set(h.sheet, h.frame)
 	h.sprite.Draw(t, pixel.IM.
 		ScaledXY(pixel.ZV, pixel.V(
-			h.phys.rect.W()/h.sprite.Frame().W(),
-			h.phys.rect.H()/h.sprite.Frame().H(),
+			h.rect.W()/h.sprite.Frame().W(),
+			h.rect.H()/h.sprite.Frame().H(),
 		)).
 		ScaledXY(pixel.ZV, pixel.V(h.dir, 1)).
-		Moved(h.phys.rect.Center()),
+		Moved(h.rect.Center()),
 	)
+}
+
+func (h *Hero) Hit(pos, vec pixel.Vec, power int) {
+	// make him suffer
+
 }
 
 func loadPicture(path string) (pixel.Picture, error) {

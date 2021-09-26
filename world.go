@@ -10,12 +10,14 @@ import (
 type world struct {
 	platforms []*platform
 	enemies   []*Enemy
+	currenm   []*Enemy
 	visible   []Objecter
 }
 
 type Enemy struct {
-	p phys
-	a Hero
+	p  phys
+	a  Hero
+	ai Ai
 }
 
 func NewWorld(w, h float64) *world {
@@ -29,18 +31,16 @@ func NewWorld(w, h float64) *world {
 func NewEnemy(cfg config.Enemy, wcfg config.World) *Enemy {
 	e := Enemy{}
 
-	e.p = phys{
-		rect:      pixel.R(cfg.Coords[0], cfg.Coords[1], cfg.Coords[0]+cfg.Width, cfg.Coords[1]+cfg.Height),
-		runSpeed:  cfg.Run,
-		walkSpeed: cfg.Walk,
-		jumpSpeed: wcfg.Gravity * 50,
-		ground:    true,
-		gravity:   wcfg.Gravity,
-	}
+	e.p = NewPhys()
+	e.p.rect = pixel.R(cfg.Coords[0], cfg.Coords[1], cfg.Coords[0]+cfg.Width/2, cfg.Coords[1]+cfg.Height*0.75)
+	e.p.runSpeed = cfg.Run
+	e.p.walkSpeed = cfg.Walk
+	e.p.jumpSpeed = wcfg.Gravity * 50
+	e.p.gravity = wcfg.Gravity
 
 	e.a = Hero{
 		phys:  &e.p,
-		rect:  e.p.rect,
+		rect:  pixel.R(cfg.Coords[0], cfg.Coords[1], cfg.Coords[0]+cfg.Width, cfg.Coords[1]+cfg.Height),
 		anims: make(map[string]*Anim, 0),
 		pos:   pixel.V(0.0, 0.0),
 		dir:   1.0,
@@ -48,6 +48,12 @@ func NewEnemy(cfg config.Enemy, wcfg config.World) *Enemy {
 
 	for _, anim := range *cfg.Anims {
 		e.a.SetAnim(anim.Name, anim.File, anim.Frames)
+	}
+
+	// add Ai
+
+	e.ai = Ai{
+		pers: &e.p,
 	}
 
 	return &e
@@ -65,12 +71,12 @@ func (w *world) Update(rect pixel.Rect) {
 	// for _, e := range w.enemies {
 	// 	e.p.Update()
 	// }
-
-	// for _, e := range w.enemies {
-	// 	if rect.Intersects(e.p.rect) {
-	// 		w.visible = append(w.visible, e)
-	// 	}
-	// }
+	w.currenm = make([]*Enemy, 0)
+	for _, e := range w.enemies {
+		if rect.Intersects(e.p.rect) {
+			w.currenm = append(w.currenm, e)
+		}
+	}
 }
 
 func (w *world) Objects() []Objecter {

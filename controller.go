@@ -40,6 +40,19 @@ func (pc *PlayerController) Update(win *pixelgl.Window) {
 	if win.Pressed(pixelgl.KeyLeftControl) {
 		// attacking!
 		pc.cmd = STRIKE
+
+		// pc.attack = Attack{
+		// 	owner: h,
+		// 	vel: pixel.ZV,
+		// 	pos: pixel.Vec{  },
+
+		// 	rect: pixel.R(
+		// 	h.rect.Center().X-h.dir*h.rect.W()/2,
+		// 	h.rect.Center().Y-h.rect.H()/2,
+		// 	h.rect.Center().X+h.dir*h.rect.W()/2,
+		// 	h.rect.Center().Y+h.rect.H()/2)
+		// }
+
 		return
 	}
 

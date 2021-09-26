@@ -36,6 +36,7 @@ func gameLoop() {
 	win.SetSmooth(true)
 
 	world := NewWorld(config.WorldConfig.Width, config.WorldConfig.Heigth)
+	atks := NewAttacks()
 	for _, p := range config.WorldConfig.Platforms {
 		world.platforms = append(world.platforms, NewPlatform(pixel.R(p[0], p[1], p[2], p[3]).Moved(win.Bounds().Center())))
 	}
@@ -44,19 +45,16 @@ func gameLoop() {
 	}
 
 	ctrl := PlayerController{}
-
-	phys := phys{
-		rect:      pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height),
-		runSpeed:  config.PlayerConfig.Run,
-		walkSpeed: config.PlayerConfig.Walk,
-		jumpSpeed: config.WorldConfig.Gravity * 50,
-		ground:    true,
-		gravity:   config.WorldConfig.Gravity,
-	}
+	phys := NewPhys()
+	phys.rect = pixel.R(0, 0, config.PlayerConfig.Width/2, config.PlayerConfig.Height*0.75)
+	phys.runSpeed = config.PlayerConfig.Run
+	phys.walkSpeed = config.PlayerConfig.Walk
+	phys.jumpSpeed = config.WorldConfig.Gravity * 50
+	phys.gravity = config.WorldConfig.Gravity
 
 	hero := Hero{
 		phys:  &phys,
-		rect:  phys.rect,
+		rect:  pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height),
 		anims: make(map[string]*Anim, 0),
 		pos:   pixel.V(0.0, 0.0),
 		dir:   1.0,
@@ -92,16 +90,23 @@ func gameLoop() {
 		currBounds = cfg.Bounds.Moved(initialCenter.Sub(pos).Scaled(-1))
 
 		world.Update(currBounds)
-		for _, e := range world.enemies {
-			e.p.update(dt, pixel.ZV, world.Objects())
-			e.a.Update(dt, NOACTION)
+		for _, e := range world.currenm {
+			e.ai.Update(pos, world.Objects())
+			e.p.update(dt, e.ai.vec, world.Objects())
+			e.a.Update(dt, e.ai.cmd)
+			//			atks.Add(e.ai.attack)
+			e.p.draw(win)
 		}
+
 		ctrl.Update(win) // - here we capture control signals, so physics receive input from controller
+		atks.Update(dt, world.Objects())
 		phys.update(dt, ctrl.vec, world.Objects())
 		hero.Update(dt, ctrl.cmd)
+		//		atks.Add(ctrl.attack)
 
 		ctrl.SetGround(phys.ground)
 
+		phys.draw(win)
 		world.Draw(win)
 		hero.draw(win)
 

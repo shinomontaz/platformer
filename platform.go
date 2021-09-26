@@ -46,3 +46,7 @@ func (p *platform) Draw(imd *imdraw.IMDraw) {
 	imd.Push(p.rect.Min, p.rect.Max)
 	imd.Rectangle(0)
 }
+
+func (p *platform) Hit(pos, vec pixel.Vec, power int) {
+	// do nothing
+}

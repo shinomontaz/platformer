@@ -1,9 +1,12 @@
 package main
 
 import (
+	"image/color"
 	"math"
 
 	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/imdraw"
+	"github.com/lucasb-eyer/go-colorful"
 )
 
 type phys struct {
@@ -14,7 +17,14 @@ type phys struct {
 	jumpSpeed float64
 	gravity   float64
 	ground    bool
-	//	ctrl      IController
+	color     color.Color
+}
+
+func NewPhys() phys {
+	return phys{
+		color:  colorful.HappyColor(),
+		ground: true,
+	}
 }
 
 func (p *phys) Intersects(obj Objecter) bool {
@@ -80,4 +90,17 @@ func (p *phys) update(dt float64, move pixel.Vec, objs []Objecter) {
 	if p.ground && move.Y > 0 {
 		p.vel.Y = p.jumpSpeed
 	}
+}
+
+func (p *phys) draw(t pixel.Target) {
+	imd := imdraw.New(nil)
+
+	vertices := p.rect.Vertices()
+
+	imd.Color = p.color
+	for _, v := range vertices {
+		imd.Push(v)
+	}
+	imd.Rectangle(1)
+	imd.Draw(t)
 }

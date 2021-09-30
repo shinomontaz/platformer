@@ -44,7 +44,7 @@ func gameLoop() {
 		world.enemies = append(world.enemies, NewEnemy(*e, config.WorldConfig))
 	}
 
-	ctrl := PlayerController{}
+	ctrl := NewController()
 	phys := NewPhys()
 	phys.rect = pixel.R(0, 0, config.PlayerConfig.Width/2, config.PlayerConfig.Height*0.75)
 	phys.runSpeed = config.PlayerConfig.Run
@@ -98,7 +98,7 @@ func gameLoop() {
 			e.p.draw(win)
 		}
 
-		ctrl.Update(win) // - here we capture control signals, so physics receive input from controller
+		ctrl.Update(dt, win) // - here we capture control signals, so physics receive input from controller
 		atks.Update(dt, world.Objects())
 		phys.update(dt, ctrl.vec, world.Objects())
 		hero.Update(dt, ctrl.cmd)

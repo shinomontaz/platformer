@@ -9,54 +9,50 @@ type PlayerController struct {
 	vec    pixel.Vec
 	cmd    int // command action
 	ground bool
+	state  ControllerStater
+	states map[int]ControllerStater
+}
+
+func NewController() *PlayerController {
+	ctrl := &PlayerController{}
+
+	sFree := &FreeState{
+		id: STATE_FREE,
+		pc: ctrl,
+	}
+	sAttack := &AttackState{
+		id:        STATE_ATTACK,
+		pc:        ctrl,
+		timelimit: 0.5,
+	}
+	sDead := &DeadState{
+		id: STATE_DEAD,
+		pc: ctrl,
+	}
+
+	ctrl.states = map[int]ControllerStater{STATE_FREE: sFree, STATE_ATTACK: sAttack, STATE_DEAD: sDead}
+	ctrl.state = sFree
+
+	return ctrl
+}
+
+func (pc *PlayerController) SetState(id int) {
+	pc.state = pc.states[id]
+	pc.state.Start()
+}
+
+func (pc *PlayerController) SetVec(vec pixel.Vec) {
+	pc.vec = vec
+}
+
+func (pc *PlayerController) SetCmd(cmd int) {
+	pc.cmd = cmd
 }
 
 func (pc *PlayerController) SetGround(g bool) {
 	pc.ground = g
 }
 
-func (pc *PlayerController) Update(win *pixelgl.Window) {
-	pc.cmd = NOACTION
-	pc.vec = pixel.ZV
-
-	if win.Pressed(pixelgl.KeyLeftShift) {
-		if win.Pressed(pixelgl.KeyLeft) {
-			pc.vec.X--
-		} else if win.Pressed(pixelgl.KeyRight) {
-			pc.vec.X++
-		}
-	} else if !win.Pressed(pixelgl.KeyLeftShift) { // running
-		if win.Pressed(pixelgl.KeyLeft) {
-			pc.vec.X -= 2.0
-		} else if win.Pressed(pixelgl.KeyRight) {
-			pc.vec.X += 2.0
-		}
-	}
-
-	if !pc.ground {
-		return
-	}
-
-	if win.Pressed(pixelgl.KeyLeftControl) {
-		// attacking!
-		pc.cmd = STRIKE
-
-		// pc.attack = Attack{
-		// 	owner: h,
-		// 	vel: pixel.ZV,
-		// 	pos: pixel.Vec{  },
-
-		// 	rect: pixel.R(
-		// 	h.rect.Center().X-h.dir*h.rect.W()/2,
-		// 	h.rect.Center().Y-h.rect.H()/2,
-		// 	h.rect.Center().X+h.dir*h.rect.W()/2,
-		// 	h.rect.Center().Y+h.rect.H()/2)
-		// }
-
-		return
-	}
-
-	if win.Pressed(pixelgl.KeyUp) {
-		pc.vec.Y++
-	}
+func (pc *PlayerController) Update(dt float64, win *pixelgl.Window) {
+	pc.state.Process(dt, win)
 }

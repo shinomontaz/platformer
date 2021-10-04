@@ -17,12 +17,14 @@ const (
 	STANDING
 	IDLE
 	FIRING
+	HURT
 	DYING
 	DEAD
 )
 
 const (
 	NOACTION = iota
+	HITTED
 	STRIKE
 )
 
@@ -88,6 +90,8 @@ func (h *Hero) Update(dt float64, cmd int) {
 		newState = JUMPING
 	case cmd == STRIKE:
 		newState = FIRING
+	case cmd == HITTED:
+		newState = HURT
 	case h.phys.vel.Len() == 0:
 		newState = STANDING
 	case h.phys.vel.Len() == h.phys.walkSpeed:
@@ -130,6 +134,9 @@ func (h *Hero) Update(dt float64, cmd int) {
 		i := int(math.Floor(h.counter / 0.1)) // MAGIC CONST!
 		h.frame = h.anims["run"].frames[i%len(h.anims["run"].frames)]
 		h.sheet = h.anims["run"].sheet
+	case HURT:
+		h.frame = h.anims["hurt"].frames[1] // only second frame we get!
+		h.sheet = h.anims["hurt"].sheet
 	case JUMPING:
 		speed := h.phys.vel.Y
 		i := int((-speed/h.phys.jumpSpeed + 1) / 2 * float64(len(h.anims["jump"].frames)))
@@ -190,7 +197,8 @@ func (h *Hero) draw(t pixel.Target) {
 
 func (h *Hero) Hit(pos, vec pixel.Vec, power int) {
 	// make him suffer
-
+	// set state to HURT
+	//
 }
 
 func loadPicture(path string) (pixel.Picture, error) {

@@ -51,6 +51,11 @@
         "frames": [6, 0, 6]
     },
     {
+        "name": "hurt",
+        "file":"assets/character/graverobber/GraveRobber_hurt.png",
+        "frames": [3, 0, 3]
+    },
+    {
         "name": "die",
         "file":"assets/character/graverobber/GraveRobber_death.png",
         "frames": [6, 0, 6]

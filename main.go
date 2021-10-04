@@ -94,15 +94,16 @@ func gameLoop() {
 			e.ai.Update(pos, world.Objects())
 			e.p.update(dt, e.ai.vec, world.Objects())
 			e.a.Update(dt, e.ai.cmd)
-			//			atks.Add(e.ai.attack)
+			atks.Add(*e.ai.attack)
 			e.p.draw(win)
 		}
 
 		ctrl.Update(dt, win) // - here we capture control signals, so physics receive input from controller
+		atks.Add(*ctrl.attack)
 		atks.Update(dt, world.Objects())
 		phys.update(dt, ctrl.vec, world.Objects())
+
 		hero.Update(dt, ctrl.cmd)
-		//		atks.Add(ctrl.attack)
 
 		ctrl.SetGround(phys.ground)
 

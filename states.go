@@ -8,6 +8,7 @@ import (
 const (
 	STATE_FREE = iota
 	STATE_ATTACK
+	STATE_HIT
 	STATE_DEAD
 )
 
@@ -75,6 +76,7 @@ func (s *AttackState) Process(dt float64, win *pixelgl.Window) {
 	s.time += dt
 	s.pc.SetVec(pixel.ZV)
 	s.pc.SetCmd(STRIKE)
+	// add attack here
 }
 
 type DeadState struct {
@@ -89,4 +91,18 @@ func (s *DeadState) Start() {
 func (s *DeadState) Process(dt float64, win *pixelgl.Window) {
 	s.pc.SetVec(pixel.ZV)
 	s.pc.SetCmd(NOACTION)
+}
+
+type HitState struct {
+	id int
+	pc *PlayerController
+}
+
+func (s *HitState) Start() {
+	s.pc.SetCmd(NOACTION)
+}
+
+func (s *HitState) Process(dt float64, win *pixelgl.Window) {
+	s.pc.SetVec(pixel.ZV)
+	s.pc.SetCmd(HITTED)
 }

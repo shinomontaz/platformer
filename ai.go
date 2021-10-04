@@ -11,6 +11,7 @@ type Ai struct {
 	cmd    int // command action
 	ground bool
 	pers   *phys
+	attack *Attack
 }
 
 func (ai *Ai) SetGround(g bool) {

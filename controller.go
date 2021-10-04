@@ -11,6 +11,7 @@ type PlayerController struct {
 	ground bool
 	state  ControllerStater
 	states map[int]ControllerStater
+	attack *Attack
 }
 
 func NewController() *PlayerController {
@@ -29,8 +30,12 @@ func NewController() *PlayerController {
 		id: STATE_DEAD,
 		pc: ctrl,
 	}
+	sHit := &HitState{
+		id: STATE_HIT,
+		pc: ctrl,
+	}
 
-	ctrl.states = map[int]ControllerStater{STATE_FREE: sFree, STATE_ATTACK: sAttack, STATE_DEAD: sDead}
+	ctrl.states = map[int]ControllerStater{STATE_FREE: sFree, STATE_ATTACK: sAttack, STATE_DEAD: sDead, STATE_HIT: sHit}
 	ctrl.state = sFree
 
 	return ctrl
@@ -54,5 +59,6 @@ func (pc *PlayerController) SetGround(g bool) {
 }
 
 func (pc *PlayerController) Update(dt float64, win *pixelgl.Window) {
+	pc.attack = nil
 	pc.state.Process(dt, win)
 }

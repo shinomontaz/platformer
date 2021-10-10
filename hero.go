@@ -28,16 +28,12 @@ const (
 	STRIKE
 )
 
-type Anim struct {
-	sheet  pixel.Picture
-	frames []pixel.Rect
-}
 type Hero struct {
 	phys *phys
 	rect pixel.Rect
 	pos  pixel.Vec
 
-	state   int
+	id      int
 	counter float64
 
 	sheet      pixel.Picture

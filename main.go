@@ -7,7 +7,11 @@ import (
 	"math/rand"
 	"time"
 
+	"platformer/actor"
+	"platformer/animation"
 	"platformer/config"
+
+	"platformer/controller"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
@@ -36,7 +40,6 @@ func gameLoop() {
 	win.SetSmooth(true)
 
 	world := NewWorld(config.WorldConfig.Width, config.WorldConfig.Heigth)
-	atks := NewAttacks()
 	for _, p := range config.WorldConfig.Platforms {
 		world.platforms = append(world.platforms, NewPlatform(pixel.R(p[0], p[1], p[2], p[3]).Moved(win.Bounds().Center())))
 	}
@@ -44,7 +47,7 @@ func gameLoop() {
 		world.enemies = append(world.enemies, NewEnemy(*e, config.WorldConfig))
 	}
 
-	ctrl := NewController()
+	ctrl := controller.New(win)
 	phys := NewPhys()
 	phys.rect = pixel.R(0, 0, config.PlayerConfig.Width/2, config.PlayerConfig.Height*0.75)
 	phys.runSpeed = config.PlayerConfig.Run
@@ -52,16 +55,21 @@ func gameLoop() {
 	phys.jumpSpeed = config.WorldConfig.Gravity * 50
 	phys.gravity = config.WorldConfig.Gravity
 
-	hero := Hero{
-		phys:  &phys,
-		rect:  pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height),
-		anims: make(map[string]*Anim, 0),
-		pos:   pixel.V(0.0, 0.0),
-		dir:   1.0,
-	}
+	// 	id:    1,
+	// 	phys:  &phys,
+	// 	rect:  pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height),
+	// 	anims: make(map[string]*Anim, 0),
+	// 	pos:   pixel.V(0.0, 0.0),
+	// 	dir:   1.0,
+	// }
+
+	anims := animation.New(pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height))
 	for _, anim := range config.PlayerConfig.Anims {
-		hero.SetAnim(anim.Name, anim.File, anim.Frames)
+		anims.SetAnim(anim.Name, anim.File, anim.Frames)
 	}
+
+	hero := actor.New(&phys, anims)
+	ctrl.Subscribe(hero)
 
 	initialCenter := win.Bounds().Center()
 	phys.rect = phys.rect.Moved(initialCenter)
@@ -94,12 +102,12 @@ func gameLoop() {
 			e.ai.Update(pos, world.Objects())
 			e.p.update(dt, e.ai.vec, world.Objects())
 			e.a.Update(dt, e.ai.cmd)
-			atks.Add(*e.ai.attack)
+			//			atks.Add(*e.ai.attack)
 			e.p.draw(win)
 		}
 
 		ctrl.Update(dt, win) // - here we capture control signals, so physics receive input from controller
-		atks.Add(*ctrl.attack)
+		//		atks.Add(*ctrl.attack)
 		atks.Update(dt, world.Objects())
 		phys.update(dt, ctrl.vec, world.Objects())
 

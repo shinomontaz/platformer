@@ -18,12 +18,18 @@ type phys struct {
 	gravity   float64
 	ground    bool
 	color     color.Color
+	qt        Quadtree
 }
 
-func NewPhys() phys {
+type Quadtree interface {
+	GetObjects() []Objecter
+}
+
+func NewPhys(qt Quadtree) phys {
 	return phys{
 		color:  colorful.HappyColor(),
 		ground: true,
+		qt:     qt,
 	}
 }
 
@@ -39,7 +45,7 @@ func (p *phys) Intersects(obj Objecter) bool {
 	return true
 }
 
-func (p *phys) update(dt float64, move pixel.Vec, objs []Objecter) {
+func (p *phys) Update(dt float64, move pixel.Vec) {
 	// apply controls
 	switch {
 	case math.Abs(move.X) == 1:
@@ -63,6 +69,8 @@ func (p *phys) update(dt float64, move pixel.Vec, objs []Objecter) {
 	// apply gravity and velocity
 	p.vel.Y -= p.gravity
 	p.rect = p.rect.Moved(p.vel.Scaled(dt))
+
+	objs := p.qt.GetObjects()
 
 	// check collisions against each platform
 	p.ground = false
@@ -90,6 +98,10 @@ func (p *phys) update(dt float64, move pixel.Vec, objs []Objecter) {
 	if p.ground && move.Y > 0 {
 		p.vel.Y = p.jumpSpeed
 	}
+}
+
+func (p *phys) GetVel() *pixel.Vec {
+	return &p.vel
 }
 
 func (p *phys) draw(t pixel.Target) {

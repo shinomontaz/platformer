@@ -25,7 +25,6 @@ const (
 type Actor struct {
 	id   int
 	phys Physicer
-	cmd  Commander
 
 	state  ActorStater
 	states map[int]ActorStater
@@ -36,38 +35,33 @@ type Actor struct {
 	anim Animater
 	// sheet  pixel.Picture
 	// frame  pixel.Rect
-	// sprite *pixel.Sprite
+	sprite *pixel.Sprite
 	// anims  map[string]Animater
 	dir float64
 }
 
-func New(phys Physicer, cmd Commander, anim Animater) *Actor {
+func New(phys Physicer, anim Animater) *Actor {
 	a := &Actor{
 		phys: phys,
-		cmd:  cmd,
 		anim: anim,
 	}
 
-	sFree := &FreeState{
-		id: STATE_FREE,
-		a:  a,
-	}
-	sAttack := &AttackState{
-		id:        STATE_ATTACK,
-		a:         a,
-		timelimit: 0.5,
-	}
-	sDead := &DeadState{
-		id: STATE_DEAD,
-		a:  a,
-	}
-	sHit := &HitState{
-		id: STATE_HIT,
-		a:  a,
-	}
+	sFree := NewFreeState(a)
+
+	sAttack := NewAttackState(a)
+	sDead := NewDeadState(a)
+	sHit := NewHitState(a)
 
 	a.states = map[int]ActorStater{STATE_FREE: sFree, STATE_ATTACK: sAttack, STATE_DEAD: sDead, STATE_HIT: sHit}
 	a.state = sFree
+
+	// attack states to animation sets
+	items := a.anim.GetAnims()
+	sFree.SetAnim("stand", items["stand"])
+	sFree.SetAnim("walk", items["walk"])
+	sFree.SetAnim("idle", items["idle"])
+	sFree.SetAnim("run", items["run"])
+	sFree.SetAnim("jump", items["jump"])
 
 	return a
 }
@@ -76,17 +70,17 @@ func (a *Actor) GetId() int {
 	return a.id
 }
 
-func (a *Actor) Notify(e int) {
-	a.state.Notify(e)
+func (a *Actor) Notify(e int, v *pixel.Vec) {
+	a.state.Notify(e, v)
 }
 
-func (a *Actor) getPos() pixel.Vec {
+func (a *Actor) GetPos() pixel.Vec {
 	return a.rect.Center()
 }
 
 func (a *Actor) Update(dt float64) {
 	a.state.Update(dt)
-	a.counter += dt
+	//	a.counter += dt
 
 	// var newState int
 	// switch {
@@ -117,8 +111,8 @@ func (a *Actor) Update(dt float64) {
 	// 	h.counter = 0
 	// }
 
-	// switch h.state {
-	// case IDLE:
+	// switch a.state.GetId() {
+	// case STATE_FREE:
 	// 	i := int(math.Floor(h.counter / 0.1)) // MAGIC CONST!
 
 	// 	if i > len(h.anims["idle"].frames) {
@@ -138,9 +132,6 @@ func (a *Actor) Update(dt float64) {
 	// 	i := int(math.Floor(h.counter / 0.1)) // MAGIC CONST!
 	// 	h.frame = h.anims["run"].frames[i%len(h.anims["run"].frames)]
 	// 	h.sheet = h.anims["run"].sheet
-	// case HURT:
-	// 	h.frame = h.anims["hurt"].frames[1] // only second frame we get!
-	// 	h.sheet = h.anims["hurt"].sheet
 	// case JUMPING:
 	// 	speed := h.phys.vel.Y
 	// 	i := int((-speed/h.phys.jumpSpeed + 1) / 2 * float64(len(h.anims["jump"].frames)))
@@ -152,7 +143,10 @@ func (a *Actor) Update(dt float64) {
 	// 	}
 	// 	h.frame = h.anims["jump"].frames[i]
 	// 	h.sheet = h.anims["jump"].sheet
-	// case FIRING:
+	// case STATE_HIT:
+	// 	h.frame = h.anims["hurt"].frames[1] // only second frame we get!
+	// 	h.sheet = h.anims["hurt"].sheet
+	// case STATE_ATTACK:
 	// 	i := int(math.Floor(h.counter / 0.1)) // h.counter stands for frame rate change in animation
 	// 	// if i == 0 || i%len(h.anims[h.attackCode].frames) == 0 {
 	// 	// 	h.attackCode = h.selectAttack(h.phys.vel)
@@ -185,12 +179,13 @@ func (a *Actor) SetState(id int) {
 	a.state.Start()
 }
 
-func (a *Actor) draw(t pixel.Target) {
-	if a.sprite == nil {
-		a.sprite = pixel.NewSprite(nil, pixel.Rect{})
-	}
+func (a *Actor) Draw(t pixel.Target) {
+	// if a.sprite == nil {
+	// 	a.sprite = pixel.NewSprite(nil, pixel.Rect{})
+	// }
 	// draw the correct frame with the correct position and direction
-	a.sprite.Set(a.sheet, a.frame)
+	a.sprite = a.state.GetSprite()
+	//	a.sprite.Set(a.sheet, a.frame)
 	a.sprite.Draw(t, pixel.IM.
 		ScaledXY(pixel.ZV, pixel.V(
 			a.rect.W()/a.sprite.Frame().W(),

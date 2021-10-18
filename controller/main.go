@@ -25,7 +25,7 @@ func (pc *Controller) Subscribe(s Subscriber) {
 
 func (pc *Controller) Notify(e int) {
 	for _, s := range pc.sbrs {
-		s.Notify(e)
+		s.Notify(e, &pc.vec)
 	}
 }
 
@@ -53,7 +53,7 @@ func (pc *Controller) Update() {
 		isMoved = true
 	}
 
-	ifpc. win.Pressed(pixelgl.KeyUp) {
+	if pc.win.Pressed(pixelgl.KeyUp) {
 		pc.vec.Y++
 		isMoved = true
 	}

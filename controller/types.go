@@ -1,5 +1,7 @@
 package controller
 
+import "github.com/faiface/pixel"
+
 const (
 	E_MOVE = iota
 	E_CTRL
@@ -9,5 +11,5 @@ const (
 
 type Subscriber interface {
 	GetId() int
-	Notify(e int)
+	Notify(e int, v *pixel.Vec)
 }

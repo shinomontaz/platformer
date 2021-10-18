@@ -43,32 +43,21 @@ func gameLoop() {
 	for _, p := range config.WorldConfig.Platforms {
 		world.platforms = append(world.platforms, NewPlatform(pixel.R(p[0], p[1], p[2], p[3]).Moved(win.Bounds().Center())))
 	}
-	for _, e := range config.WorldConfig.Enemies {
-		world.enemies = append(world.enemies, NewEnemy(*e, config.WorldConfig))
-	}
 
 	ctrl := controller.New(win)
-	phys := NewPhys()
+	phys := NewPhys(world)
 	phys.rect = pixel.R(0, 0, config.PlayerConfig.Width/2, config.PlayerConfig.Height*0.75)
 	phys.runSpeed = config.PlayerConfig.Run
 	phys.walkSpeed = config.PlayerConfig.Walk
 	phys.jumpSpeed = config.WorldConfig.Gravity * 50
 	phys.gravity = config.WorldConfig.Gravity
 
-	// 	id:    1,
-	// 	phys:  &phys,
-	// 	rect:  pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height),
-	// 	anims: make(map[string]*Anim, 0),
-	// 	pos:   pixel.V(0.0, 0.0),
-	// 	dir:   1.0,
-	// }
-
-	anims := animation.New(pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height))
+	playerAnims := animation.New(pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height))
 	for _, anim := range config.PlayerConfig.Anims {
-		anims.SetAnim(anim.Name, anim.File, anim.Frames)
+		playerAnims.SetAnim(anim.Name, anim.File, anim.Frames)
 	}
 
-	hero := actor.New(&phys, anims)
+	hero := actor.New(&phys, playerAnims)
 	ctrl.Subscribe(hero)
 
 	initialCenter := win.Bounds().Center()
@@ -90,34 +79,19 @@ func gameLoop() {
 		last = time.Now()
 		win.Clear(rgba)
 
-		pos := hero.getPos()
+		pos := hero.GetPos()
 		camPos = pixel.Lerp(camPos, initialCenter.Sub(pos), 1-math.Pow(1.0/128, dt))
 		cam := pixel.IM.Moved(camPos)
 
 		win.SetMatrix(cam)
 		currBounds = cfg.Bounds.Moved(initialCenter.Sub(pos).Scaled(-1))
 
+		ctrl.Update() // - here we capture control signals, so actor physics receive input from controller
+		hero.Update(dt)
 		world.Update(currBounds)
-		for _, e := range world.currenm {
-			e.ai.Update(pos, world.Objects())
-			e.p.update(dt, e.ai.vec, world.Objects())
-			e.a.Update(dt, e.ai.cmd)
-			//			atks.Add(*e.ai.attack)
-			e.p.draw(win)
-		}
 
-		ctrl.Update(dt, win) // - here we capture control signals, so physics receive input from controller
-		//		atks.Add(*ctrl.attack)
-		atks.Update(dt, world.Objects())
-		phys.update(dt, ctrl.vec, world.Objects())
-
-		hero.Update(dt, ctrl.cmd)
-
-		ctrl.SetGround(phys.ground)
-
-		phys.draw(win)
 		world.Draw(win)
-		hero.draw(win)
+		hero.Draw(win)
 
 		win.Update()
 

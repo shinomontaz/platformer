@@ -10,6 +10,7 @@ import (
 type Anim struct {
 	sheet  pixel.Picture
 	frames []pixel.Rect
+	sprite *pixel.Sprite
 }
 
 type Anims struct {
@@ -22,6 +23,10 @@ func New(rect pixel.Rect) *Anims {
 		rect:  rect,
 		items: make(map[string]*Anim),
 	}
+}
+
+func (a *Anims) GetAnims() map[string]*Anim {
+	return a.items
 }
 
 func (a *Anims) SetAnim(name, file string, frames []int) error {
@@ -45,9 +50,19 @@ func (a *Anims) SetAnim(name, file string, frames []int) error {
 	a.items[name] = &Anim{
 		sheet:  spritesheet,
 		frames: frs[frames[1]:frames[2]],
+		sprite: pixel.NewSprite(nil, pixel.Rect{}),
 	}
 
 	return nil
+}
+
+func (a *Anim) GetFrames() []pixel.Rect {
+	return a.frames
+}
+
+func (a *Anim) GetSprite(idx int) *pixel.Sprite {
+	a.sprite.Set(a.sheet, a.frames[idx])
+	return a.sprite
 }
 
 func loadPicture(path string) (pixel.Picture, error) {

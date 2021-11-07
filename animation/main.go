@@ -14,8 +14,9 @@ type Anim struct {
 }
 
 type Anims struct {
-	items map[string]*Anim
-	rect  pixel.Rect
+	items  map[string]*Anim
+	rect   pixel.Rect
+	sprite *pixel.Sprite
 }
 
 func New(rect pixel.Rect) *Anims {
@@ -25,8 +26,14 @@ func New(rect pixel.Rect) *Anims {
 	}
 }
 
-func (a *Anims) GetAnims() map[string]*Anim {
-	return a.items
+// func (a *Anims) GetAnims() map[string]*Anim {
+// 	return a.items
+// }
+
+func (a *Anims) GetSprite(name string, idx int) *pixel.Sprite {
+	//	return a.items[name]
+	a.sprite.Set(a.items[name].sheet, a.items[name].frames[idx])
+	return a.sprite
 }
 
 func (a *Anims) SetAnim(name, file string, frames []int) error {

@@ -46,23 +46,14 @@ func New(phys Physicer, anim Animater) *Actor {
 		anim: anim,
 	}
 
-	sFree := NewFreeState(a)
+	sFree := NewFreeState(a, anim)
 
-	sAttack := NewAttackState(a)
-	sDead := NewDeadState(a)
-	sHit := NewHitState(a)
+	sAttack := NewAttackState(a, anim)
+	sDead := NewDeadState(a, anim)
+	sHit := NewHitState(a, anim)
 
 	a.states = map[int]ActorStater{STATE_FREE: sFree, STATE_ATTACK: sAttack, STATE_DEAD: sDead, STATE_HIT: sHit}
 	a.state = sFree
-
-	// attack states to animation sets
-	items := a.anim.GetAnims()
-	sFree.SetAnim("stand", items["stand"])
-	sFree.SetAnim("walk", items["walk"])
-	sFree.SetAnim("idle", items["idle"])
-	sFree.SetAnim("run", items["run"])
-	sFree.SetAnim("jump", items["jump"])
-
 	return a
 }
 

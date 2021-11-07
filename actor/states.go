@@ -14,9 +14,10 @@ const (
 )
 
 type CommonState struct {
-	id         int
-	a          *Actor
-	animations map[string]Animation
+	id int
+	a  *Actor
+	//	animations map[string]Animation
+	anims Animater
 }
 
 type FreeState struct {
@@ -30,16 +31,12 @@ func (s *CommonState) GetId() int {
 	return s.id
 }
 
-func (s *CommonState) SetAnim(name string, anim Animation) {
-	s.animations[name] = anim
-}
-
-func NewFreeState(a *Actor) *FreeState {
+func NewFreeState(a *Actor, an Animater) *FreeState {
 	fs := &FreeState{
 		CommonState: CommonState{
-			id:         STATE_FREE,
-			a:          a,
-			animations: make(map[string]Animation),
+			id:    STATE_FREE,
+			a:     a,
+			anims: an,
 		},
 		idleLimit: 5.0, // seconds before idle
 	}
@@ -85,7 +82,7 @@ func (s *FreeState) Notify(e int, v *pixel.Vec) {
 }
 
 func (s *FreeState) GetSprite() *pixel.Sprite {
-	return s.animations["idle"].GetSprite(0)
+	return s.anims.GetSprite("idle", 0)
 }
 
 type AttackState struct {
@@ -94,12 +91,12 @@ type AttackState struct {
 	idleLimit float64
 }
 
-func NewAttackState(a *Actor) *AttackState {
+func NewAttackState(a *Actor, an Animater) *AttackState {
 	fs := &AttackState{
 		CommonState: CommonState{
-			id:         STATE_ATTACK,
-			a:          a,
-			animations: make(map[string]Animation),
+			id:    STATE_ATTACK,
+			a:     a,
+			anims: an,
 		},
 		idleLimit: 5.0, // seconds before idle
 	}
@@ -127,19 +124,20 @@ func (s *AttackState) Update(dt float64) {
 }
 
 func (s *AttackState) GetSprite() *pixel.Sprite {
-	return s.animations["attack1"].GetSprite(0)
+	//	return s.animations["attack1"].GetSprite(0)
+	return s.anims.GetSprite("attack1", 0)
 }
 
 type DeadState struct {
 	CommonState
 }
 
-func NewDeadState(a *Actor) *DeadState {
+func NewDeadState(a *Actor, an Animater) *DeadState {
 	fs := &DeadState{
 		CommonState: CommonState{
-			id:         STATE_DEAD,
-			a:          a,
-			animations: make(map[string]Animation),
+			id:    STATE_DEAD,
+			a:     a,
+			anims: an,
 		},
 	}
 
@@ -157,7 +155,7 @@ func (s *DeadState) Update(dt float64) {
 }
 
 func (s *DeadState) GetSprite() *pixel.Sprite {
-	return s.animations["dead"].GetSprite(0)
+	return s.anims.GetSprite("dead", 0)
 }
 
 type HitState struct {
@@ -166,12 +164,12 @@ type HitState struct {
 	timelimit float64
 }
 
-func NewHitState(a *Actor) *HitState {
+func NewHitState(a *Actor, an Animater) *HitState {
 	fs := &HitState{
 		CommonState: CommonState{
-			id:         STATE_HIT,
-			a:          a,
-			animations: make(map[string]Animation),
+			id:    STATE_HIT,
+			a:     a,
+			anims: an,
 		},
 	}
 
@@ -195,5 +193,5 @@ func (s *HitState) Update(dt float64) {
 }
 
 func (s *HitState) GetSprite() *pixel.Sprite {
-	return s.animations["hurt"].GetSprite(0)
+	return s.anims.GetSprite("hurt", 0)
 }

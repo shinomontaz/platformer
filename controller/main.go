@@ -13,7 +13,8 @@ type Controller struct {
 
 func New(win *pixelgl.Window) *Controller {
 	ctrl := &Controller{
-		win: win,
+		win:  win,
+		sbrs: make(map[int]Subscriber),
 	}
 
 	return ctrl

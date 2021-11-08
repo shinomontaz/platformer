@@ -21,8 +21,9 @@ type Anims struct {
 
 func New(rect pixel.Rect) *Anims {
 	return &Anims{
-		rect:  rect,
-		items: make(map[string]*Anim),
+		rect:   rect,
+		items:  make(map[string]*Anim),
+		sprite: pixel.NewSprite(nil, pixel.Rect{}),
 	}
 }
 

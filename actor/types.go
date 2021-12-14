@@ -4,7 +4,8 @@ import "github.com/faiface/pixel"
 
 type Animater interface {
 	//	GetAnims() map[string]Animation
-	GetSprite(name string, idx int) *pixel.Sprite
+	//	GetSprite(name string, idx int) *pixel.Sprite
+	GetSprite(name string, idx int) (pixel.Picture, pixel.Rect)
 }
 
 type Animation interface {

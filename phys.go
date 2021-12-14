@@ -5,7 +5,6 @@ import (
 	"math"
 
 	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/imdraw"
 	"github.com/lucasb-eyer/go-colorful"
 )
 
@@ -109,14 +108,15 @@ func (p *phys) GetRect() pixel.Rect {
 }
 
 func (p *phys) draw(t pixel.Target) {
-	imd := imdraw.New(nil)
+	// imd := imdraw.New(nil)
 
-	vertices := p.rect.Vertices()
+	// vertices := p.rect.Vertices()
 
-	imd.Color = p.color
-	for _, v := range vertices {
-		imd.Push(v)
-	}
-	imd.Rectangle(1)
-	imd.Draw(t)
+	// imd.Color = p.color
+	// for _, v := range vertices {
+	// 	imd.Push(v)
+	// }
+	// imd.Rectangle(1)
+
+	// imd.Draw(t)
 }

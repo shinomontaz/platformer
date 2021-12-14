@@ -46,7 +46,9 @@ func gameLoop() {
 
 	ctrl := controller.New(win)
 	phys := NewPhys(world)
-	phys.rect = pixel.R(0, 0, config.PlayerConfig.Width/2, config.PlayerConfig.Height*0.75)
+	//	phys.rect = pixel.R(0, 0, config.PlayerConfig.Width/2, config.PlayerConfig.Height*0.75)
+	phys.rect = pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height)
+
 	phys.runSpeed = config.PlayerConfig.Run
 	phys.walkSpeed = config.PlayerConfig.Walk
 	phys.jumpSpeed = config.WorldConfig.Gravity * 30

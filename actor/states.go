@@ -25,6 +25,7 @@ type FreeState struct {
 	shift     bool
 	idleLimit float64
 	counter   float64
+	sprite    *pixel.Sprite
 }
 
 func (s *CommonState) GetId() int {
@@ -82,8 +83,14 @@ func (s *FreeState) Notify(e int, v *pixel.Vec) {
 }
 
 func (s *FreeState) GetSprite() *pixel.Sprite {
-	//	fmt.Println("free state get sprite")
-	return s.anims.GetSprite("idle", 0)
+	if s.sprite == nil {
+		s.sprite = pixel.NewSprite(nil, pixel.Rect{})
+	}
+
+	pic, rect := s.anims.GetSprite("idle", 0)
+	s.sprite.Set(pic, rect)
+
+	return s.sprite
 }
 
 type AttackState struct {
@@ -126,7 +133,8 @@ func (s *AttackState) Update(dt float64) {
 
 func (s *AttackState) GetSprite() *pixel.Sprite {
 	//	return s.animations["attack1"].GetSprite(0)
-	return s.anims.GetSprite("attack1", 0)
+	//	return s.anims.GetSprite("attack1", 0)
+	return nil
 }
 
 type DeadState struct {
@@ -156,7 +164,8 @@ func (s *DeadState) Update(dt float64) {
 }
 
 func (s *DeadState) GetSprite() *pixel.Sprite {
-	return s.anims.GetSprite("dead", 0)
+	return nil
+	//	return s.anims.GetSprite("dead", 0)
 }
 
 type HitState struct {
@@ -194,5 +203,6 @@ func (s *HitState) Update(dt float64) {
 }
 
 func (s *HitState) GetSprite() *pixel.Sprite {
-	return s.anims.GetSprite("hurt", 0)
+	return nil
+	//	return s.anims.GetSprite("hurt", 0)
 }

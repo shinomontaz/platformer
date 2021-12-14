@@ -45,6 +45,7 @@ func New(phys Physicer, anim Animater) *Actor {
 		phys: phys,
 		anim: anim,
 		rect: phys.GetRect(),
+		dir:  1,
 	}
 
 	sFree := NewFreeState(a, anim)
@@ -173,13 +174,8 @@ func (a *Actor) SetState(id int) {
 }
 
 func (a *Actor) Draw(t pixel.Target) {
-	// if a.sprite == nil {
-	// 	a.sprite = pixel.NewSprite(nil, pixel.Rect{})
-	// }
-	// draw the correct frame with the correct position and direction
 	a.sprite = a.state.GetSprite()
 
-	//	a.sprite.Set(a.sheet, a.frame)
 	a.sprite.Draw(t, pixel.IM.
 		ScaledXY(pixel.ZV, pixel.V(
 			a.rect.W()/a.sprite.Frame().W(),

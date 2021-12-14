@@ -31,11 +31,14 @@ func New(rect pixel.Rect) *Anims {
 // 	return a.items
 // }
 
-func (a *Anims) GetSprite(name string, idx int) *pixel.Sprite {
-	//	return a.items[name]
-	a.sprite.Set(a.items[name].sheet, a.items[name].frames[idx])
+// func (a *Anims) GetSprite(name string, idx int) *pixel.Sprite {
+// 	a.sprite.Set(a.items[name].sheet, a.items[name].frames[idx])
 
-	return a.sprite
+// 	return a.sprite
+// }
+
+func (a *Anims) GetSprite(name string, idx int) (pixel.Picture, pixel.Rect) {
+	return a.items[name].sheet, a.items[name].frames[idx]
 }
 
 func (a *Anims) SetAnim(name, file string, frames []int) error {

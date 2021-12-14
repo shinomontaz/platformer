@@ -34,6 +34,7 @@ func New(rect pixel.Rect) *Anims {
 func (a *Anims) GetSprite(name string, idx int) *pixel.Sprite {
 	//	return a.items[name]
 	a.sprite.Set(a.items[name].sheet, a.items[name].frames[idx])
+
 	return a.sprite
 }
 

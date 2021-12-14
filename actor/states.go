@@ -82,6 +82,7 @@ func (s *FreeState) Notify(e int, v *pixel.Vec) {
 }
 
 func (s *FreeState) GetSprite() *pixel.Sprite {
+	//	fmt.Println("free state get sprite")
 	return s.anims.GetSprite("idle", 0)
 }
 

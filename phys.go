@@ -100,8 +100,12 @@ func (p *phys) Update(dt float64, move pixel.Vec) {
 	}
 }
 
-func (p *phys) GetVel() *pixel.Vec {
-	return &p.vel
+func (p *phys) GetVel() pixel.Vec {
+	return p.vel
+}
+
+func (p *phys) GetRect() pixel.Rect {
+	return p.rect
 }
 
 func (p *phys) draw(t pixel.Target) {

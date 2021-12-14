@@ -49,8 +49,11 @@ func gameLoop() {
 	phys.rect = pixel.R(0, 0, config.PlayerConfig.Width/2, config.PlayerConfig.Height*0.75)
 	phys.runSpeed = config.PlayerConfig.Run
 	phys.walkSpeed = config.PlayerConfig.Walk
-	phys.jumpSpeed = config.WorldConfig.Gravity * 50
+	phys.jumpSpeed = config.WorldConfig.Gravity * 30
 	phys.gravity = config.WorldConfig.Gravity
+
+	initialCenter := win.Bounds().Center()
+	phys.rect = phys.rect.Moved(initialCenter)
 
 	playerAnims := animation.New(pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height))
 	for _, anim := range config.PlayerConfig.Anims {
@@ -59,9 +62,6 @@ func gameLoop() {
 
 	hero := actor.New(&phys, playerAnims)
 	ctrl.Subscribe(hero)
-
-	initialCenter := win.Bounds().Center()
-	phys.rect = phys.rect.Moved(initialCenter)
 	currBounds := cfg.Bounds
 
 	var (
@@ -80,6 +80,7 @@ func gameLoop() {
 		win.Clear(rgba)
 
 		pos := hero.GetPos()
+
 		camPos = pixel.Lerp(camPos, initialCenter.Sub(pos), 1-math.Pow(1.0/128, dt))
 		cam := pixel.IM.Moved(camPos)
 
@@ -92,6 +93,7 @@ func gameLoop() {
 
 		world.Draw(win)
 		hero.Draw(win)
+		phys.draw(win)
 
 		win.Update()
 

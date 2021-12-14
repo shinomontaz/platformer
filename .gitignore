@@ -7,6 +7,8 @@
 *.so
 *.dylib
 
+platformer
+
 run
 
 # Test binary, built with `go test -c`

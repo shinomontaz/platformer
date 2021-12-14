@@ -12,7 +12,8 @@ type Animation interface {
 }
 
 type Physicer interface {
-	GetVel() *pixel.Vec
+	GetVel() pixel.Vec
+	GetRect() pixel.Rect
 	Update(dt float64, v pixel.Vec)
 }
 

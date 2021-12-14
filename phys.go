@@ -5,7 +5,6 @@ import (
 	"math"
 
 	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/imdraw"
 	"github.com/lucasb-eyer/go-colorful"
 )
 
@@ -18,12 +17,18 @@ type phys struct {
 	gravity   float64
 	ground    bool
 	color     color.Color
+	qt        Quadtree
 }
 
-func NewPhys() phys {
+type Quadtree interface {
+	GetObjects() []Objecter
+}
+
+func NewPhys(qt Quadtree) phys {
 	return phys{
 		color:  colorful.HappyColor(),
 		ground: true,
+		qt:     qt,
 	}
 }
 
@@ -39,7 +44,7 @@ func (p *phys) Intersects(obj Objecter) bool {
 	return true
 }
 
-func (p *phys) update(dt float64, move pixel.Vec, objs []Objecter) {
+func (p *phys) Update(dt float64, move pixel.Vec) {
 	// apply controls
 	switch {
 	case math.Abs(move.X) == 1:
@@ -63,6 +68,8 @@ func (p *phys) update(dt float64, move pixel.Vec, objs []Objecter) {
 	// apply gravity and velocity
 	p.vel.Y -= p.gravity
 	p.rect = p.rect.Moved(p.vel.Scaled(dt))
+
+	objs := p.qt.GetObjects()
 
 	// check collisions against each platform
 	p.ground = false
@@ -92,15 +99,24 @@ func (p *phys) update(dt float64, move pixel.Vec, objs []Objecter) {
 	}
 }
 
+func (p *phys) GetVel() pixel.Vec {
+	return p.vel
+}
+
+func (p *phys) GetRect() pixel.Rect {
+	return p.rect
+}
+
 func (p *phys) draw(t pixel.Target) {
-	imd := imdraw.New(nil)
+	// imd := imdraw.New(nil)
 
-	vertices := p.rect.Vertices()
+	// vertices := p.rect.Vertices()
 
-	imd.Color = p.color
-	for _, v := range vertices {
-		imd.Push(v)
-	}
-	imd.Rectangle(1)
-	imd.Draw(t)
+	// imd.Color = p.color
+	// for _, v := range vertices {
+	// 	imd.Push(v)
+	// }
+	// imd.Rectangle(1)
+
+	// imd.Draw(t)
 }

@@ -37,8 +37,13 @@ func New(rect pixel.Rect) *Anims {
 // 	return a.sprite
 // }
 
-func (a *Anims) GetSprite(name string, idx int) (pixel.Picture, pixel.Rect) {
+func (a *Anims) GetSprite(name string, num int) (pixel.Picture, pixel.Rect) {
+	idx := num % len(a.items[name].frames)
 	return a.items[name].sheet, a.items[name].frames[idx]
+}
+
+func (a *Anims) GetLen(name string) int {
+	return a.items[name].GetLen()
 }
 
 func (a *Anims) SetAnim(name, file string, frames []int) error {
@@ -70,6 +75,10 @@ func (a *Anims) SetAnim(name, file string, frames []int) error {
 
 func (a *Anim) GetFrames() []pixel.Rect {
 	return a.frames
+}
+
+func (a *Anim) GetLen() int {
+	return len(a.frames)
 }
 
 func (a *Anim) GetSprite(idx int) *pixel.Sprite {

@@ -8,6 +8,7 @@ const (
 	WALKING = iota
 	RUNNING
 	JUMPING
+	FALLING
 	STANDING
 	IDLE
 	FIRING
@@ -32,12 +33,10 @@ type Actor struct {
 	counter float64
 	rect    pixel.Rect
 
-	anim Animater
-	// sheet  pixel.Picture
-	// frame  pixel.Rect
+	anim   Animater
 	sprite *pixel.Sprite
-	// anims  map[string]Animater
-	dir float64
+	dir    float64
+	vec    *pixel.Vec
 }
 
 func New(phys Physicer, anim Animater) *Actor {
@@ -64,7 +63,15 @@ func (a *Actor) GetId() int {
 }
 
 func (a *Actor) Notify(e int, v *pixel.Vec) {
-	//	fmt.Println("notify", v, e)
+	if v != nil && v.X != 0 {
+		if v.X > 0 {
+			a.dir = 1
+		} else {
+			a.dir = -1
+		}
+	}
+
+	a.vec = v
 	a.state.Notify(e, v)
 }
 
@@ -73,92 +80,11 @@ func (a *Actor) GetPos() pixel.Vec {
 }
 
 func (a *Actor) Update(dt float64) {
+	if a.vec != nil {
+		a.phys.Update(dt, *a.vec)
+	}
+
 	a.state.Update(dt)
-	//	a.counter += dt
-
-	// var newState int
-	// switch {
-	// case !h.phys.ground:
-	// 	newState = JUMPING
-	// case cmd == STRIKE:
-	// 	newState = FIRING
-	// case cmd == HITTED:
-	// 	newState = HURT
-	// case h.phys.vel.Len() == 0:
-	// 	newState = STANDING
-	// case h.phys.vel.Len() == h.phys.walkSpeed:
-	// 	newState = WALKING
-	// case h.phys.vel.Len() == h.phys.runSpeed:
-	// 	newState = RUNNING
-	// }
-
-	// if h.state == IDLE { // make idle animation
-	// 	newState = IDLE
-	// }
-	// if h.counter > 5.0 && h.state == STANDING && (newState == h.state || newState == STANDING) { // make idle animation
-	// 	newState = IDLE
-	// }
-
-	// // make state transision
-	// if h.state != newState {
-	// 	h.state = newState
-	// 	h.counter = 0
-	// }
-
-	// switch a.state.GetId() {
-	// case STATE_FREE:
-	// 	i := int(math.Floor(h.counter / 0.1)) // MAGIC CONST!
-
-	// 	if i > len(h.anims["idle"].frames) {
-	// 		h.state = STANDING
-	// 	}
-
-	// 	h.frame = h.anims["idle"].frames[i%len(h.anims["idle"].frames)]
-	// 	h.sheet = h.anims["idle"].sheet
-	// case STANDING:
-	// 	h.frame = h.anims["stand"].frames[0]
-	// 	h.sheet = h.anims["stand"].sheet
-	// case WALKING:
-	// 	i := int(math.Floor(h.counter / 0.1)) // MAGIC CONST!
-	// 	h.frame = h.anims["walk"].frames[i%len(h.anims["walk"].frames)]
-	// 	h.sheet = h.anims["walk"].sheet
-	// case RUNNING:
-	// 	i := int(math.Floor(h.counter / 0.1)) // MAGIC CONST!
-	// 	h.frame = h.anims["run"].frames[i%len(h.anims["run"].frames)]
-	// 	h.sheet = h.anims["run"].sheet
-	// case JUMPING:
-	// 	speed := h.phys.vel.Y
-	// 	i := int((-speed/h.phys.jumpSpeed + 1) / 2 * float64(len(h.anims["jump"].frames)))
-	// 	if i < 0 {
-	// 		i = 0
-	// 	}
-	// 	if i >= len(h.anims["jump"].frames) {
-	// 		i = len(h.anims["jump"].frames) - 1
-	// 	}
-	// 	h.frame = h.anims["jump"].frames[i]
-	// 	h.sheet = h.anims["jump"].sheet
-	// case STATE_HIT:
-	// 	h.frame = h.anims["hurt"].frames[1] // only second frame we get!
-	// 	h.sheet = h.anims["hurt"].sheet
-	// case STATE_ATTACK:
-	// 	i := int(math.Floor(h.counter / 0.1)) // h.counter stands for frame rate change in animation
-	// 	// if i == 0 || i%len(h.anims[h.attackCode].frames) == 0 {
-	// 	// 	h.attackCode = h.selectAttack(h.phys.vel)
-	// 	// }
-	// 	h.frame = h.anims[h.attackCode].frames[i%len(h.anims[h.attackCode].frames)]
-	// 	h.sheet = h.anims[h.attackCode].sheet
-	// }
-
-	// if h.phys.vel.X != 0 {
-	// 	if h.phys.vel.X > 0 {
-	// 		h.dir = +1
-	// 	} else {
-	// 		h.dir = -1
-	// 	}
-	// }
-
-	// h.pos = h.phys.rect.Min
-	// h.rect = pixel.R(h.phys.rect.Center().X-h.phys.rect.W()/2, h.phys.rect.Center().Y-h.phys.rect.H()/2, h.phys.rect.Center().X-h.phys.rect.W()/2+h.rect.W(), h.phys.rect.Center().Y-h.phys.rect.H()/2+h.rect.H())
 }
 
 // func (h *Actor) selectAttack(move pixel.Vec) string {

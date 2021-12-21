@@ -34,15 +34,15 @@ func (pc *Controller) Update() {
 	pc.vec = pixel.ZV
 	isMoved := false
 
-	if pc.win.Pressed(pixelgl.KeyEscape) {
+	if pc.win.JustPressed(pixelgl.KeyEscape) {
 		pc.Notify(E_ESCAPE)
 	}
 
-	if pc.win.Pressed(pixelgl.KeyLeftControl) {
+	if pc.win.JustPressed(pixelgl.KeyLeftControl) {
 		pc.Notify(E_CTRL)
 	}
 
-	if pc.win.Pressed(pixelgl.KeyLeftShift) {
+	if pc.win.JustPressed(pixelgl.KeyLeftShift) || pc.win.JustReleased(pixelgl.KeyLeftShift) {
 		pc.Notify(E_SHIFT)
 	}
 
@@ -56,6 +56,10 @@ func (pc *Controller) Update() {
 
 	if pc.win.Pressed(pixelgl.KeyUp) {
 		pc.vec.Y++
+		isMoved = true
+	}
+
+	if pc.win.JustReleased(pixelgl.KeyLeft) || pc.win.JustReleased(pixelgl.KeyRight) || pc.win.JustReleased(pixelgl.KeyUp) {
 		isMoved = true
 	}
 

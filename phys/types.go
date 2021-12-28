@@ -1,8 +1,7 @@
-package main
+package phys
 
 import (
 	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/imdraw"
 )
 
 type Quadtree interface {
@@ -10,7 +9,6 @@ type Quadtree interface {
 }
 
 type Objecter interface {
-	Draw(imd *imdraw.IMDraw)
 	Rect() *pixel.Rect
 	Hit(pos, vel pixel.Vec, power int) // hit coords, hit velocity, hit strength
 	// Name() string

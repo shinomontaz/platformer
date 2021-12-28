@@ -1,6 +1,8 @@
 package main
 
 import (
+	"platformer/phys"
+
 	"github.com/faiface/pixel"
 )
 
@@ -8,7 +10,7 @@ type Ai struct {
 	vec    pixel.Vec
 	cmd    int // command action
 	ground bool
-	pers   *phys
+	pers   *phys.Phys
 	//	attack *Attack
 }
 

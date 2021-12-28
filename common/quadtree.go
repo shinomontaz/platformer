@@ -1,12 +1,24 @@
-package main
+package common
 
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 )
 
-type Quadtree interface {
-	GetObjects() []Objecter
+type Quadtree struct {
+	list []Objecter
+}
+
+func NewQuadtree() *Quadtree {
+	return &Quadtree{}
+}
+
+func (qt *Quadtree) Add(o Objecter) {
+	qt.list = append(qt.list, o)
+}
+
+func (qt *Quadtree) GetObjects() []Objecter {
+	return qt.list
 }
 
 type Objecter interface {

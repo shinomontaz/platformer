@@ -1,15 +1,16 @@
-package main
+package phys
 
 import (
 	"image/color"
 	"math"
 
 	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/imdraw"
 	"github.com/lucasb-eyer/go-colorful"
+
+	"platformer/common"
 )
 
-type phys struct {
+type Phys struct {
 	rect      pixel.Rect
 	vel       pixel.Vec
 	runSpeed  float64
@@ -18,22 +19,26 @@ type phys struct {
 	gravity   float64
 	ground    bool
 	color     color.Color
-	qt        Quadtree
+	qt        *common.Quadtree
 }
 
-type Quadtree interface {
-	GetObjects() []Objecter
-}
-
-func NewPhys(qt Quadtree) phys {
-	return phys{
-		color:  colorful.HappyColor(),
-		ground: true,
-		qt:     qt,
+func New(r pixel.Rect, run, walk, jump, gravity float64) Phys {
+	return Phys{
+		rect:      r,
+		color:     colorful.HappyColor(),
+		ground:    true,
+		runSpeed:  run,
+		walkSpeed: walk,
+		jumpSpeed: jump,
+		gravity:   gravity,
 	}
 }
 
-func (p *phys) Intersects(obj Objecter) bool {
+func (p *Phys) SetQt(qt *common.Quadtree) {
+	p.qt = qt
+}
+
+func (p *Phys) Intersects(obj Objecter) bool {
 	rect := obj.Rect()
 	if p.rect.Max.X <= rect.Min.X || p.rect.Min.X >= rect.Max.X {
 		return false
@@ -45,7 +50,7 @@ func (p *phys) Intersects(obj Objecter) bool {
 	return true
 }
 
-func (p *phys) Update(dt float64, move pixel.Vec) {
+func (p *Phys) Update(dt float64, move pixel.Vec) {
 	// apply controls
 	switch {
 	case math.Abs(move.X) == 1:
@@ -70,7 +75,7 @@ func (p *phys) Update(dt float64, move pixel.Vec) {
 	p.vel.Y -= p.gravity
 	p.rect = p.rect.Moved(p.vel.Scaled(dt))
 
-	objs := p.qt.GetObjects()
+	objs := p.qt.GetObjects() // get from Quadtree objects that can be hitted
 
 	// check collisions against each platform
 	p.ground = false
@@ -100,24 +105,24 @@ func (p *phys) Update(dt float64, move pixel.Vec) {
 	}
 }
 
-func (p *phys) GetVel() pixel.Vec {
+func (p *Phys) GetVel() pixel.Vec {
 	return p.vel
 }
 
-func (p *phys) GetRect() pixel.Rect {
+func (p *Phys) GetRect() pixel.Rect {
 	return p.rect
 }
 
-func (p *phys) draw(t pixel.Target) {
-	imd := imdraw.New(nil)
+func (p *Phys) Draw(t pixel.Target) {
+	// imd := imdraw.New(nil)
 
-	vertices := p.rect.Vertices()
+	// vertices := p.rect.Vertices()
 
-	imd.Color = p.color
-	for _, v := range vertices {
-		imd.Push(v)
-	}
-	imd.Rectangle(1)
+	// imd.Color = p.color
+	// for _, v := range vertices {
+	// 	imd.Push(v)
+	// }
+	// imd.Rectangle(1)
 
-	imd.Draw(t)
+	// imd.Draw(t)
 }

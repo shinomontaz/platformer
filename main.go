@@ -10,6 +10,8 @@ import (
 	"platformer/actor"
 	"platformer/animation"
 	"platformer/config"
+	"platformer/phys"
+	"platformer/world"
 
 	"platformer/controller"
 
@@ -39,30 +41,27 @@ func gameLoop() {
 
 	win.SetSmooth(true)
 
-	world := NewWorld(config.WorldConfig.Width, config.WorldConfig.Heigth)
+	w := world.New(config.WorldConfig.Width, config.WorldConfig.Heigth)
 	for _, p := range config.WorldConfig.Platforms {
-		world.platforms = append(world.platforms, NewPlatform(pixel.R(p[0], p[1], p[2], p[3]).Moved(win.Bounds().Center())))
+		w.Add(world.NewPlatform(pixel.R(p[0], p[1], p[2], p[3]).Moved(win.Bounds().Center())))
 	}
 
 	ctrl := controller.New(win)
-	phys := NewPhys(world)
-	//	phys.rect = pixel.R(0, 0, config.PlayerConfig.Width/2, config.PlayerConfig.Height*0.75)
-	phys.rect = pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height)
 
-	phys.runSpeed = config.PlayerConfig.Run
-	phys.walkSpeed = config.PlayerConfig.Walk
-	phys.jumpSpeed = config.WorldConfig.Gravity * 30
-	phys.gravity = config.WorldConfig.Gravity
-
+	mainRect := pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height)
 	initialCenter := win.Bounds().Center()
-	phys.rect = phys.rect.Moved(initialCenter)
 
-	playerAnims := animation.New(pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height))
+	fmt.Println("mainRect, mainRect.Moved(initialCenter)", mainRect, mainRect.Moved(initialCenter))
+
+	p := phys.New(mainRect.Moved(initialCenter), config.PlayerConfig.Run, config.PlayerConfig.Walk, config.WorldConfig.Gravity*30, config.WorldConfig.Gravity)
+	p.SetQt(w.GetQt())
+
+	playerAnims := animation.New(mainRect)
 	for _, anim := range config.PlayerConfig.Anims {
 		playerAnims.SetAnim(anim.Name, anim.File, anim.Frames)
 	}
 
-	hero := actor.New(&phys, playerAnims)
+	hero := actor.New(&p, playerAnims)
 	ctrl.Subscribe(hero)
 	currBounds := cfg.Bounds
 
@@ -83,6 +82,8 @@ func gameLoop() {
 
 		pos := hero.GetPos()
 
+		//		fmt.Println("hero.GetPos()", pos)
+
 		camPos = pixel.Lerp(camPos, initialCenter.Sub(pos), 1-math.Pow(1.0/128, dt))
 		cam := pixel.IM.Moved(camPos)
 
@@ -91,11 +92,11 @@ func gameLoop() {
 
 		ctrl.Update() // - here we capture control signals, so actor physics receive input from controller
 		hero.Update(dt)
-		world.Update(currBounds)
+		w.Update(currBounds)
 
-		world.Draw(win)
+		w.Draw(win)
 		hero.Draw(win)
-		phys.draw(win)
+		p.Draw(win)
 
 		win.Update()
 

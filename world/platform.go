@@ -1,4 +1,4 @@
-package main
+package world
 
 import (
 	"image/color"
@@ -14,13 +14,13 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-type platform struct {
+type Platform struct {
 	rect  pixel.Rect
 	color color.Color
 }
 
-func NewPlatform(rect pixel.Rect) *platform {
-	p := platform{rect: rect}
+func NewPlatform(rect pixel.Rect) *Platform {
+	p := Platform{rect: rect}
 	p.color = random_color()
 	return &p
 }
@@ -37,16 +37,16 @@ again:
 	return pixel.RGB(r/len, g/len, b/len)
 }
 
-func (p *platform) Rect() *pixel.Rect {
+func (p *Platform) Rect() *pixel.Rect {
 	return &p.rect
 }
 
-func (p *platform) Draw(imd *imdraw.IMDraw) {
+func (p *Platform) Draw(imd *imdraw.IMDraw) {
 	imd.Color = p.color
 	imd.Push(p.rect.Min, p.rect.Max)
 	imd.Rectangle(0)
 }
 
-func (p *platform) Hit(pos, vec pixel.Vec, power int) {
+func (p *Platform) Hit(pos, vec pixel.Vec, power int) {
 	// do nothing
 }

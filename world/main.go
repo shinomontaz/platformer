@@ -1,15 +1,18 @@
-package main
+package world
 
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
+
+	"platformer/common"
 )
 
-type world struct {
-	platforms []*platform
+type World struct {
+	platforms []*Platform
+	visible   []*Platform
 	// enemies   []*Enemy
 	// currenm   []*Enemy
-	visible []Objecter
+	qt *common.Quadtree
 }
 
 // type Enemy struct {
@@ -18,12 +21,18 @@ type world struct {
 // 	ai Ai
 // }
 
-func NewWorld(w, h float64) *world {
-	wrld := world{
-		platforms: make([]*platform, 0),
+func New(w, h float64) *World {
+	wrld := World{
+		platforms: make([]*Platform, 0),
 		//		enemies:   make([]*Enemy, 0),
+		qt: common.NewQuadtree(),
 	}
 	return &wrld
+}
+
+func (w *World) Add(p *Platform) {
+	w.platforms = append(w.platforms, p)
+	w.qt.Add(p)
 }
 
 // func NewEnemy(cfg config.Enemy, wcfg config.World) *Enemy {
@@ -57,9 +66,9 @@ func NewWorld(w, h float64) *world {
 // 	return &e
 // }
 
-func (w *world) Update(rect pixel.Rect) {
+func (w *World) Update(rect pixel.Rect) {
 	// update viewport and detect visible objects to draw only them
-	w.visible = make([]Objecter, 0, 10)
+	w.visible = make([]*Platform, 0, 10)
 	for _, p := range w.platforms {
 		if rect.Intersects(p.rect) {
 			w.visible = append(w.visible, p)
@@ -74,12 +83,16 @@ func (w *world) Update(rect pixel.Rect) {
 	// }
 }
 
-func (w *world) GetObjects() []Objecter {
+func (w *World) GetQt() *common.Quadtree {
+	return w.qt
+}
+
+func (w *World) GetObjects() []*Platform {
 	// return visible platforms only
 	return w.visible
 }
 
-func (w *world) Draw(t pixel.Target) {
+func (w *World) Draw(t pixel.Target) {
 	imd := imdraw.New(nil)
 	// for _, p := range w.platforms {
 	// 	p.draw(imd)

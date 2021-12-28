@@ -1,6 +1,8 @@
 package actor
 
 import (
+	"fmt"
+
 	"github.com/faiface/pixel"
 )
 
@@ -47,6 +49,8 @@ func New(phys Physicer, anim Animater) *Actor {
 		dir:  1,
 	}
 
+	fmt.Println("On hero created", phys.GetRect())
+
 	sFree := NewFreeState(a, anim)
 
 	sAttack := NewAttackState(a, anim)
@@ -83,6 +87,8 @@ func (a *Actor) Update(dt float64) {
 	if a.vec != nil {
 		a.phys.Update(dt, *a.vec)
 	}
+
+	a.rect = a.phys.GetRect()
 
 	a.state.Update(dt)
 }

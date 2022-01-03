@@ -1,8 +1,6 @@
 package actor
 
 import (
-	"fmt"
-
 	"github.com/faiface/pixel"
 )
 
@@ -27,7 +25,7 @@ const (
 
 type Actor struct {
 	id   int
-	phys Physicer
+	phys Phys
 
 	state  ActorStater
 	states map[int]ActorStater
@@ -41,18 +39,20 @@ type Actor struct {
 	vec    *pixel.Vec
 }
 
-func New(phys Physicer, anim Animater) *Actor {
+func New(w Worlder, anim Animater, rect pixel.Rect, run, walk float64) *Actor {
+	grav := w.GetGravity()
+	p := NewPhys(rect, run, walk, grav*30, grav)
+	p.SetQt(w.GetQt())
+
 	a := &Actor{
-		phys: phys,
+		phys: p,
 		anim: anim,
-		rect: phys.GetRect(),
+		rect: rect,
 		dir:  1,
 	}
 
-	fmt.Println("On hero created", phys.GetRect())
-
+	// init states
 	sFree := NewFreeState(a, anim)
-
 	sAttack := NewAttackState(a, anim)
 	sDead := NewDeadState(a, anim)
 	sHit := NewHitState(a, anim)
@@ -60,6 +60,10 @@ func New(phys Physicer, anim Animater) *Actor {
 	a.states = map[int]ActorStater{STATE_FREE: sFree, STATE_ATTACK: sAttack, STATE_DEAD: sDead, STATE_HIT: sHit}
 	a.state = sFree
 	return a
+}
+
+func (a *Actor) Move(vec pixel.Vec) {
+	a.phys.Move(vec)
 }
 
 func (a *Actor) GetId() int {

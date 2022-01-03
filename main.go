@@ -10,7 +10,6 @@ import (
 	"platformer/actor"
 	"platformer/animation"
 	"platformer/config"
-	"platformer/phys"
 	"platformer/world"
 
 	"platformer/controller"
@@ -46,22 +45,20 @@ func gameLoop() {
 		w.Add(world.NewPlatform(pixel.R(p[0], p[1], p[2], p[3]).Moved(win.Bounds().Center())))
 	}
 
+	w.SetGravity(config.WorldConfig.Gravity)
+
 	ctrl := controller.New(win)
 
 	mainRect := pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height)
 	initialCenter := win.Bounds().Center()
-
-	fmt.Println("mainRect, mainRect.Moved(initialCenter)", mainRect, mainRect.Moved(initialCenter))
-
-	p := phys.New(mainRect.Moved(initialCenter), config.PlayerConfig.Run, config.PlayerConfig.Walk, config.WorldConfig.Gravity*30, config.WorldConfig.Gravity)
-	p.SetQt(w.GetQt())
 
 	playerAnims := animation.New(mainRect)
 	for _, anim := range config.PlayerConfig.Anims {
 		playerAnims.SetAnim(anim.Name, anim.File, anim.Frames)
 	}
 
-	hero := actor.New(&p, playerAnims)
+	hero := actor.New(w, playerAnims, mainRect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
+	hero.Move(initialCenter)
 	ctrl.Subscribe(hero)
 	currBounds := cfg.Bounds
 
@@ -96,7 +93,7 @@ func gameLoop() {
 
 		w.Draw(win)
 		hero.Draw(win)
-		p.Draw(win)
+		//		p.Draw(win)
 
 		win.Update()
 

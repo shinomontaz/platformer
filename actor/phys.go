@@ -1,4 +1,4 @@
-package phys
+package actor
 
 import (
 	"image/color"
@@ -22,7 +22,7 @@ type Phys struct {
 	qt        *common.Quadtree
 }
 
-func New(r pixel.Rect, run, walk, jump, gravity float64) Phys {
+func NewPhys(r pixel.Rect, run, walk, jump, gravity float64) Phys {
 	return Phys{
 		rect:      r,
 		color:     colorful.HappyColor(),
@@ -38,7 +38,7 @@ func (p *Phys) SetQt(qt *common.Quadtree) {
 	p.qt = qt
 }
 
-func (p *Phys) Intersects(obj Objecter) bool {
+func (p *Phys) intersects(obj common.Objecter) bool {
 	rect := obj.Rect()
 	if p.rect.Max.X <= rect.Min.X || p.rect.Min.X >= rect.Max.X {
 		return false
@@ -75,28 +75,30 @@ func (p *Phys) Update(dt float64, move pixel.Vec) {
 	p.vel.Y -= p.gravity
 	p.rect = p.rect.Moved(p.vel.Scaled(dt))
 
-	objs := p.qt.GetObjects() // get from Quadtree objects that can be hitted
-
 	// check collisions against each platform
 	p.ground = false
 	if p.vel.Y != 0 {
-		for _, obj := range objs {
-			if !p.Intersects(obj) {
-				continue
-			}
+		objs := p.qt.CanIntersect(p.rect)
+		if len(objs) > 0 { // precise check for each object that can intersects
+			for _, obj := range objs {
+				if !p.intersects(obj) {
+					continue
+				}
 
-			// Handle collision
-			rect := obj.Rect()
+				// Handle collision
+				rect := obj.Rect()
 
-			if p.vel.Y < 0 {
-				p.rect = p.rect.Moved(pixel.V(0, rect.Max.Y-p.rect.Min.Y))
-				p.ground = true
-			} else {
-				p.rect = p.rect.Moved(pixel.V(0, rect.Min.Y-p.rect.Max.Y))
-				//				p.vel.Y = -p.vel.Y
+				if p.vel.Y < 0 {
+					p.rect = p.rect.Moved(pixel.V(0, rect.Max.Y-p.rect.Min.Y))
+					p.ground = true
+				} else {
+					p.rect = p.rect.Moved(pixel.V(0, rect.Min.Y-p.rect.Max.Y))
+					//				p.vel.Y = -p.vel.Y
+				}
+				p.vel.Y = 0
 			}
-			p.vel.Y = 0
 		}
+
 	}
 
 	// jump if on the ground and the player wants to jump
@@ -107,6 +109,10 @@ func (p *Phys) Update(dt float64, move pixel.Vec) {
 
 func (p *Phys) GetVel() pixel.Vec {
 	return p.vel
+}
+
+func (p *Phys) Move(v pixel.Vec) {
+	p.rect = p.rect.Moved(v)
 }
 
 func (p *Phys) GetRect() pixel.Rect {

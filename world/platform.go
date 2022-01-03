@@ -41,6 +41,10 @@ func (p *Platform) Rect() *pixel.Rect {
 	return &p.rect
 }
 
+func (p *Platform) Pixels() []uint32 {
+	return nil
+}
+
 func (p *Platform) Draw(imd *imdraw.IMDraw) {
 	imd.Color = p.color
 	imd.Push(p.rect.Min, p.rect.Max)

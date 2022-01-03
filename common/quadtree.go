@@ -21,9 +21,19 @@ func (qt *Quadtree) GetObjects() []Objecter {
 	return qt.list
 }
 
+func (qt *Quadtree) Clear() {
+
+}
+
+func (qt *Quadtree) CanIntersect(rect pixel.Rect) []Objecter {
+	// TODO: make
+	return qt.list
+}
+
 type Objecter interface {
 	Draw(imd *imdraw.IMDraw)
 	Rect() *pixel.Rect
+	Pixels() []uint32
 	Hit(pos, vel pixel.Vec, power int) // hit coords, hit velocity, hit strength
 	// Name() string
 	// Type() int

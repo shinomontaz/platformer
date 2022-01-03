@@ -1,6 +1,10 @@
 package actor
 
-import "github.com/faiface/pixel"
+import (
+	"platformer/common"
+
+	"github.com/faiface/pixel"
+)
 
 type Animater interface {
 	//	GetAnims() map[string]Animation
@@ -13,10 +17,9 @@ type Animation interface {
 	GetSprite(idx int) *pixel.Sprite
 }
 
-type Physicer interface {
-	GetVel() pixel.Vec
-	GetRect() pixel.Rect
-	Update(dt float64, v pixel.Vec)
+type Worlder interface {
+	GetGravity() float64
+	GetQt() *common.Quadtree // temporary solution, we will check collision in the world ?
 }
 
 type ActorStater interface {

@@ -12,7 +12,8 @@ type World struct {
 	visible   []*Platform
 	// enemies   []*Enemy
 	// currenm   []*Enemy
-	qt *common.Quadtree
+	qt      *common.Quadtree
+	gravity float64
 }
 
 // type Enemy struct {
@@ -85,6 +86,14 @@ func (w *World) Update(rect pixel.Rect) {
 
 func (w *World) GetQt() *common.Quadtree {
 	return w.qt
+}
+
+func (w *World) SetGravity(g float64) {
+	w.gravity = g
+}
+
+func (w *World) GetGravity() float64 {
+	return w.gravity
 }
 
 func (w *World) GetObjects() []*Platform {

@@ -26,41 +26,16 @@ func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
 }
 
-func gameLoop() {
-	cfg := pixelgl.WindowConfig{
-		Title:  "platformer",
-		Bounds: pixel.R(0, 0, config.WorldConfig.Width, config.WorldConfig.Heigth),
-		VSync:  true,
-	}
+var (
+	w             *world.World
+	hero          *actor.Actor
+	ctrl          *controller.Controller
+	title         string = "platformer"
+	initBounds    pixel.Rect
+	initialCenter pixel.Vec
+)
 
-	win, err := pixelgl.NewWindow(cfg)
-	if err != nil {
-		panic(err)
-	}
-
-	win.SetSmooth(true)
-
-	w := world.New(config.WorldConfig.Width, config.WorldConfig.Heigth)
-	for _, p := range config.WorldConfig.Platforms {
-		w.Add(world.NewPlatform(pixel.R(p[0], p[1], p[2], p[3]).Moved(win.Bounds().Center())))
-	}
-
-	w.SetGravity(config.WorldConfig.Gravity)
-
-	ctrl := controller.New(win)
-
-	mainRect := pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height)
-	initialCenter := win.Bounds().Center()
-
-	playerAnims := animation.New(mainRect)
-	for _, anim := range config.PlayerConfig.Anims {
-		playerAnims.SetAnim(anim.Name, anim.File, anim.Frames)
-	}
-
-	hero := actor.New(w, playerAnims, mainRect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
-	hero.Move(initialCenter)
-	ctrl.Subscribe(hero)
-	currBounds := cfg.Bounds
+func gameLoop(win *pixelgl.Window) {
 
 	var (
 		camPos    = pixel.ZV
@@ -79,13 +54,11 @@ func gameLoop() {
 
 		pos := hero.GetPos()
 
-		//		fmt.Println("hero.GetPos()", pos)
-
 		camPos = pixel.Lerp(camPos, initialCenter.Sub(pos), 1-math.Pow(1.0/128, dt))
 		cam := pixel.IM.Moved(camPos)
 
 		win.SetMatrix(cam)
-		currBounds = cfg.Bounds.Moved(initialCenter.Sub(pos).Scaled(-1))
+		currBounds := initBounds.Moved(initialCenter.Sub(pos).Scaled(-1))
 
 		ctrl.Update() // - here we capture control signals, so actor physics receive input from controller
 		hero.Update(dt)
@@ -93,7 +66,6 @@ func gameLoop() {
 
 		w.Draw(win)
 		hero.Draw(win)
-		//		p.Draw(win)
 
 		win.Update()
 
@@ -102,13 +74,52 @@ func gameLoop() {
 		case <-frametime:
 			//			hero.Tick()
 		case <-second:
-			win.SetTitle(fmt.Sprintf("%s | FPS: %d", cfg.Title, frames))
+			win.SetTitle(fmt.Sprintf("%s | FPS: %d", title, frames))
 			frames = 0
 		default:
 		}
 	}
 }
 
+func run() {
+	initBounds = pixel.R(0, 0, config.WorldConfig.Width, config.WorldConfig.Heigth)
+	cfg := pixelgl.WindowConfig{
+		Title:  title,
+		Bounds: initBounds,
+		VSync:  true,
+	}
+
+	win, err := pixelgl.NewWindow(cfg)
+	if err != nil {
+		panic(err)
+	}
+
+	win.SetSmooth(true)
+
+	w = world.New(config.WorldConfig.Width, config.WorldConfig.Heigth)
+	for _, p := range config.WorldConfig.Platforms {
+		w.Add(world.NewPlatform(pixel.R(p[0], p[1], p[2], p[3]).Moved(win.Bounds().Center())))
+	}
+
+	w.SetGravity(config.WorldConfig.Gravity)
+
+	ctrl = controller.New(win)
+
+	mainRect := pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height)
+	initialCenter = win.Bounds().Center()
+
+	playerAnims := animation.New(mainRect)
+	for _, anim := range config.PlayerConfig.Anims {
+		playerAnims.SetAnim(anim.Name, anim.File, anim.Frames)
+	}
+
+	hero = actor.New(w, playerAnims, mainRect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
+	hero.Move(initialCenter)
+	ctrl.Subscribe(hero)
+
+	gameLoop(win)
+}
+
 func main() {
-	pixelgl.Run(gameLoop)
+	pixelgl.Run(run)
 }

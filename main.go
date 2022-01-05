@@ -96,7 +96,7 @@ func run() {
 
 	win.SetSmooth(true)
 
-	w = world.New(config.WorldConfig.Width, config.WorldConfig.Heigth)
+	w = world.New(pixel.R(-2000000.0, -1000.0, 20000000.0, 1000.0))
 	for _, p := range config.WorldConfig.Platforms {
 		w.Add(world.NewPlatform(pixel.R(p[0], p[1], p[2], p[3]).Moved(win.Bounds().Center())))
 	}

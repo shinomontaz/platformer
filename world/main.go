@@ -1,6 +1,8 @@
 package world
 
 import (
+	"fmt"
+
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 
@@ -9,7 +11,7 @@ import (
 
 type World struct {
 	platforms []*Platform
-	visible   []*Platform
+	visible   []common.Objecter
 	// enemies   []*Enemy
 	// currenm   []*Enemy
 	qt      *common.Quadtree
@@ -22,18 +24,22 @@ type World struct {
 // 	ai Ai
 // }
 
-func New(w, h float64) *World {
+func New(r pixel.Rect) *World {
 	wrld := World{
 		platforms: make([]*Platform, 0),
 		//		enemies:   make([]*Enemy, 0),
-		qt: common.NewQuadtree(),
+		qt: common.New(1, r),
 	}
 	return &wrld
 }
 
+func (w *World) Print() {
+	fmt.Println(w.qt.Print())
+}
+
 func (w *World) Add(p *Platform) {
 	w.platforms = append(w.platforms, p)
-	w.qt.Add(p)
+	w.qt.Insert(p)
 }
 
 // func NewEnemy(cfg config.Enemy, wcfg config.World) *Enemy {
@@ -69,12 +75,16 @@ func (w *World) Add(p *Platform) {
 
 func (w *World) Update(rect pixel.Rect) {
 	// update viewport and detect visible objects to draw only them
-	w.visible = make([]*Platform, 0, 10)
-	for _, p := range w.platforms {
-		if rect.Intersects(p.rect) {
-			w.visible = append(w.visible, p)
-		}
-	}
+	//	w.visible = make([]*Platform, 0, 10)
+
+	w.visible = w.qt.Retrieve(rect)
+	fmt.Println(w.visible)
+
+	// for _, p := range w.platforms {
+	// 	if rect.Intersects(p.rect) {
+	// 		w.visible = append(w.visible, p)
+	// 	}
+	// }
 
 	// w.currenm = make([]*Enemy, 0)
 	// for _, e := range w.enemies {
@@ -94,11 +104,6 @@ func (w *World) SetGravity(g float64) {
 
 func (w *World) GetGravity() float64 {
 	return w.gravity
-}
-
-func (w *World) GetObjects() []*Platform {
-	// return visible platforms only
-	return w.visible
 }
 
 func (w *World) Draw(t pixel.Target) {

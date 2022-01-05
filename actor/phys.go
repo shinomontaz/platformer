@@ -78,7 +78,7 @@ func (p *Phys) Update(dt float64, move pixel.Vec) {
 	// check collisions against each platform
 	p.ground = false
 	if p.vel.Y != 0 {
-		objs := p.qt.CanIntersect(p.rect)
+		objs := p.qt.Retrieve(p.rect)
 		if len(objs) > 0 { // precise check for each object that can intersects
 			for _, obj := range objs {
 				if !p.intersects(obj) {

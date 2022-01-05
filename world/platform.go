@@ -37,8 +37,8 @@ again:
 	return pixel.RGB(r/len, g/len, b/len)
 }
 
-func (p *Platform) Rect() *pixel.Rect {
-	return &p.rect
+func (p *Platform) Rect() pixel.Rect {
+	return p.rect
 }
 
 func (p *Platform) Pixels() []uint32 {

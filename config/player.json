@@ -66,8 +66,9 @@
         "frames": [6, 5, 6]
     }
     ],
-    "width": 48,
-    "height": 48,
+    "width": 40,
+    "height": 40,
+    "space": 4,
     "mass": 100,
     "walk": 50,
     "run": 100

@@ -4,10 +4,18 @@ import (
 	"fmt"
 
 	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/imdraw"
 )
 
 const MAX = 10
+
+type Objecter struct {
+	R  pixel.Rect
+	ID int
+}
+
+func (o *Objecter) Rect() pixel.Rect {
+	return o.R
+}
 
 /*
 ________
@@ -36,7 +44,6 @@ func New(level int, b pixel.Rect) *Quadtree {
 
 func (qt *Quadtree) Insert(o Objecter) bool {
 	if !qt.b.Intersects(o.Rect()) {
-		fmt.Println("!intersects!", o.Rect(), qt.b)
 		return false
 	}
 
@@ -52,14 +59,17 @@ func (qt *Quadtree) Insert(o Objecter) bool {
 		for _, o := range qt.items {
 			idx := qt.index(o.Rect())
 			if idx > -1 {
-				qt.nodes[idx].Insert(o)
+				if !qt.nodes[idx].Insert(o) {
+					panic(fmt.Sprintf("cannot insert %+v into %+v", o.Rect(), qt.nodes[idx]))
+				}
 			} else {
 				qt.items[i] = o
 				i++
 			}
 		}
-		qt.items = qt.items[0:i]
+		qt.items = qt.items[:i]
 	}
+
 	idx := qt.index(o.Rect())
 	if idx > -1 {
 		qt.nodes[idx].Insert(o)
@@ -73,17 +83,20 @@ func (qt *Quadtree) Insert(o Objecter) bool {
 func (qt *Quadtree) index(r pixel.Rect) int { // get quadrand index if object contains in any and -1 otherwise
 	idx := -1
 
-	top := (r.Max.Y < (qt.b.Min.Y + qt.b.H()/2.0)) && (r.Min.Y < (qt.b.Min.Y + qt.b.H()/2.0))
-	bottom := r.Max.Y > (qt.b.Min.Y + qt.b.H()/2.0)
+	verticalMidpoint := qt.b.Min.X + (qt.b.W() / 2)
+	horizontalMidpoint := qt.b.Min.Y + (qt.b.H() / 2)
 
-	if r.Max.X < qt.b.Min.X+(qt.b.W()/2.0) {
+	bottom := (r.Min.Y < horizontalMidpoint) && (r.Max.Y < horizontalMidpoint)
+	top := r.Min.Y > horizontalMidpoint
+
+	if r.Min.X < verticalMidpoint && r.Max.X < verticalMidpoint {
 		if top {
 			idx = 1
 		}
 		if bottom {
 			idx = 2
 		}
-	} else if r.Max.X > qt.b.Min.X+(qt.b.W()/2.0) {
+	} else if r.Min.X > verticalMidpoint {
 		if top {
 			idx = 0
 		}
@@ -98,30 +111,30 @@ func (qt *Quadtree) index(r pixel.Rect) int { // get quadrand index if object co
 func (qt *Quadtree) subdivide() {
 	qt.nodes = append(qt.nodes, New(qt.level+1, pixel.R( // 0
 		qt.b.Min.X+(qt.b.W()/2.0),
-		qt.b.Max.Y,
-		qt.b.Min.X,
 		qt.b.Min.Y+(qt.b.H()/2.0),
+		qt.b.Max.X,
+		qt.b.Max.Y,
 	)))
 
 	qt.nodes = append(qt.nodes, New(qt.level+1, pixel.R( // 1
-		qt.b.Max.X,
-		qt.b.Max.Y,
-		qt.b.Min.X+(qt.b.W()/2.0),
+		qt.b.Min.X,
 		qt.b.Min.Y+(qt.b.H()/2.0),
+		qt.b.Min.X+(qt.b.W()/2.0),
+		qt.b.Max.Y,
 	)))
 
 	qt.nodes = append(qt.nodes, New(qt.level+1, pixel.R( // 2
-		qt.b.Max.X,
-		qt.b.Min.Y+(qt.b.H()/2.0),
-		qt.b.Min.X+(qt.b.W()/2.0),
+		qt.b.Min.X,
 		qt.b.Min.Y,
+		qt.b.Min.X+(qt.b.W()/2.0),
+		qt.b.Min.Y+(qt.b.H()/2.0),
 	)))
 
 	qt.nodes = append(qt.nodes, New(qt.level+1, pixel.R( // 3
-		qt.b.Min.X+(qt.b.H()/2.0),
 		qt.b.Min.X+(qt.b.W()/2.0),
-		qt.b.Min.X,
 		qt.b.Min.Y,
+		qt.b.Max.X,
+		qt.b.Min.Y+(qt.b.H()/2.0),
 	)))
 }
 
@@ -156,13 +169,4 @@ func (qt *Quadtree) Clear() {
 	for _, n := range qt.nodes {
 		n.Clear()
 	}
-}
-
-type Objecter interface {
-	Draw(imd *imdraw.IMDraw)
-	Rect() pixel.Rect
-	Pixels() []uint32
-	Hit(pos, vel pixel.Vec, power int) // hit coords, hit velocity, hit strength
-	// Name() string
-	// Type() int
 }

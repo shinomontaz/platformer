@@ -17,6 +17,7 @@ require (
 	github.com/peterh/liner v1.2.1 // indirect
 	github.com/pkg/profile v0.0.0-20170413231811-06b906832ed0 // indirect
 	github.com/russross/blackfriday v0.0.0-20180428102519-11635eb403ff // indirect
+	github.com/salviati/go-tmx v0.0.0-20180901011116-8dae25beffeb
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/cobra v1.2.1 // indirect
 	go.starlark.net v0.0.0-20211013185944-b0039bd2cfe3 // indirect

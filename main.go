@@ -82,7 +82,11 @@ func gameLoop(win *pixelgl.Window) {
 }
 
 func run() {
-	initBounds = pixel.R(0, 0, config.WorldConfig.Width, config.WorldConfig.Heigth)
+	w = world.New("my3.tmx")
+	w.SetGravity(config.WorldConfig.Gravity)
+	mainRect := w.Data()
+
+	initBounds = pixel.R(0, 0, mainRect.W(), mainRect.H())
 	cfg := pixelgl.WindowConfig{
 		Title:  title,
 		Bounds: initBounds,
@@ -96,24 +100,17 @@ func run() {
 
 	win.SetSmooth(true)
 
-	w = world.New(pixel.R(-2000000.0, -1000.0, 20000000.0, 1000.0))
-	for _, p := range config.WorldConfig.Platforms {
-		w.Add(world.NewPlatform(pixel.R(p[0], p[1], p[2], p[3]).Moved(win.Bounds().Center())))
-	}
-
-	w.SetGravity(config.WorldConfig.Gravity)
-
 	ctrl = controller.New(win)
 
-	mainRect := pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height)
-	initialCenter = win.Bounds().Center()
+	playerRect := pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height)
+	initialCenter = mainRect.Center()
 
-	playerAnims := animation.New(mainRect)
+	playerAnims := animation.New(playerRect)
 	for _, anim := range config.PlayerConfig.Anims {
 		playerAnims.SetAnim(anim.Name, anim.File, anim.Frames)
 	}
 
-	hero = actor.New(w, playerAnims, mainRect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
+	hero = actor.New(w, playerAnims, playerRect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
 	hero.Move(initialCenter)
 	ctrl.Subscribe(hero)
 

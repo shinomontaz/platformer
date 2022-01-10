@@ -105,7 +105,7 @@ func run() {
 	playerRect := pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height)
 	initialCenter = mainRect.Center()
 
-	playerAnims := animation.New(playerRect)
+	playerAnims := animation.New(playerRect, config.PlayerConfig.Margin)
 	for _, anim := range config.PlayerConfig.Anims {
 		playerAnims.SetAnim(anim.Name, anim.File, anim.Frames)
 	}

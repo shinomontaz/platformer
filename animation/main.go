@@ -17,25 +17,17 @@ type Anims struct {
 	items  map[string]*Anim
 	rect   pixel.Rect
 	sprite *pixel.Sprite
+	m      float64
 }
 
-func New(rect pixel.Rect) *Anims {
+func New(rect pixel.Rect, margin float64) *Anims {
 	return &Anims{
 		rect:   rect,
 		items:  make(map[string]*Anim),
 		sprite: pixel.NewSprite(nil, pixel.Rect{}),
+		m:      margin,
 	}
 }
-
-// func (a *Anims) GetAnims() map[string]*Anim {
-// 	return a.items
-// }
-
-// func (a *Anims) GetSprite(name string, idx int) *pixel.Sprite {
-// 	a.sprite.Set(a.items[name].sheet, a.items[name].frames[idx])
-
-// 	return a.sprite
-// }
 
 func (a *Anims) GetSprite(name string, num int) (pixel.Picture, pixel.Rect) {
 	idx := num % len(a.items[name].frames)
@@ -62,6 +54,7 @@ func (a *Anims) SetAnim(name, file string, frames []int) error {
 			x+frameWidth,
 			spritesheet.Bounds().H(),
 		))
+		x += a.m
 	}
 
 	a.items[name] = &Anim{

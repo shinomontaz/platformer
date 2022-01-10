@@ -19,6 +19,7 @@ type Player struct {
 	Anims  []Anim  `json:"anims"`
 	Width  float64 `json:"width"`
 	Height float64 `json:"height"`
+	Margin float64 `json:"margin"`
 	Mass   int     `json:"mass"`
 	Walk   float64 `json:"walk"`
 	Run    float64 `json:"run"`

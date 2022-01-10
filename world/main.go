@@ -157,7 +157,7 @@ func (w *World) initObjs() {
 		//		gamePos := pixel.V(o.X+o.Width/2.0, w.Height-o.Y+o.Height/2.0)
 		min := pixel.V(
 			float64(o.X),
-			float64(w.Height)-float64(o.Y)-float64(o.Height),
+			float64(w.Height)-float64(o.Y),
 		)
 		max := pixel.Vec{
 			X: min.X + float64(o.Width),
@@ -270,7 +270,7 @@ func tileIDToCoord(tID int, numColumns int, numRows int) (x int, y int) {
 func indexToGamePos(idx int, width int, height int) pixel.Vec {
 	gamePos := pixel.V(
 		float64(idx%width),
-		float64(height)-float64(idx/width)-0.5,
+		float64(height)-float64(idx/width)-1,
 	)
 	return gamePos
 }

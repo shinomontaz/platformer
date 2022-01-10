@@ -41,7 +41,7 @@ func (s *AttackState) Update(dt float64) {
 }
 
 func (s *AttackState) GetSprite() *pixel.Sprite {
-	//	return s.animations["attack1"].GetSprite(0)
-	//	return s.anims.GetSprite("attack1", 0)
+	// return s.animations["attack1"].GetSprite(0)
+	// return s.anims.GetSprite("attack1", 0)
 	return nil
 }

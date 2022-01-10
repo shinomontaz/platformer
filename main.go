@@ -82,7 +82,7 @@ func gameLoop(win *pixelgl.Window) {
 }
 
 func run() {
-	w = world.New("my3.tmx")
+	w = world.New("my4.tmx")
 	w.SetGravity(config.WorldConfig.Gravity)
 	mainRect := w.Data()
 
@@ -103,7 +103,8 @@ func run() {
 	ctrl = controller.New(win)
 
 	playerRect := pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height)
-	initialCenter = mainRect.Center()
+	initialCenter = mainRect.Center() //.Sub(pixel.V(mainRect.W(), mainRect.H()))
+	fmt.Println(initialCenter)
 
 	playerAnims := animation.New(playerRect, config.PlayerConfig.Margin)
 	for _, anim := range config.PlayerConfig.Anims {

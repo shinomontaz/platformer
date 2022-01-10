@@ -64,6 +64,7 @@ func New(w Worlder, anim Animater, rect pixel.Rect, run, walk float64) *Actor {
 
 func (a *Actor) Move(vec pixel.Vec) {
 	a.phys.Move(vec)
+	//	a.rect = a.phys.GetRect()
 }
 
 func (a *Actor) GetId() int {

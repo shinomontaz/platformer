@@ -126,7 +126,10 @@ func (w *World) initTiles() {
 			gamePos := indexToGamePos(tileIndex, w.tm.Width, w.tm.Height)
 			pos := gamePos.ScaledXY(pixel.V(float64(ts.TileWidth), float64(ts.TileHeight)))
 			w.tiles[tileIndex] = tile
-			w.qtTile.Insert(common.Objecter{ID: tileIndex, R: pixel.R(pos.X, pos.Y, pos.X+float64(ts.TileWidth), pos.Y+float64(ts.TileHeight))})
+			res := w.qtTile.Insert(common.Objecter{ID: tileIndex, R: pixel.R(pos.X, pos.Y, pos.X+float64(ts.TileWidth), pos.Y+float64(ts.TileHeight))})
+			if !res {
+				panic("canot insert tile!")
+			}
 		}
 	}
 }

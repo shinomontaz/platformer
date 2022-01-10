@@ -53,12 +53,11 @@ func gameLoop(win *pixelgl.Window) {
 		win.Clear(rgba)
 
 		pos := hero.GetPos()
-
 		camPos = pixel.Lerp(camPos, initialCenter.Sub(pos), 1-math.Pow(1.0/128, dt))
 		cam := pixel.IM.Moved(camPos)
 
 		win.SetMatrix(cam)
-		currBounds := initBounds.Moved(initialCenter.Sub(pos).Scaled(-1))
+		currBounds := initBounds.Moved(initialCenter.Sub(pos))
 
 		ctrl.Update() // - here we capture control signals, so actor physics receive input from controller
 		hero.Update(dt)
@@ -103,8 +102,8 @@ func run() {
 	ctrl = controller.New(win)
 
 	playerRect := pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height)
-	initialCenter = mainRect.Center() //.Sub(pixel.V(mainRect.W(), mainRect.H()))
-	fmt.Println(initialCenter)
+	initialCenter = initBounds.Center()
+	//	initialCenter = mainRect.Center() //.Add(pixel.V(mainRect.W()/2, mainRect.H()/2))
 
 	playerAnims := animation.New(playerRect, config.PlayerConfig.Margin)
 	for _, anim := range config.PlayerConfig.Anims {
@@ -112,7 +111,7 @@ func run() {
 	}
 
 	hero = actor.New(w, playerAnims, playerRect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
-	hero.Move(initialCenter)
+	hero.Move(mainRect.Center())
 	ctrl.Subscribe(hero)
 
 	gameLoop(win)

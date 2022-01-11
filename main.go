@@ -31,8 +31,9 @@ var (
 	hero          *actor.Actor
 	ctrl          *controller.Controller
 	title         string = "platformer"
-	initBounds    pixel.Rect
+	currBounds    pixel.Rect
 	initialCenter pixel.Vec
+	lastPos       pixel.Vec
 )
 
 func gameLoop(win *pixelgl.Window) {
@@ -57,7 +58,7 @@ func gameLoop(win *pixelgl.Window) {
 		cam := pixel.IM.Moved(camPos)
 
 		win.SetMatrix(cam)
-		currBounds := initBounds.Moved(initialCenter.Sub(pos))
+		currBounds = currBounds.Moved(lastPos.To(pos))
 
 		ctrl.Update() // - here we capture control signals, so actor physics receive input from controller
 		hero.Update(dt)
@@ -66,6 +67,7 @@ func gameLoop(win *pixelgl.Window) {
 		w.Draw(win)
 		hero.Draw(win)
 
+		lastPos = pos
 		win.Update()
 
 		frames++
@@ -81,14 +83,13 @@ func gameLoop(win *pixelgl.Window) {
 }
 
 func run() {
-	w = world.New("my4.tmx")
+	w = world.New("my.tmx")
 	w.SetGravity(config.WorldConfig.Gravity)
-	mainRect := w.Data()
+	currBounds = w.Data()
 
-	initBounds = pixel.R(0, 0, mainRect.W(), mainRect.H())
 	cfg := pixelgl.WindowConfig{
 		Title:  title,
-		Bounds: initBounds,
+		Bounds: currBounds,
 		VSync:  true,
 	}
 
@@ -102,17 +103,18 @@ func run() {
 	ctrl = controller.New(win)
 
 	playerRect := pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height)
-	initialCenter = initBounds.Center()
-	//	initialCenter = mainRect.Center() //.Add(pixel.V(mainRect.W()/2, mainRect.H()/2))
+	initialCenter = currBounds.Center()
 
 	playerAnims := animation.New(playerRect, config.PlayerConfig.Margin)
 	for _, anim := range config.PlayerConfig.Anims {
 		playerAnims.SetAnim(anim.Name, anim.File, anim.Frames)
 	}
 
-	hero = actor.New(w, playerAnims, playerRect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
-	hero.Move(mainRect.Center())
+	hero = actor.New(w, playerAnims, playerRect.ResizedMin(pixel.Vec{config.PlayerConfig.Width * 1.25, config.PlayerConfig.Height * 1.25}), config.PlayerConfig.Run, config.PlayerConfig.Walk)
+	hero.Move(initialCenter)
 	ctrl.Subscribe(hero)
+
+	lastPos = hero.GetPos()
 
 	gameLoop(win)
 }

@@ -64,7 +64,7 @@ func New(w Worlder, anim Animater, rect pixel.Rect, run, walk float64) *Actor {
 
 func (a *Actor) Move(vec pixel.Vec) {
 	a.phys.Move(vec)
-	//	a.rect = a.phys.GetRect()
+	a.rect = a.phys.GetRect()
 }
 
 func (a *Actor) GetId() int {
@@ -80,8 +80,8 @@ func (a *Actor) Notify(e int, v *pixel.Vec) {
 		}
 	}
 
-	a.vec = v
 	a.state.Notify(e, v)
+	a.vec = v
 }
 
 func (a *Actor) GetPos() pixel.Vec {

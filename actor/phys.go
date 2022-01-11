@@ -71,40 +71,62 @@ func (p *Phys) Update(dt float64, move pixel.Vec) {
 		p.vel.X = 0
 	}
 
-	// apply gravity and velocity
-	p.vel.Y -= p.gravity
-	p.rect = p.rect.Moved(p.vel.Scaled(dt))
-
-	// check collisions against each platform
-	p.ground = false
-	if p.vel.Y != 0 {
-		objs := p.qt.Retrieve(p.rect)
-		if len(objs) > 0 { // precise check for each object that can intersects
-			for _, obj := range objs {
-				if !p.intersects(obj) {
-					continue
-				}
-
-				// Handle collision
-				rect := obj.Rect()
-
-				if p.vel.Y < 0 {
-					p.rect = p.rect.Moved(pixel.V(0, rect.Max.Y-p.rect.Min.Y))
-					p.ground = true
-				} else {
-					p.rect = p.rect.Moved(pixel.V(0, rect.Min.Y-p.rect.Max.Y))
-					//				p.vel.Y = -p.vel.Y
-				}
-				p.vel.Y = 0
-			}
-		}
-
+	if !p.ground {
+		p.vel.Y -= p.gravity
+	}
+	vec := p.vel.Scaled(dt)
+	if p.canmove(&vec) {
+		p.rect = p.rect.Moved(vec)
+	} else {
+		p.vel = pixel.ZV
 	}
 
 	// jump if on the ground and the player wants to jump
 	if p.ground && move.Y > 0 {
 		p.vel.Y = p.jumpSpeed
 	}
+
+}
+
+func (p *Phys) canmove(v *pixel.Vec) bool {
+	res := true
+	p.ground = false
+	if p.vel.Y != 0 {
+		objs := p.qt.Retrieve(p.rect)
+		if len(objs) > 0 { // precise check for each object that can intersects
+			for _, obj := range objs {
+
+				// Handle collision
+				rect := obj.Rect()
+				if !p.rect.Intersects(rect) {
+					continue
+				}
+
+				if p.intersectTop(rect) {
+					// do top intersection
+				}
+				if p.intersectBottom(rect) {
+					// do ground intersection
+				}
+				if p.intersectBottom(rect) {
+					// do ground intersection
+				}
+
+				if p.vel.Y < 0 {
+					p.rect = p.rect.Moved(pixel.V(0, rect.Max.Y-p.rect.Min.Y))
+					p.ground = true
+				} else if p.vel.Y == 0 {
+					//					p.rect = p.rect.Moved(pixel.V(0, rect.Min.Y-p.rect.Max.Y))
+					res = false
+				}
+				if !res {
+					return res
+				}
+			}
+		}
+	}
+
+	return res
 }
 
 func (p *Phys) GetVel() pixel.Vec {

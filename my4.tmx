@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="50" height="100" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="4">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="50" height="100" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="4">
  <tileset firstgid="1" name="Tileset" tilewidth="32" tileheight="32" tilecount="60" columns="10">
   <image source="tileset/1 Tiles/Tileset.png" width="320" height="192"/>
  </tileset>
@@ -120,12 +120,12 @@
 </data>
  </layer>
  <objectgroup id="2" name="scenery">
-  <object id="1" gid="61" x="777.633" y="3004.57" width="104" height="135"/>
+  <object id="1" gid="61" x="777.633" y="3008.57" width="104" height="135"/>
  </objectgroup>
  <objectgroup id="3" name="meta">
   <object id="2" x="539.341" y="2599.3" width="500" height="500"/>
  </objectgroup>
- <objectgroup id="4" name="geom">
-  <object id="3" x="450.524" y="3005.04" width="638.822" height="42.743"/>
+ <objectgroup id="4" name="geom" visible="0">
+  <object id="3" x="450.524" y="3008.04" width="638.822" height="42.743"/>
  </objectgroup>
 </map>

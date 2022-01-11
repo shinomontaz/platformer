@@ -1,6 +1,8 @@
 package world
 
 import (
+	"fmt"
+
 	"github.com/faiface/pixel"
 
 	"platformer/common"
@@ -93,7 +95,7 @@ func (w *World) init() {
 func (w *World) initSets() {
 	batchCounter := 0
 	for _, tileset := range w.tm.Tilesets {
-		if len(tileset.Tiles) > 0 {
+		if len(tileset.Tiles) > 0 && tileset.Image.Source == "" {
 			for _, tile := range tileset.Tiles {
 				if _, alreadyLoaded := w.sprites[tile.Image.Source]; !alreadyLoaded {
 					sprite, pictureData := loadSprite(tile.Image.Source)
@@ -281,6 +283,7 @@ func indexToGamePos(idx int, width int, height int) pixel.Vec {
 func loadSprite(path string) (*pixel.Sprite, *pixel.PictureData) {
 	f, err := os.Open(path)
 	if err != nil {
+		fmt.Println(path)
 		panic(err)
 	}
 

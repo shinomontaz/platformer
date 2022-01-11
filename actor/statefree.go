@@ -85,8 +85,9 @@ func (s *FreeState) Notify(e int, v *pixel.Vec) {
 	case (v.Len() > 0 && !s.isShift):
 		s.newStateAnim = RUNNING
 	}
-
-	// set animation?
+	if !s.isShift {
+		v.X *= 2
+	}
 }
 
 func (s *FreeState) GetSprite() *pixel.Sprite {

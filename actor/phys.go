@@ -102,15 +102,15 @@ func (p *Phys) canmove(v *pixel.Vec) bool {
 					continue
 				}
 
-				if p.intersectTop(rect) {
-					// do top intersection
-				}
-				if p.intersectBottom(rect) {
-					// do ground intersection
-				}
-				if p.intersectBottom(rect) {
-					// do ground intersection
-				}
+				// if p.intersectTop(rect) {
+				// 	// do top intersection
+				// }
+				// if p.intersectBottom(rect) {
+				// 	// do ground intersection
+				// }
+				// if p.intersectBottom(rect) {
+				// 	// do ground intersection
+				// }
 
 				if p.vel.Y < 0 {
 					p.rect = p.rect.Moved(pixel.V(0, rect.Max.Y-p.rect.Min.Y))

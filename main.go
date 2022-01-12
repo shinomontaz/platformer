@@ -9,6 +9,7 @@ import (
 
 	"platformer/actor"
 	"platformer/animation"
+	"platformer/background"
 	"platformer/config"
 	"platformer/world"
 
@@ -19,19 +20,18 @@ import (
 )
 
 func init() {
-	// create world
-	// create physics
-	// create hero
-
 	rand.Seed(time.Now().UTC().UnixNano())
 }
 
 var (
-	w             *world.World
-	hero          *actor.Actor
-	ctrl          *controller.Controller
-	title         string = "platformer"
-	currBounds    pixel.Rect
+	b              *background.Back
+	w              *world.World
+	hero           *actor.Actor
+	ctrl           *controller.Controller
+	title          string     = "platformer"
+	currBounds     pixel.Rect // current viewport
+	tolerantBounds pixel.Rect // moving inside this rect will not result in camera update
+
 	initialCenter pixel.Vec
 	lastPos       pixel.Vec
 )
@@ -46,7 +46,8 @@ func gameLoop(win *pixelgl.Window) {
 	)
 
 	last := time.Now()
-	rgba := color.RGBA{205, 231, 244, 1}
+	rgba := color.RGBA{123, 175, 213, 1}
+	bgCurrPos := initialCenter
 
 	for !win.Closed() {
 		dt := time.Since(last).Seconds()
@@ -54,15 +55,22 @@ func gameLoop(win *pixelgl.Window) {
 		win.Clear(rgba)
 
 		pos := hero.GetPos()
-		camPos = pixel.Lerp(camPos, initialCenter.Sub(pos), 1-math.Pow(1.0/128, dt))
+		deltaVec := lastPos.To(pos)
+		if !tolerantBounds.Contains(pos) {
+			camPos = pixel.Lerp(camPos, initialCenter.Sub(pos).Sub(pixel.V(0, 100)), 1-math.Pow(1.0/128, dt)) // standart with moving cam slightly down
+			tolerantBounds = tolerantBounds.Moved(deltaVec)
+			bgCurrPos = pos
+		}
 		cam := pixel.IM.Moved(camPos)
 
 		win.SetMatrix(cam)
-		currBounds = currBounds.Moved(lastPos.To(pos))
+		currBounds = currBounds.Moved(deltaVec)
 
 		ctrl.Update() // - here we capture control signals, so actor physics receive input from controller
 		hero.Update(dt)
 		w.Update(currBounds)
+
+		b.Draw(win, pos, initialCenter.Sub(bgCurrPos)) // we don't need interpolated camera pos
 
 		w.Draw(win)
 		hero.Draw(win)
@@ -86,6 +94,8 @@ func run() {
 	w = world.New("my.tmx")
 	w.SetGravity(config.WorldConfig.Gravity)
 	currBounds = w.Data()
+
+	tolerantBounds = currBounds.Resized(currBounds.Center(), pixel.Vec{currBounds.W() * 0.35, currBounds.H() * 0.35})
 
 	cfg := pixelgl.WindowConfig{
 		Title:  title,
@@ -115,6 +125,7 @@ func run() {
 	ctrl.Subscribe(hero)
 
 	lastPos = hero.GetPos()
+	b = background.New(lastPos, currBounds, "assets/gamebackground.png")
 
 	gameLoop(win)
 }

@@ -38,7 +38,6 @@ type World struct {
 
 	visibleTiles []common.Objecter
 	visibleObjs  []common.Objecter
-	visiblePhys  []common.Objecter
 }
 
 func New(source string) *World {
@@ -188,7 +187,6 @@ func (w *World) initObjs() {
 func (w *World) Update(rect pixel.Rect) {
 	w.visibleTiles = w.qtTile.Retrieve(rect)
 	w.visibleObjs = w.qtObjs.Retrieve(rect)
-	w.visiblePhys = w.qtPhys.Retrieve(rect)
 }
 
 func (w *World) GetQt() *common.Quadtree {

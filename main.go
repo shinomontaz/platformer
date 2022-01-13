@@ -47,7 +47,6 @@ func gameLoop(win *pixelgl.Window) {
 
 	last := time.Now()
 	rgba := color.RGBA{123, 175, 213, 1}
-	bgCurrPos := initialCenter
 
 	for !win.Closed() {
 		dt := time.Since(last).Seconds()
@@ -59,7 +58,6 @@ func gameLoop(win *pixelgl.Window) {
 		if !tolerantBounds.Contains(pos) {
 			camPos = pixel.Lerp(camPos, initialCenter.Sub(pos).Sub(pixel.V(0, 100)), 1-math.Pow(1.0/128, dt)) // standart with moving cam slightly down
 			tolerantBounds = tolerantBounds.Moved(deltaVec)
-			bgCurrPos = pos
 		}
 		cam := pixel.IM.Moved(camPos)
 
@@ -70,7 +68,7 @@ func gameLoop(win *pixelgl.Window) {
 		hero.Update(dt)
 		w.Update(currBounds)
 
-		b.Draw(win, pos, initialCenter.Sub(bgCurrPos)) // we don't need interpolated camera pos
+		b.Draw(win, pos, camPos)
 
 		w.Draw(win)
 		hero.Draw(win)

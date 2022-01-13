@@ -99,47 +99,47 @@ func (p *Phys) canmove(v *pixel.Vec) bool {
 
 				// Handle collision
 				rect := obj.Rect()
-				// if !p.rect.Intersects(rect) {
-				// 	continue
+				if !p.rect.Intersects(rect) {
+					continue
+				}
+
+				// top := p.intersectTop(rect, v)
+				// if top > 0 {
+				// 	v.Y -= top
+				// 	return true
+				// 	// do top intersection
 				// }
-
-				top := p.intersectTop(rect, v)
-				if top > 0 {
-					v.Y -= top
-					return true
-					// do top intersection
-				}
-				bottom := p.intersectBottom(rect, v)
-				if bottom > 0 {
-					// do ground intersection
-					v.Y += bottom
-					p.ground = true
-					return true
-
-				}
-				left := p.intersectLeft(rect, v)
-				if left > 0 {
-					v.X -= left
-					// do ground intersection
-					return true
-
-				}
-				right := p.intersectRight(rect, v)
-				if right > 0 {
-					v.X += right
-					return true
-
-				}
-
-				// if p.vel.Y < 0 {
-				// 	p.rect = p.rect.Moved(pixel.V(0, rect.Max.Y-p.rect.Min.Y))
+				// bottom := p.intersectBottom(rect, v)
+				// if bottom > 0 {
+				// 	// do ground intersection
+				// 	v.Y += bottom
 				// 	p.ground = true
-				// } else if p.vel.Y == 0 {
-				// 	res = false
+				// 	return true
+
 				// }
-				// if !res {
-				// 	return res
+				// left := p.intersectLeft(rect, v)
+				// if left > 0 {
+				// 	v.X -= left
+				// 	// do ground intersection
+				// 	return true
+
 				// }
+				// right := p.intersectRight(rect, v)
+				// if right > 0 {
+				// 	v.X += right
+				// 	return true
+
+				// }
+
+				if p.vel.Y < 0 {
+					p.rect = p.rect.Moved(pixel.V(0, rect.Max.Y-p.rect.Min.Y))
+					p.ground = true
+				} else if p.vel.Y == 0 {
+					res = false
+				}
+				if !res {
+					return res
+				}
 			}
 		}
 	}

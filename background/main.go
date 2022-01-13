@@ -15,20 +15,26 @@ type Back struct {
 	viewport pixel.Rect
 	vector1  pixel.Vec
 	vector2  pixel.Vec
-	part1    *pixel.Sprite
-	part2    *pixel.Sprite
-	pos      pixel.Vec
-	steps    int
+
+	part1 *pixel.Sprite
+	part2 *pixel.Sprite
+
+	pos   pixel.Vec
+	steps int
 }
 
 func New(start pixel.Vec, viewport pixel.Rect, path string) *Back {
 	width := viewport.W()
 	height := viewport.H()
+
+	// width := 1200.0 //viewport.W()
+	// height := 450.0 // viewport.H()
+
 	x, y := viewport.Min.X, viewport.Min.Y
 	b := Back{
 		width:    width,
 		height:   height,
-		viewport: viewport, //pixel.R(0, 0, width, height),
+		viewport: viewport,
 
 		vector1: pixel.V(x+width/2+1, y+height/2),
 		vector2: pixel.V(x+3*width/2, y+height/2),

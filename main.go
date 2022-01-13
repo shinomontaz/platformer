@@ -24,7 +24,9 @@ func init() {
 }
 
 var (
-	b              *background.Back
+	//	b *background.Pback
+	b *background.Back
+
 	w              *world.World
 	hero           *actor.Actor
 	ctrl           *controller.Controller
@@ -55,10 +57,10 @@ func gameLoop(win *pixelgl.Window) {
 
 		pos := hero.GetPos()
 		deltaVec := lastPos.To(pos)
-		if !tolerantBounds.Contains(pos) {
-			camPos = pixel.Lerp(camPos, initialCenter.Sub(pos).Sub(pixel.V(0, 100)), 1-math.Pow(1.0/128, dt)) // standart with moving cam slightly down
-			tolerantBounds = tolerantBounds.Moved(deltaVec)
-		}
+		//		if !tolerantBounds.Contains(pos) {
+		camPos = pixel.Lerp(camPos, initialCenter.Sub(pos).Sub(pixel.V(0, 150)), 1-math.Pow(1.0/128, dt)) // standart with moving cam slightly down
+		tolerantBounds = tolerantBounds.Moved(deltaVec)
+		//		}
 		cam := pixel.IM.Moved(camPos)
 
 		win.SetMatrix(cam)
@@ -123,7 +125,8 @@ func run() {
 	ctrl.Subscribe(hero)
 
 	lastPos = hero.GetPos()
-	b = background.New(lastPos, currBounds, "assets/gamebackground.png")
+	b = background.New(lastPos, currBounds.Moved(pixel.Vec{0, 100}), "assets/gamebackground.png")
+	//	b = background.NewParallax(lastPos, currBounds.Moved(pixel.Vec{0, 100}))
 
 	gameLoop(win)
 }

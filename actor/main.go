@@ -41,7 +41,7 @@ type Actor struct {
 
 func New(w Worlder, anim Animater, rect pixel.Rect, run, walk float64) *Actor {
 	grav := w.GetGravity()
-	p := NewPhys(rect, run, walk, grav*30, grav)
+	p := NewPhys(rect, run, walk, grav*40, grav)
 	p.SetQt(w.GetQt())
 
 	a := &Actor{

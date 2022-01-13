@@ -38,18 +38,6 @@ func (p *Phys) SetQt(qt *common.Quadtree) {
 	p.qt = qt
 }
 
-func (p *Phys) intersects(obj common.Objecter) bool {
-	rect := obj.Rect()
-	if p.rect.Max.X <= rect.Min.X || p.rect.Min.X >= rect.Max.X {
-		return false
-	}
-	if p.rect.Min.Y > rect.Max.Y || p.rect.Max.Y < rect.Max.Y {
-		return false
-	}
-
-	return true
-}
-
 func (p *Phys) Update(dt float64, move pixel.Vec) {
 	// apply controls
 	switch {
@@ -74,83 +62,77 @@ func (p *Phys) Update(dt float64, move pixel.Vec) {
 	if !p.ground {
 		p.vel.Y -= p.gravity
 	}
-	vec := p.vel.Scaled(dt)
-	if p.canmove(&vec) {
-		p.rect = p.rect.Moved(vec)
-	} else {
-		p.vel = pixel.ZV
-	}
-
-	// jump if on the ground and the player wants to jump
 	if p.ground && move.Y > 0 {
 		p.vel.Y = p.jumpSpeed
 	}
 
+	if p.vel.X != 0 || p.vel.Y != 0 {
+		vec := p.vel.Scaled(dt)
+		p.canmove(&vec)
+		p.rect = p.rect.Moved(vec)
+	}
+
+	// jump if on the ground and the player wants to jump
+
 }
 
-func (p *Phys) canmove(v *pixel.Vec) bool {
+func (p *Phys) canmove(v *pixel.Vec) {
 	res := true
 	p.ground = false
-	if p.vel.Y != 0 {
-		moved := p.rect.Moved(*v)
-		objs := p.qt.Retrieve(moved)
-		if len(objs) > 0 { // precise check for each object that can intersects
-			for _, obj := range objs {
+	moved := p.rect.Moved(*v)
+	objs := p.qt.Retrieve(moved)
+	if len(objs) > 0 { // precise check for each object that can intersects
+		for _, obj := range objs {
 
-				// Handle collision
-				rect := obj.Rect()
-				if !p.rect.Intersects(rect) {
-					continue
-				}
+			// Handle collision
+			rect := obj.Rect()
+			if !p.rect.Intersects(rect) {
+				continue
+			}
 
-				// top := p.intersectTop(rect, v)
-				// if top > 0 {
-				// 	v.Y -= top
-				// 	return true
-				// 	// do top intersection
-				// }
-				// bottom := p.intersectBottom(rect, v)
-				// if bottom > 0 {
-				// 	// do ground intersection
-				// 	v.Y += bottom
-				// 	p.ground = true
-				// 	return true
-
-				// }
-				// left := p.intersectLeft(rect, v)
-				// if left > 0 {
-				// 	v.X -= left
-				// 	// do ground intersection
-				// 	return true
-
-				// }
-				// right := p.intersectRight(rect, v)
-				// if right > 0 {
-				// 	v.X += right
-				// 	return true
-
-				// }
-
-				if p.vel.Y < 0 {
-					p.rect = p.rect.Moved(pixel.V(0, rect.Max.Y-p.rect.Min.Y))
-					p.ground = true
-				} else if p.vel.Y == 0 {
+			if v.Y > 0 {
+				top := p.intersectTop(rect, v)
+				if top > 0 {
+					v.Y -= top
 					res = false
+					moved = moved.Moved(pixel.Vec{0, -top})
 				}
-				if !res {
-					return res
+			} else {
+				bottom := p.intersectBottom(rect, v)
+				if bottom > 0 {
+					v.Y += bottom
+					moved = moved.Moved(pixel.Vec{0, bottom})
+					p.ground = true
+					res = false
+					p.vel.Y = 0
 				}
+			}
+			if v.X < 0 {
+				left := p.intersectLeft(rect, v)
+				if left > 0 {
+					v.X += left
+					res = false
+					panic("!")
+				}
+			} else {
+				right := p.intersectRight(rect, v)
+				if right > 0 {
+					v.X -= right
+				}
+				res = false
+			}
+
+			if !res {
+				return
 			}
 		}
 	}
-
-	return res
 }
 
 func (p *Phys) intersectTop(r pixel.Rect, v *pixel.Vec) float64 {
 	moved := p.rect.Moved(*v)
 
-	if moved.Min.Y > r.Max.Y || (moved.Max.X < r.Min.X || moved.Min.X > r.Max.X) {
+	if moved.Min.Y > r.Max.Y || (moved.Max.X <= r.Min.X || moved.Min.X >= r.Max.X) {
 		return 0
 	}
 
@@ -164,7 +146,7 @@ func (p *Phys) intersectTop(r pixel.Rect, v *pixel.Vec) float64 {
 func (p *Phys) intersectBottom(r pixel.Rect, v *pixel.Vec) float64 {
 	moved := p.rect.Moved(*v)
 
-	if moved.Max.Y < r.Min.Y || (moved.Max.X < r.Min.X || moved.Min.X > r.Max.X) {
+	if moved.Max.Y < r.Min.Y || (moved.Max.X <= r.Min.X || moved.Min.X >= r.Max.X) {
 		return 0
 	}
 
@@ -178,7 +160,7 @@ func (p *Phys) intersectBottom(r pixel.Rect, v *pixel.Vec) float64 {
 func (p *Phys) intersectLeft(r pixel.Rect, v *pixel.Vec) float64 {
 	moved := p.rect.Moved(*v)
 
-	if moved.Max.X < r.Min.X || (moved.Max.Y < r.Min.Y || moved.Min.Y > r.Max.Y) {
+	if moved.Max.X < r.Min.X || (moved.Max.Y <= r.Min.Y || moved.Min.Y >= r.Max.Y) {
 		return 0
 	}
 

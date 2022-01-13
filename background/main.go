@@ -1,9 +1,7 @@
 package background
 
 import (
-	"image/png"
 	"math"
-	"os"
 
 	"github.com/faiface/pixel"
 )
@@ -27,9 +25,6 @@ func New(start pixel.Vec, viewport pixel.Rect, path string) *Back {
 	width := viewport.W()
 	height := viewport.H()
 
-	// width := 1200.0 //viewport.W()
-	// height := 450.0 // viewport.H()
-
 	x, y := viewport.Min.X, viewport.Min.Y
 	b := Back{
 		width:    width,
@@ -42,6 +37,7 @@ func New(start pixel.Vec, viewport pixel.Rect, path string) *Back {
 		pos:   start,
 		steps: 0,
 	}
+
 	bg, err := loadPicture(path)
 	if err != nil {
 		panic(err)
@@ -49,8 +45,8 @@ func New(start pixel.Vec, viewport pixel.Rect, path string) *Back {
 
 	b.p = bg
 
-	b.part1 = pixel.NewSprite(b.p, pixel.R(0, 0, 600, 450))
-	b.part2 = pixel.NewSprite(b.p, pixel.R(600, 0, 1200, 450))
+	b.part1 = pixel.NewSprite(b.p, pixel.R(0, 0, bg.Bounds().W()/2, bg.Bounds().H()))
+	b.part2 = pixel.NewSprite(b.p, pixel.R(bg.Bounds().W()/2, 0, bg.Bounds().W(), bg.Bounds().H()))
 
 	return &b
 }
@@ -70,20 +66,9 @@ func (b *Back) Draw(t pixel.Target, pos pixel.Vec, cam pixel.Vec) {
 
 	b.pos = pixel.V(x, 0)
 
+	// b.part1.Draw(t, pixel.IM.Moved(b.vector1.Sub(b.pos).Sub(cam)).ScaledXY(b.vector1.Sub(b.pos).Sub(cam), pixel.Vec{b.width / b.p.Bounds().W() / 2, b.height / b.p.Bounds().H()}))
+	// b.part2.Draw(t, pixel.IM.Moved(b.vector2.Sub(b.pos).Sub(cam)).ScaledXY(b.vector2.Sub(b.pos).Sub(cam), pixel.Vec{b.width / b.p.Bounds().W() / 2, b.height / b.p.Bounds().H()}))
+
 	b.part1.Draw(t, pixel.IM.Moved(b.vector1.Sub(b.pos).Sub(cam)))
 	b.part2.Draw(t, pixel.IM.Moved(b.vector2.Sub(b.pos).Sub(cam)))
-}
-
-func loadPicture(path string) (pixel.Picture, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-	img, err := png.Decode(file)
-	if err != nil {
-		return nil, err
-	}
-
-	return pixel.PictureDataFromImage(img), nil
 }

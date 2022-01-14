@@ -25,7 +25,7 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] tmx [915fa7e](https://github.com/shinomontaz/platformer/commit/915fa7e05eb937ae8ff9a45663be39b7fd078b9e)
 - [x] infinite scrolling background [2780300](https://github.com/shinomontaz/platformer/commit/27803009930d30dbc851eb50625aec56778685b7)
 - [x] complex physics [177923f](https://github.com/shinomontaz/platformer/commit/177923f1fd371e6e4e0cb3e8160be445a302b295)
-- [x] release v0.5
+- [x] release [v0.5](https://github.com/shinomontaz/platformer/releases/tag/v0.5.0)
 - [ ] speed and impulse + phys fix
 - [ ] fix attack state ( no anim supported )
 - [ ] enemies v2 ( still stupid AI, x-proximity based )

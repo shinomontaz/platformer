@@ -26,21 +26,21 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] infinite scrolling background [27803009930d30dbc851eb50625aec56778685b7](https://github.com/shinomontaz/platformer/commit/27803009930d30dbc851eb50625aec56778685b7)
 - [x] complex physics [177923f1fd371e6e4e0cb3e8160be445a302b295](https://github.com/shinomontaz/platformer/commit/177923f1fd371e6e4e0cb3e8160be445a302b295)
 - [x] release v0.5
-- [] speed and impulse + phys fix
-- [] fix attack state ( no anim supported )
-- [] enemies v2 ( still stupid AI, x-proximity based )
-- [] release v0.6
-- [] characteristics and some UI
-- [] hit and strike
-- [] release v0.7
-- [] sounds
-- [] some shaders: spot lights
-- [] release v0.8
-- [] advanced physic behaviour ( step up/down )
-- [] main menu
-- [] save/load
-- [] interactive objects, inventory
-- [] release v0.9
+- [ ] speed and impulse + phys fix
+- [ ] fix attack state ( no anim supported )
+- [ ] enemies v2 ( still stupid AI, x-proximity based )
+- [ ] release v0.6
+- [ ] characteristics and some UI
+- [ ] hit and strike
+- [ ] release v0.7
+- [ ] sounds
+- [ ] some shaders: spot lights
+- [ ] release v0.8
+- [ ] advanced physic behaviour ( step up/down )
+- [ ] main menu
+- [ ] save/load
+- [ ] interactive objects, inventory
+- [ ] release v0.9
 
 ---
 ## basic scheme

@@ -23,7 +23,7 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] state pattern [caf3611](https://github.com/shinomontaz/platformer/commit/caf3611876c02b252a30f2b6ce3ef5ff69f2e222)
 - [x] quadtree [3988cac2](https://github.com/shinomontaz/platformer/commit/3988cac2f6cd5dcc358ba8fd7d92ca76ebd61d0b) + fix [2608f8e](https://github.com/shinomontaz/platformer/commit/2608f8e3e9248eef0d19ee2822c3745d01171a29)
 - [x] tmx [915fa7e](https://github.com/shinomontaz/platformer/commit/915fa7e05eb937ae8ff9a45663be39b7fd078b9e)
-- [x] infinite scrolling background [2780300](https://github.com/shinomontaz/platformer/commit/27803009930d30dbc851eb50625aec56778685b7)
+- [x] infinite scrolling background [b7f02e4](https://github.com/shinomontaz/platformer/commit/b7f02e4e39a7ee3b52e6bfac670fafec2db88d08)
 - [x] complex physics [177923f](https://github.com/shinomontaz/platformer/commit/177923f1fd371e6e4e0cb3e8160be445a302b295)
 - [x] release [v0.5](https://github.com/shinomontaz/platformer/releases/tag/v0.5.0)
 - [ ] speed and impulse + phys fix

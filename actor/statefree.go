@@ -2,7 +2,7 @@ package actor
 
 import (
 	"math"
-	"platformer/controller"
+	"platformer/events"
 
 	"github.com/faiface/pixel"
 )
@@ -13,7 +13,6 @@ type FreeState struct {
 	counter       float64
 	sprite        *pixel.Sprite
 	isJumping     bool
-	isShift       bool
 	animName      string
 	animSpriteNum int
 	newStateAnim  int
@@ -66,27 +65,26 @@ func (s *FreeState) Notify(e int, v *pixel.Vec) {
 	// if event = attack or hit => switch state
 	// if event = move => make it move
 
-	if e == controller.E_CTRL {
+	if e == events.CTRL {
 		if !s.isJumping {
 			s.a.SetState(STATE_ATTACK)
 		}
 	}
-	if e == controller.E_SHIFT {
-		s.isShift = !s.isShift
+
+	if e == events.WALK {
+		s.newStateAnim = WALKING
+	}
+	if e == events.RUN {
+		s.newStateAnim = RUNNING
 	}
 
 	switch {
 	case v.Y > 0:
 		s.newStateAnim = JUMPING
+	case v.Y < 0:
+		s.newStateAnim = FALLING
 	case v.Len() == 0:
 		s.newStateAnim = STANDING
-	case (v.Len() > 0 && s.isShift):
-		s.newStateAnim = WALKING
-	case (v.Len() > 0 && !s.isShift):
-		s.newStateAnim = RUNNING
-	}
-	if !s.isShift {
-		v.X *= 2
 	}
 }
 

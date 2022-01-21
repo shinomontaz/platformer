@@ -38,25 +38,36 @@ func (p *Phys) SetQt(qt *common.Quadtree) {
 	p.qt = qt
 }
 
-func (p *Phys) Update(dt float64, move pixel.Vec) {
-	// apply controls
+func (p *Phys) GetVel() *pixel.Vec {
+	return &p.vel
+}
+
+func (p *Phys) Update(dt float64, move *pixel.Vec) {
+	//	oldspeed := p.vel
 	switch {
 	case math.Abs(move.X) == 1:
-		switch {
-		case move.X < 0:
-			p.vel.X = -p.walkSpeed
-		case move.X > 0:
-			p.vel.X = +p.walkSpeed
+		p.vel.X += move.X * p.walkSpeed / 20
+		if math.Abs(p.vel.X) > p.walkSpeed {
+			if p.vel.X > 0 {
+				p.vel.X = p.walkSpeed
+			} else {
+				p.vel.X = -p.walkSpeed
+			}
 		}
 	case math.Abs(move.X) == 2:
-		switch {
-		case move.X < 0:
-			p.vel.X = -p.runSpeed
-		case move.X > 0:
-			p.vel.X = +p.runSpeed
+		p.vel.X += move.X * p.runSpeed / 20
+		if math.Abs(p.vel.X) > p.runSpeed {
+			if p.vel.X > 0 {
+				p.vel.X = p.runSpeed
+			} else {
+				p.vel.X = -p.runSpeed
+			}
 		}
 	default:
-		p.vel.X = 0
+		p.vel.X /= 1.1
+		if math.Abs(p.vel.X) <= p.runSpeed/20 {
+			p.vel.X = 0
+		}
 	}
 
 	if !p.ground {
@@ -71,15 +82,28 @@ func (p *Phys) Update(dt float64, move pixel.Vec) {
 		p.canmove(&vec)
 		p.rect = p.rect.Moved(vec)
 	}
-
 	// jump if on the ground and the player wants to jump
-
 }
 
 func (p *Phys) canmove(v *pixel.Vec) {
 	res := true
 	p.ground = false
+	//	oldcenter := p.rect.Center()
+	//	moveline := pixel.Line{oldcenter, oldcenter.Add(v)}
+	/*
+		     __              ____
+		....|__| -->  = ....|____| moved
+		     __            ____
+		....|__| <--  = ..|____|.. moved
+	*/
+	// if v.X > 0 {
+	// 	moved = pixel.Rect{p.rect.Max, pixel.Vec{p.rect.Max.X + v.X, p.rect.Max.Y + v.Y}}
+	// } else {
+	// 	moved = pixel.Rect{pixel.Vec{p.rect.Min.X + v.X, p.rect.Min.Y + v.Y}, p.rect.Min}
+	// }
+
 	moved := p.rect.Moved(*v)
+
 	objs := p.qt.Retrieve(moved)
 	if len(objs) > 0 { // precise check for each object that can intersects
 		for _, obj := range objs {
@@ -89,6 +113,11 @@ func (p *Phys) canmove(v *pixel.Vec) {
 			if !p.rect.Intersects(rect) {
 				continue
 			}
+
+			// intersectionVec := rect.IntersectLine(moveline)
+			// vec := moveline.B.Sub(intersectionVec)
+			// v := &vec
+			// moved = p.rect.Moved(*v)
 
 			if v.Y > 0 {
 				top := p.intersectTop(rect, v)
@@ -182,10 +211,6 @@ func (p *Phys) intersectRight(r pixel.Rect, v *pixel.Vec) float64 {
 		val = 0
 	}
 	return val
-}
-
-func (p *Phys) GetVel() pixel.Vec {
-	return p.vel
 }
 
 func (p *Phys) Move(v pixel.Vec) {

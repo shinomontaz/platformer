@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"platformer/events"
+
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 )
@@ -26,7 +28,7 @@ func (pc *Controller) Subscribe(s Subscriber) {
 
 func (pc *Controller) Notify(e int) {
 	for _, s := range pc.sbrs {
-		s.Notify(e, &pc.vec)
+		s.Notify(e, pc.vec)
 	}
 }
 
@@ -35,15 +37,15 @@ func (pc *Controller) Update() {
 	isMoved := false
 
 	if pc.win.JustPressed(pixelgl.KeyEscape) {
-		pc.Notify(E_ESCAPE)
+		pc.Notify(events.ESCAPE)
 	}
 
 	if pc.win.JustPressed(pixelgl.KeyLeftControl) {
-		pc.Notify(E_CTRL)
+		pc.Notify(events.CTRL)
 	}
 
 	if pc.win.JustPressed(pixelgl.KeyLeftShift) || pc.win.JustReleased(pixelgl.KeyLeftShift) {
-		pc.Notify(E_SHIFT)
+		pc.Notify(events.SHIFT)
 	}
 
 	if pc.win.Pressed(pixelgl.KeyLeft) {
@@ -64,7 +66,7 @@ func (pc *Controller) Update() {
 	}
 
 	if isMoved {
-		pc.Notify(E_MOVE)
+		pc.Notify(events.MOVE)
 	}
 
 }

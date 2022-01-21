@@ -1,6 +1,9 @@
 package actor
 
 import (
+	"math"
+	"platformer/events"
+
 	"github.com/faiface/pixel"
 )
 
@@ -30,13 +33,16 @@ type Actor struct {
 	state  ActorStater
 	states map[int]ActorStater
 
-	counter float64
-	rect    pixel.Rect
+	rect pixel.Rect
 
-	anim   Animater
-	sprite *pixel.Sprite
-	dir    float64
-	vec    *pixel.Vec
+	anim      Animater
+	sprite    *pixel.Sprite
+	dir       float64
+	vec       pixel.Vec // delta speed
+	vel       pixel.Vec
+	runspeed  float64
+	walkspeed float64
+	isShift   bool
 }
 
 func New(w Worlder, anim Animater, rect pixel.Rect, run, walk float64) *Actor {
@@ -45,10 +51,13 @@ func New(w Worlder, anim Animater, rect pixel.Rect, run, walk float64) *Actor {
 	p.SetQt(w.GetQt())
 
 	a := &Actor{
-		phys: p,
-		anim: anim,
-		rect: rect,
-		dir:  1,
+		phys:      p,
+		anim:      anim,
+		rect:      rect,
+		dir:       1,
+		runspeed:  run,
+		walkspeed: walk,
+		vel:       pixel.ZV,
 	}
 
 	// init states
@@ -71,16 +80,23 @@ func (a *Actor) GetId() int {
 	return a.id
 }
 
-func (a *Actor) Notify(e int, v *pixel.Vec) {
-	if v != nil && v.X != 0 {
+func (a *Actor) Notify(e int, v pixel.Vec) {
+	if v.X != 0 {
 		if v.X > 0 {
 			a.dir = 1
 		} else {
 			a.dir = -1
 		}
+		if !a.isShift {
+			v.X *= 2
+		}
 	}
 
-	a.state.Notify(e, v)
+	if e == events.SHIFT {
+		a.isShift = !a.isShift
+	}
+
+	a.state.Notify(e, &v)
 	a.vec = v
 }
 
@@ -89,12 +105,18 @@ func (a *Actor) GetPos() pixel.Vec {
 }
 
 func (a *Actor) Update(dt float64) {
-	if a.vec != nil {
-		a.phys.Update(dt, *a.vec)
+	a.phys.Update(dt, &a.vec)
+	newspeed := a.phys.GetVel()
+	var event int
+	if math.Abs(newspeed.X) <= a.runspeed && math.Abs(newspeed.X) > a.walkspeed {
+		event = events.RUN
+	} else if (math.Abs(a.vel.X) > a.walkspeed && math.Abs(newspeed.X) <= a.walkspeed) || (a.vel.X == 0 && math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed) {
+		event = events.WALK
 	}
+	a.state.Notify(event, newspeed)
+	a.vel = *newspeed
 
 	a.rect = a.phys.GetRect()
-
 	a.state.Update(dt)
 }
 

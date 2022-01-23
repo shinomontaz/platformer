@@ -81,10 +81,13 @@ func (s *FreeState) Notify(e int, v *pixel.Vec) {
 	switch {
 	case v.Y > 0:
 		s.newStateAnim = JUMPING
+		s.isJumping = true
 	case v.Y < 0:
 		s.newStateAnim = FALLING
+		s.isJumping = true
 	case v.Len() == 0:
 		s.newStateAnim = STANDING
+		s.isJumping = false
 	}
 }
 

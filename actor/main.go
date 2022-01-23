@@ -120,13 +120,6 @@ func (a *Actor) Update(dt float64) {
 	a.state.Update(dt)
 }
 
-// func (h *Actor) selectAttack(move pixel.Vec) string {
-// 	if move.Len() == 0 {
-// 		return fmt.Sprintf("attack%d", rand.Intn(2)+1)
-// 	}
-// 	return "attack3"
-// }
-
 func (a *Actor) SetState(id int) {
 	a.state = a.states[id]
 	a.state.Start()

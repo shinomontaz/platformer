@@ -134,14 +134,14 @@ func (a *Actor) SetState(id int) {
 
 func (a *Actor) Draw(t pixel.Target) {
 	a.sprite = a.state.GetSprite()
-
+	drawrect := a.rect.ResizedMin(pixel.Vec{a.rect.W() * 1.25, a.rect.H() * 1.25})
 	a.sprite.Draw(t, pixel.IM.
 		ScaledXY(pixel.ZV, pixel.V(
-			a.rect.W()/a.sprite.Frame().W(),
-			a.rect.H()/a.sprite.Frame().H(),
+			drawrect.W()/a.sprite.Frame().W(),
+			drawrect.H()/a.sprite.Frame().H(),
 		)).
 		ScaledXY(pixel.ZV, pixel.V(a.dir, 1)).
-		Moved(a.rect.Center()),
+		Moved(drawrect.Center()),
 	)
 	//	a.phys.Draw(t)
 }

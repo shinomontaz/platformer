@@ -45,30 +45,32 @@ func (p *Phys) GetVel() *pixel.Vec {
 
 func (p *Phys) Update(dt float64, move *pixel.Vec) {
 	// do speed update by move vec
-	switch {
-	case math.Abs(move.X) == 1:
-		p.vel.X += move.X * p.walkSpeed / 20
-		if math.Abs(p.vel.X) > p.walkSpeed {
-			if p.vel.X > 0 {
-				p.vel.X = p.walkSpeed
-			} else {
-				p.vel.X = -p.walkSpeed
+	if p.ground {
+		switch {
+		case math.Abs(move.X) == 1:
+			p.vel.X += move.X * p.walkSpeed / 20
+			if math.Abs(p.vel.X) > p.walkSpeed {
+				if p.vel.X > 0 {
+					p.vel.X = p.walkSpeed
+				} else {
+					p.vel.X = -p.walkSpeed
+				}
 			}
-		}
-	case math.Abs(move.X) == 2:
-		p.vel.X += move.X * p.runSpeed / 20
-		if math.Abs(p.vel.X) > p.runSpeed {
-			if p.vel.X > 0 {
-				p.vel.X = p.runSpeed
-			} else {
-				p.vel.X = -p.runSpeed
+		case math.Abs(move.X) == 2:
+			p.vel.X += move.X * p.runSpeed / 20
+			if math.Abs(p.vel.X) > p.runSpeed {
+				if p.vel.X > 0 {
+					p.vel.X = p.runSpeed
+				} else {
+					p.vel.X = -p.runSpeed
+				}
 			}
-		}
-	default:
-		if p.ground {
-			p.vel.X /= 1.1
-			if math.Abs(p.vel.X) <= p.runSpeed/20 {
-				p.vel.X = 0
+		default:
+			if p.ground {
+				p.vel.X /= 1.1
+				if math.Abs(p.vel.X) <= p.runSpeed/20 {
+					p.vel.X = 0
+				}
 			}
 		}
 	}
@@ -116,7 +118,8 @@ func (p *Phys) collide(v *pixel.Vec) {
 						p.vel.Y = -p.vel.Y * 0.5
 					}
 					if n.X != 0 {
-						p.vel.X = 0
+						p.vel.X = -p.vel.X * 0.5
+						//						p.vel.X = 0
 					}
 				}
 			}

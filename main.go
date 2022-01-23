@@ -120,7 +120,8 @@ func run() {
 		playerAnims.SetAnim(anim.Name, anim.File, anim.Frames)
 	}
 
-	hero = actor.New(w, playerAnims, playerRect.ResizedMin(pixel.Vec{config.PlayerConfig.Width * 1.25, config.PlayerConfig.Height * 1.25}), config.PlayerConfig.Run, config.PlayerConfig.Walk)
+	hero = actor.New(w, playerAnims, playerRect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
+
 	hero.Move(initialCenter)
 	ctrl.Subscribe(hero)
 

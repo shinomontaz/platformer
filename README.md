@@ -10,7 +10,7 @@ https://youtu.be/ct5y-nLBAYc
 Features ( suppose it can be used as an example due to code simplicity ):
 - Quadtree object data structure used for draw and retrieve a collidable objects
 - TMX support with multyple tileset
-- Basic physics with some errors
+- Physics based on swept AABB ( no tunneling, simple and rather cute )
 - Infinite scrolling background
 - Actor logic and view separation by state pattern
 
@@ -26,7 +26,7 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] infinite scrolling background [b7f02e4](https://github.com/shinomontaz/platformer/commit/b7f02e4e39a7ee3b52e6bfac670fafec2db88d08)
 - [x] complex physics [177923f](https://github.com/shinomontaz/platformer/commit/177923f1fd371e6e4e0cb3e8160be445a302b295)
 - [x] release [v0.5](https://github.com/shinomontaz/platformer/releases/tag/v0.5.0)
-- [ ] speed and impulse + phys fix
+- [] speed and impulse + phys fix
 - [ ] fix attack state ( no anim supported )
 - [ ] enemies v2 ( still stupid AI, x-proximity based )
 - [ ] release v0.6

@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/imdraw"
 	"github.com/lucasb-eyer/go-colorful"
 
 	"platformer/common"
@@ -43,7 +44,7 @@ func (p *Phys) GetVel() *pixel.Vec {
 }
 
 func (p *Phys) Update(dt float64, move *pixel.Vec) {
-	//	oldspeed := p.vel
+	// do speed update by move vec
 	switch {
 	case math.Abs(move.X) == 1:
 		p.vel.X += move.X * p.walkSpeed / 20
@@ -64,9 +65,11 @@ func (p *Phys) Update(dt float64, move *pixel.Vec) {
 			}
 		}
 	default:
-		p.vel.X /= 1.1
-		if math.Abs(p.vel.X) <= p.runSpeed/20 {
-			p.vel.X = 0
+		if p.ground {
+			p.vel.X /= 1.1
+			if math.Abs(p.vel.X) <= p.runSpeed/20 {
+				p.vel.X = 0
+			}
 		}
 	}
 
@@ -79,138 +82,59 @@ func (p *Phys) Update(dt float64, move *pixel.Vec) {
 
 	if p.vel.X != 0 || p.vel.Y != 0 {
 		vec := p.vel.Scaled(dt)
-		p.canmove(&vec)
+		p.collide(&vec) // p.vel and vec can be updated here
 		p.rect = p.rect.Moved(vec)
 	}
-	// jump if on the ground and the player wants to jump
 }
 
-func (p *Phys) canmove(v *pixel.Vec) {
-	res := true
+func (p *Phys) collide(v *pixel.Vec) {
 	p.ground = false
-	//	oldcenter := p.rect.Center()
-	//	moveline := pixel.Line{oldcenter, oldcenter.Add(v)}
-	/*
-		     __              ____
-		....|__| -->  = ....|____| moved
-		     __            ____
-		....|__| <--  = ..|____|.. moved
-	*/
-	// if v.X > 0 {
-	// 	moved = pixel.Rect{p.rect.Max, pixel.Vec{p.rect.Max.X + v.X, p.rect.Max.Y + v.Y}}
-	// } else {
-	// 	moved = pixel.Rect{pixel.Vec{p.rect.Min.X + v.X, p.rect.Min.Y + v.Y}, p.rect.Min}
-	// }
-
-	moved := p.rect.Moved(*v)
-
-	objs := p.qt.Retrieve(moved)
+	broadbox := Broadbox(p.rect, *v)
+	objs := p.qt.Retrieve(broadbox)
+	collisiontimes := []float64{}
 	if len(objs) > 0 { // precise check for each object that can intersects
 		for _, obj := range objs {
-
-			// Handle collision
 			rect := obj.Rect()
-			if !p.rect.Intersects(rect) {
-				continue
-			}
-
-			// intersectionVec := rect.IntersectLine(moveline)
-			// vec := moveline.B.Sub(intersectionVec)
-			// v := &vec
-			// moved = p.rect.Moved(*v)
-
-			if v.Y > 0 {
-				top := p.intersectTop(rect, v)
-				if top > 0 {
-					v.Y -= top
-					res = false
-					moved = moved.Moved(pixel.Vec{0, -top})
-				}
-			} else {
-				bottom := p.intersectBottom(rect, v)
-				if bottom > 0 {
-					v.Y += bottom
-					moved = moved.Moved(pixel.Vec{0, bottom})
+			if Isinbox(rect, broadbox) {
+				if rect.Max.Y == p.rect.Min.Y {
 					p.ground = true
-					res = false
-					p.vel.Y = 0
+					continue
 				}
-			}
-			if v.X < 0 {
-				left := p.intersectLeft(rect, v)
-				if left > 0 {
-					v.X += left
-					res = false
-					panic("!")
+				coltime, n := DoCollision(p.rect, rect, *v) // coltime in [0,1], where 1 means no collision
+				if coltime == 1 {                           // no collision
+					continue
 				}
-			} else {
-				right := p.intersectRight(rect, v)
-				if right > 0 {
-					v.X -= right
-				}
-				res = false
-			}
 
-			if !res {
-				return
+				if n.X == 0 && p.vel.Y == 0 { // here we step on ground, no collision actually
+					p.ground = true
+				} else {
+					collisiontimes = append(collisiontimes, coltime)
+					if n.Y > 0 {
+						p.ground = true
+						p.vel.Y = 0
+					} else if n.Y < 0 {
+						p.vel.Y = -p.vel.Y * 0.5
+					}
+					if n.X != 0 {
+						p.vel.X = 0
+					}
+				}
 			}
 		}
 	}
-}
 
-func (p *Phys) intersectTop(r pixel.Rect, v *pixel.Vec) float64 {
-	moved := p.rect.Moved(*v)
+	if len(collisiontimes) > 0 {
+		mintime := collisiontimes[0]
+		// find minimal collision time
+		for _, ct := range collisiontimes {
+			if mintime > ct {
+				mintime = ct
+			}
+		}
 
-	if moved.Min.Y > r.Max.Y || (moved.Max.X <= r.Min.X || moved.Min.X >= r.Max.X) {
-		return 0
+		v.X *= mintime
+		v.Y *= mintime
 	}
-
-	val := moved.Max.Y - r.Min.Y
-	if val < 0 {
-		val = 0
-	}
-	return val
-}
-
-func (p *Phys) intersectBottom(r pixel.Rect, v *pixel.Vec) float64 {
-	moved := p.rect.Moved(*v)
-
-	if moved.Max.Y < r.Min.Y || (moved.Max.X <= r.Min.X || moved.Min.X >= r.Max.X) {
-		return 0
-	}
-
-	val := r.Max.Y - moved.Min.Y
-	if val < 0 {
-		val = 0
-	}
-	return val
-}
-
-func (p *Phys) intersectLeft(r pixel.Rect, v *pixel.Vec) float64 {
-	moved := p.rect.Moved(*v)
-
-	if moved.Max.X < r.Min.X || (moved.Max.Y <= r.Min.Y || moved.Min.Y >= r.Max.Y) {
-		return 0
-	}
-
-	val := r.Max.X - moved.Min.X
-	if val < 0 {
-		val = 0
-	}
-	return val
-}
-
-func (p *Phys) intersectRight(r pixel.Rect, v *pixel.Vec) float64 {
-	moved := p.rect.Moved(*v)
-
-	if moved.Min.X > r.Max.X || !(moved.Max.Y < r.Min.Y || moved.Min.Y > r.Max.Y) {
-		return 0
-	}
-	val := r.Min.X - moved.Max.X
-	if val < 0 {
-		val = 0
-	}
-	return val
 }
 
 func (p *Phys) Move(v pixel.Vec) {
@@ -222,15 +146,103 @@ func (p *Phys) GetRect() pixel.Rect {
 }
 
 func (p *Phys) Draw(t pixel.Target) {
-	// imd := imdraw.New(nil)
+	imd := imdraw.New(nil)
 
-	// vertices := p.rect.Vertices()
+	vertices := p.rect.Vertices()
 
-	// imd.Color = p.color
-	// for _, v := range vertices {
-	// 	imd.Push(v)
-	// }
-	// imd.Rectangle(1)
+	imd.Color = p.color
+	for _, v := range vertices {
+		imd.Push(v)
+	}
+	imd.Rectangle(1)
 
-	// imd.Draw(t)
+	imd.Draw(t)
+}
+
+// sweptAABB implemented here
+//Box b1, Box b2, float& normalx, float& normaly
+func DoCollision(p, q pixel.Rect, v pixel.Vec) (float64, pixel.Vec) {
+	n := pixel.ZV
+	var xInvEntry, yInvEntry, xInvExit, yInvExit float64
+	if v.X > 0 {
+		xInvEntry = q.Min.X - p.Max.X
+		xInvExit = q.Max.X - p.Min.X
+	} else {
+		xInvEntry = q.Max.X - p.Min.X
+		xInvExit = q.Min.X - p.Max.X
+	}
+
+	if v.Y > 0 {
+		yInvEntry = q.Min.Y - p.Max.Y
+		yInvExit = q.Max.Y - p.Min.Y
+	} else {
+		yInvEntry = q.Max.Y - p.Min.Y
+		yInvExit = q.Min.Y - p.Max.Y
+	}
+
+	var xEntry, yEntry, xExit, yExit float64
+
+	if v.X == 0 {
+		xEntry = math.Inf(-1)
+		xExit = math.Inf(1)
+	} else {
+		xEntry = xInvEntry / v.X
+		xExit = xInvExit / v.X
+	}
+
+	if v.Y == 0 {
+		yEntry = math.Inf(-1)
+		yExit = math.Inf(1)
+	} else {
+		yEntry = yInvEntry / v.Y
+		yExit = yInvExit / v.Y
+	}
+
+	entryTime := math.Max(xEntry, yEntry)
+	exitTime := math.Min(xExit, yExit)
+
+	if entryTime > exitTime || (xEntry < 0 && yEntry < 0) || xEntry > 1 || yEntry > 1 {
+		return 1, n
+	} else {
+		if xEntry > yEntry {
+			if xInvEntry < 0 {
+				n.X = 1
+			} else {
+				n.X = -1
+			}
+		} else {
+			if yInvEntry < 0 {
+				n.Y = 1
+			} else {
+				n.Y = -1
+			}
+		}
+	}
+
+	return entryTime, n
+}
+
+func Isinbox(p, q pixel.Rect) bool {
+	//return !(b1.x + b1.w < b2.x || b1.x > b2.x + b2.w || b1.y + b1.h < b2.y || b1.y > b2.y + b2.h);
+	return !(p.Max.X < q.Min.X || p.Min.X > q.Max.X || p.Max.Y < q.Min.Y || p.Min.Y > q.Max.Y)
+}
+
+func Broadbox(r pixel.Rect, v pixel.Vec) pixel.Rect {
+	var minx, miny, w, h float64
+	if v.X > 0 {
+		minx = r.Min.X
+		w = v.X + r.W()
+	} else {
+		minx = r.Min.X + v.X
+		w = r.W() - v.X
+	}
+	if v.Y > 0 {
+		miny = r.Min.Y
+		h = v.Y + r.H()
+	} else {
+		miny = r.Min.Y + v.Y
+		h = r.H() - v.Y
+	}
+
+	return pixel.R(minx, miny, minx+w, miny+h)
 }

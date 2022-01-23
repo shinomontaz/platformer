@@ -143,6 +143,7 @@ func (a *Actor) Draw(t pixel.Target) {
 		ScaledXY(pixel.ZV, pixel.V(a.dir, 1)).
 		Moved(a.rect.Center()),
 	)
+	//	a.phys.Draw(t)
 }
 
 func (a *Actor) Hit(pos, vec pixel.Vec, power int) {

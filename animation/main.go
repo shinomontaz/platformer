@@ -7,6 +7,12 @@ import (
 	"github.com/faiface/pixel"
 )
 
+var anims map[string]*Anims
+
+func init() {
+	anims = make(map[string]*Anims)
+}
+
 type Anim struct {
 	sheet  pixel.Picture
 	frames []pixel.Rect
@@ -18,6 +24,20 @@ type Anims struct {
 	rect   pixel.Rect
 	sprite *pixel.Sprite
 	m      float64
+}
+
+func Load(cfg AnimatingConfig) {
+	animRect := pixel.R(0, 0, cfg.W(), cfg.H())
+	a := New(animRect, cfg.M())
+	names, files, frames := cfg.Get()
+	for i := 0; i < len(names); i++ {
+		a.SetAnim(names[i], files[i], frames[i])
+	}
+	anims[cfg.N()] = a
+}
+
+func Get(name string) *Anims {
+	return anims[name]
 }
 
 func New(rect pixel.Rect, margin float64) *Anims {

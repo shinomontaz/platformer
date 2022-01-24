@@ -5,6 +5,7 @@ import (
 
 	"github.com/faiface/pixel"
 
+	"platformer/actor"
 	"platformer/common"
 
 	"image/png"
@@ -35,6 +36,7 @@ type World struct {
 	objectTiles map[int]*tmx.DecodedTile
 	phys        map[int]tmx.Object
 	tiles       map[int]*tmx.DecodedTile
+	enemies     []*actor.Actor
 
 	visibleTiles []common.Objecter
 	visibleObjs  []common.Objecter
@@ -56,6 +58,7 @@ func New(source string) *World {
 		objects:      make(map[int]tmx.Object),
 
 		objectTiles: make(map[int]*tmx.DecodedTile),
+		enemies:     make([]*actor.Actor, 0),
 	}
 
 	w.init()
@@ -69,7 +72,14 @@ func (w *World) init() {
 			w.geom = og
 		}
 		if og.Name == "meta" {
-			w.meta = og.Objects[0]
+			for _, o := range og.Objects {
+				if o.Type == "scene" {
+					w.meta = o
+				}
+				if o.Type == "enemy" {
+					w.AddEnemy(o)
+				}
+			}
 		}
 		if og.Name == "scenery" {
 			w.scenery = og
@@ -214,6 +224,18 @@ func (w *World) Data() pixel.Rect {
 	}
 
 	return rect
+}
+
+func (w *World) AddEnemy(meta tmx.Object) {
+	// do something
+	/*
+		playerAnims := animation.New(playerRect, config.PlayerConfig.Margin)
+		for _, anim := range config.PlayerConfig.Anims {
+			playerAnims.SetAnim(anim.Name, anim.File, anim.Frames)
+		}
+
+		hero = actor.New(w, playerAnims, playerRect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
+	*/
 }
 
 func (w *World) Draw(win *pixelgl.Window) {

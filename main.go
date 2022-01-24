@@ -21,6 +21,10 @@ import (
 
 func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
+	// load animations
+	for _, anim := range config.AnimConfig {
+		animation.Load(&anim)
+	}
 }
 
 var (
@@ -115,12 +119,12 @@ func run() {
 	playerRect := pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height)
 	initialCenter = currBounds.Center()
 
-	playerAnims := animation.New(playerRect, config.PlayerConfig.Margin)
-	for _, anim := range config.PlayerConfig.Anims {
-		playerAnims.SetAnim(anim.Name, anim.File, anim.Frames)
-	}
+	// playerAnims := animation.New(playerRect, config.PlayerConfig.Margin)
+	// for _, anim := range config.PlayerConfig.Anims {
+	// 	playerAnims.SetAnim(anim.Name, anim.File, anim.Frames)
+	// }
 
-	hero = actor.New(w, playerAnims, playerRect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
+	hero = actor.New(w, animation.Get("player"), playerRect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
 
 	hero.Move(initialCenter)
 	ctrl.Subscribe(hero)

@@ -6,7 +6,10 @@ import (
 	"github.com/faiface/pixel"
 
 	"platformer/actor"
+	"platformer/ai"
+	"platformer/animation"
 	"platformer/common"
+	"platformer/config"
 
 	"image/png"
 	"os"
@@ -36,7 +39,9 @@ type World struct {
 	objectTiles map[int]*tmx.DecodedTile
 	phys        map[int]tmx.Object
 	tiles       map[int]*tmx.DecodedTile
-	enemies     []*actor.Actor
+
+	enmeta  []tmx.Object
+	enemies []*actor.Actor
 
 	visibleTiles []common.Objecter
 	visibleObjs  []common.Objecter
@@ -58,6 +63,7 @@ func New(source string) *World {
 		objects:      make(map[int]tmx.Object),
 
 		objectTiles: make(map[int]*tmx.DecodedTile),
+		enmeta:      make([]tmx.Object, 0),
 		enemies:     make([]*actor.Actor, 0),
 	}
 
@@ -77,7 +83,8 @@ func (w *World) init() {
 					w.meta = o
 				}
 				if o.Type == "enemy" {
-					w.AddEnemy(o)
+					w.enmeta = append(w.enmeta, o)
+					//					w.AddEnemy(o)
 				}
 			}
 		}
@@ -101,6 +108,13 @@ func (w *World) init() {
 
 	// init tiles QT
 }
+
+func (w *World) InitEnemies() {
+	for _, o := range w.enmeta {
+		w.AddEnemy(o)
+	}
+}
+
 func (w *World) initSets() {
 	batchCounter := 0
 	for _, tileset := range w.tm.Tilesets {
@@ -168,7 +182,6 @@ func (w *World) initPhys() {
 
 func (w *World) initObjs() {
 	for _, o := range w.scenery.Objects {
-		//		gamePos := pixel.V(o.X+o.Width/2.0, w.Height-o.Y+o.Height/2.0)
 		min := pixel.V(
 			float64(o.X),
 			float64(w.Height)-float64(o.Y),
@@ -199,12 +212,15 @@ func (w *World) Update(rect pixel.Rect) {
 	w.visibleObjs = w.qtObjs.Retrieve(rect)
 }
 
-func (w *World) GetQt() *common.Quadtree {
-	return w.qtPhys
+func (w *World) DoEnemies(dt float64) {
+	ai.Update()
+	for _, en := range w.enemies {
+		en.Update(dt)
+	}
 }
 
-func (w *World) SetGravity(g float64) {
-	w.gravity = g
+func (w *World) GetQt() *common.Quadtree {
+	return w.qtPhys
 }
 
 func (w *World) GetGravity() float64 {
@@ -226,16 +242,16 @@ func (w *World) Data() pixel.Rect {
 	return rect
 }
 
-func (w *World) AddEnemy(meta tmx.Object) {
-	// do something
-	/*
-		playerAnims := animation.New(playerRect, config.PlayerConfig.Margin)
-		for _, anim := range config.PlayerConfig.Anims {
-			playerAnims.SetAnim(anim.Name, anim.File, anim.Frames)
-		}
+func (w *World) SetGravity(g float64) {
+	w.gravity = g
+}
 
-		hero = actor.New(w, playerAnims, playerRect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
-	*/
+func (w *World) AddEnemy(meta tmx.Object) {
+	rect := pixel.R(meta.X, w.Height-meta.Y, meta.X+meta.Width, w.Height-meta.Y+meta.Height)
+	enemy := actor.New(w, animation.Get(meta.Name), rect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
+	w.enemies = append(w.enemies, enemy)
+	ai := ai.New()
+	ai.Subscribe(enemy)
 }
 
 func (w *World) Draw(win *pixelgl.Window) {
@@ -283,6 +299,10 @@ func (w *World) Draw(win *pixelgl.Window) {
 
 	for _, batch := range w.batches {
 		batch.Draw(win)
+	}
+
+	for _, e := range w.enemies {
+		e.Draw(win)
 	}
 }
 

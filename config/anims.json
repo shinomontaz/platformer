@@ -74,9 +74,9 @@
     },
     {
         "type": "mummy",
-        "width": 40,
-        "height": 40,
-        "margin": 8,    
+        "width": 48,
+        "height": 48,
+        "margin": 14,    
         "list":  [
         {
             "name": "stand",
@@ -117,8 +117,8 @@
     },
     {
         "type": "deceased",
-        "width": 40,
-        "height": 40,
+        "width": 48,
+        "height": 48,
         "margin": 8,    
         "list":  [
         {
@@ -161,62 +161,62 @@
     {
         "type": "bigbloated",
         "width": 72,
-        "height": 27,
-        "margin": 0,    
+        "height": 72,
+        "margin": 8,    
         "list":  [
         {
             "name": "stand",
-            "file":"assets/enemies/bigbloated/Big_bloated.png",
+            "file":"assets/bosses/bigbloated/Big_bloated.png",
             "frames": [1, 0, 1]
         },
         {
             "name": "walk",
-            "file":"assets/enemies/bigbloated/Big_bloated_walk.png",
+            "file":"assets/bosses/bigbloated/Big_bloated_walk.png",
             "frames": [6, 0, 6]
         },
         {
             "name": "idle",
-            "file":"assets/enemies/bigbloated/Big_bloated_idle.png",
+            "file":"assets/bosses/bigbloated/Big_bloated_idle.png",
             "frames": [4, 0, 4]
         },
         {
             "name": "sneer",
-            "file":"assets/enemies/bigbloated/Big_bloated_sneer.png",
+            "file":"assets/bosses/bigbloated/Big_bloated_sneer.png",
             "frames": [4, 0, 4]
         },
         {
             "name": "attack1",
-            "file":"assets/enemies/bigbloated/Big_bloated_attack1.png",
+            "file":"assets/bosses/bigbloated/Big_bloated_attack1.png",
             "frames": [6, 0, 6]
         },
         {
             "name": "attack2",
-            "file":"assets/enemies/bigbloated/Big_bloated_attack2.png",
+            "file":"assets/bosses/bigbloated/Big_bloated_attack2.png",
             "frames": [6, 0, 6]
         },
         {
             "name": "attack3",
-            "file":"assets/enemies/bigbloated/Big_bloated_attack3.png",
+            "file":"assets/bosses/bigbloated/Big_bloated_attack3.png",
             "frames": [4, 0, 4]
         },
         {
             "name": "attack4",
-            "file":"assets/enemies/bigbloated/Big_bloated_attack4.png",
+            "file":"assets/bosses/bigbloated/Big_bloated_attack4.png",
             "frames": [6, 0, 6]
         },
         {
             "name": "hurt",
-            "file":"assets/enemies/bigbloated/Big_bloated_hurt.png",
+            "file":"assets/bosses/bigbloated/Big_bloated_hurt.png",
             "frames": [2, 0, 2]
         },
         {
             "name": "die",
-            "file":"assets/enemies/bigbloated/Big_bloated_death.png",
+            "file":"assets/bosses/bigbloated/Big_bloated_death.png",
             "frames": [4, 0, 4]
         },
         {
             "name": "dead",
-            "file":"assets/enemies/bigbloated/Big_bloated_death.png",
+            "file":"assets/bosses/bigbloated/Big_bloated_death.png",
             "frames": [4, 3, 4]
         }
         ]

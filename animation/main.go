@@ -50,6 +50,12 @@ func New(rect pixel.Rect, margin float64) *Anims {
 }
 
 func (a *Anims) GetSprite(name string, num int) (pixel.Picture, pixel.Rect) {
+	_, ok := a.items[name]
+	if !ok {
+		name = "idle" // fallback animation
+		num = 1
+	}
+
 	idx := num % len(a.items[name].frames)
 	return a.items[name].sheet, a.items[name].frames[idx]
 }

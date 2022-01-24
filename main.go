@@ -73,6 +73,7 @@ func gameLoop(win *pixelgl.Window) {
 		ctrl.Update() // - here we capture control signals, so actor physics receive input from controller
 		hero.Update(dt)
 		w.Update(currBounds)
+		w.DoEnemies(dt)
 
 		b.Draw(win, pos, camPos)
 
@@ -97,8 +98,9 @@ func gameLoop(win *pixelgl.Window) {
 func run() {
 	w = world.New("my.tmx")
 	w.SetGravity(config.WorldConfig.Gravity)
-	currBounds = w.Data()
+	w.InitEnemies()
 
+	currBounds = w.Data()
 	tolerantBounds = currBounds.Resized(currBounds.Center(), pixel.Vec{currBounds.W() * 0.35, currBounds.H() * 0.35})
 
 	cfg := pixelgl.WindowConfig{
@@ -116,17 +118,9 @@ func run() {
 
 	ctrl = controller.New(win)
 
-	playerRect := pixel.R(0, 0, config.PlayerConfig.Width, config.PlayerConfig.Height)
 	initialCenter = currBounds.Center()
-
-	// playerAnims := animation.New(playerRect, config.PlayerConfig.Margin)
-	// for _, anim := range config.PlayerConfig.Anims {
-	// 	playerAnims.SetAnim(anim.Name, anim.File, anim.Frames)
-	// }
-
+	playerRect := pixel.R(initialCenter.X, initialCenter.Y, initialCenter.X+config.PlayerConfig.Width, initialCenter.Y+config.PlayerConfig.Height)
 	hero = actor.New(w, animation.Get("player"), playerRect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
-
-	hero.Move(initialCenter)
 	ctrl.Subscribe(hero)
 
 	lastPos = hero.GetPos()

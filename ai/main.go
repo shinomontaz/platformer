@@ -1,14 +1,42 @@
-package main
+package ai
 
 import (
 	"github.com/faiface/pixel"
 )
 
+var list []*Ai
+
 type Ai struct {
-	vec    pixel.Vec
-	cmd    int // command action
-	ground bool
-	//	attack *Attack
+	vec  pixel.Vec
+	sbrs map[int]Subscriber
+}
+
+func New() *Ai {
+	a := &Ai{
+		sbrs: make(map[int]Subscriber),
+	}
+	list = append(list, a)
+	return a
+}
+
+func Update() {
+	for _, a := range list {
+		a.Update()
+	}
+}
+
+func (a *Ai) Update() {
+
+}
+
+func (a *Ai) Subscribe(s Subscriber) {
+	a.sbrs[s.GetId()] = s
+}
+
+func (a *Ai) Notify(e int) {
+	for _, s := range a.sbrs {
+		s.Notify(e, a.vec)
+	}
 }
 
 // func (ai *Ai) SetGround(g bool) {

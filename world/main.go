@@ -2,6 +2,7 @@ package world
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/faiface/pixel"
 
@@ -91,7 +92,6 @@ func (w *World) init() {
 		if og.Name == "scenery" {
 			w.scenery = og
 		}
-		// init objects QT
 	}
 	w.Height = float64(w.tm.TileHeight * w.tm.Height)
 	w.Width = float64(w.tm.TileWidth * w.tm.Width)
@@ -101,12 +101,21 @@ func (w *World) init() {
 	w.qtPhys = common.New(1, r)
 	w.qtObjs = common.New(1, r)
 
+	w.initProps()
 	w.initSets()
 	w.initTiles()
 	w.initPhys()
 	w.initObjs()
+}
 
-	// init tiles QT
+func (w *World) initProps() {
+	for _, p := range w.tm.Properties {
+		if p.Name == "gravity" {
+			if g, err := strconv.ParseFloat(p.Value, 64); err == nil {
+				w.gravity = g
+			}
+		}
+	}
 }
 
 func (w *World) InitEnemies() {
@@ -240,10 +249,6 @@ func (w *World) Data() pixel.Rect {
 	}
 
 	return rect
-}
-
-func (w *World) SetGravity(g float64) {
-	w.gravity = g
 }
 
 func (w *World) AddEnemy(meta tmx.Object) {

@@ -26,12 +26,6 @@ type Player struct {
 	Run    float64 `json:"run"`
 }
 
-type World struct {
-	Width   float64 `json:"width"`
-	Heigth  float64 `json:"heigth"`
-	Gravity float64 `json:"gravity"`
-}
-
 type Anims struct {
 	Name   string `json:"type"`
 	Width  int    `json:"width"`

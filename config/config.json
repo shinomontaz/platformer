@@ -5,6 +5,5 @@
     "Width": 640,
     "Height": 480,
     "PlayerCfg": "player.json",
-    "WorldCfg": "world.json",
     "AllAnims": "anims.json"
 }

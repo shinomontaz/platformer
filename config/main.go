@@ -11,7 +11,6 @@ import (
 var (
 	MainConfig   Main
 	PlayerConfig Player
-	WorldConfig  World
 	AnimConfig   []Anims
 )
 
@@ -25,15 +24,6 @@ func init() {
 
 	byteValue, _ = ioutil.ReadAll(fconfig)
 	json.Unmarshal(byteValue, &MainConfig)
-
-	fworld, err := os.Open(fmt.Sprintf("config/%s", MainConfig.WorldCfg))
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fworld.Close()
-
-	byteValue, _ = ioutil.ReadAll(fworld)
-	json.Unmarshal(byteValue, &WorldConfig)
 
 	fanims, err := os.Open(fmt.Sprintf("config/%s", MainConfig.AllAnims))
 	if err != nil {

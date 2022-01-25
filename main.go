@@ -97,7 +97,6 @@ func gameLoop(win *pixelgl.Window) {
 
 func run() {
 	w = world.New("my.tmx")
-	w.SetGravity(config.WorldConfig.Gravity)
 	w.InitEnemies()
 
 	currBounds = w.Data()

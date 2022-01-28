@@ -39,7 +39,7 @@ func (s *Idle) Start() {
 func (s *Idle) Update(dt float64) {
 	s.counter += dt
 	s.animSpriteNum = int(math.Floor(s.counter / 0.2))
-	if s.counter > s.idleLimit {
+	if s.animSpriteNum > 4 {
 		s.a.SetState(STAND)
 	}
 }

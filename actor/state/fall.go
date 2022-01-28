@@ -1,6 +1,8 @@
 package state
 
 import (
+	"platformer/events"
+
 	"github.com/faiface/pixel"
 )
 
@@ -39,14 +41,16 @@ func (s *Fall) Update(dt float64) {
 }
 
 func (s *Fall) Notify(e int, v *pixel.Vec) {
-	// switch e {
-	// case events.WALK:
-	// 	s.a.SetState(WALK)
-	// 	return
-	// case events.RUN:
-	// 	s.a.SetState(RUN)
-	// 	return
-	// }
+	if v.Y == 0 {
+		switch e {
+		case events.WALK:
+			s.a.SetState(WALK)
+			return
+		case events.RUN:
+			s.a.SetState(RUN)
+			return
+		}
+	}
 
 	switch {
 	case v.Y > 0:

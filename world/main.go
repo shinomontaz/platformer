@@ -253,7 +253,10 @@ func (w *World) Data() pixel.Rect {
 
 func (w *World) AddEnemy(meta tmx.Object) {
 	rect := pixel.R(meta.X, w.Height-meta.Y, meta.X+meta.Width, w.Height-meta.Y+meta.Height)
-	enemy := actor.New(w, animation.Get(meta.Name), rect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
+	enemy := actor.New(w, animation.Get(meta.Name), rect,
+		actor.WithRun(config.PlayerConfig.Run),
+		actor.WithWalk(config.PlayerConfig.Walk),
+	)
 	w.enemies = append(w.enemies, enemy)
 	ai := ai.New()
 	ai.Subscribe(enemy)

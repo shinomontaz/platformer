@@ -11,6 +11,7 @@ import (
 	"platformer/animation"
 	"platformer/background"
 	"platformer/config"
+	"platformer/factories"
 	"platformer/world"
 
 	"platformer/controller"
@@ -118,8 +119,14 @@ func run() {
 	ctrl = controller.New(win)
 
 	initialCenter = currBounds.Center()
+	st := factories.NewPlayer()
 	playerRect := pixel.R(initialCenter.X, initialCenter.Y, initialCenter.X+config.PlayerConfig.Width, initialCenter.Y+config.PlayerConfig.Height)
-	hero = actor.New(w, animation.Get("player"), playerRect, config.PlayerConfig.Run, config.PlayerConfig.Walk)
+	hero = actor.New(w, animation.Get("player"), playerRect,
+		actor.WithRun(config.PlayerConfig.Run),
+		actor.WithWalk(config.PlayerConfig.Walk),
+		actor.WithJump(30),
+		actor.WithStatemachine(st),
+	)
 	ctrl.Subscribe(hero)
 
 	lastPos = hero.GetPos()

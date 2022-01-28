@@ -4,6 +4,9 @@ import (
 	"math"
 	"platformer/events"
 
+	"platformer/actor/state"
+	"platformer/actor/statemachine"
+
 	"github.com/faiface/pixel"
 )
 
@@ -30,8 +33,8 @@ type Actor struct {
 	id   int
 	phys Phys
 
-	state  ActorStater
-	states map[int]ActorStater
+	state  Stater
+	states map[int]Stater
 
 	rect pixel.Rect
 
@@ -42,33 +45,71 @@ type Actor struct {
 	vel       pixel.Vec
 	runspeed  float64
 	walkspeed float64
+	grav      float64
+	jumpforce float64
 	isShift   bool
+
+	sm statemachine.Machine
 }
 
-func New(w Worlder, anim Animater, rect pixel.Rect, run, walk float64) *Actor {
-	grav := w.GetGravity()
-	p := NewPhys(rect, run, walk, grav*40, grav)
-	p.SetQt(w.GetQt())
-
+func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
 	a := &Actor{
-		phys:      p,
-		anim:      anim,
-		rect:      rect,
-		dir:       1,
-		runspeed:  run,
-		walkspeed: walk,
-		vel:       pixel.ZV,
+		anim: anim,
+		rect: rect,
+		dir:  1,
+		vel:  pixel.ZV,
+		grav: w.GetGravity(),
 	}
 
-	// init states
-	sFree := NewFreeState(a, anim)
-	sAttack := NewAttackState(a, anim)
-	sDead := NewDeadState(a, anim)
-	sHit := NewHitState(a, anim)
+	for _, opt := range opts {
+		opt(a)
+	}
 
-	a.states = map[int]ActorStater{STATE_FREE: sFree, STATE_ATTACK: sAttack, STATE_DEAD: sDead, STATE_HIT: sHit}
-	a.state = sFree
+	p := NewPhys(rect, a.runspeed, a.grav) // TODO does we really need phys to know run and walk speeds?
+	p.SetQt(w.GetQt())
+	a.phys = p
+
+	a.initStates()
+
 	return a
+}
+
+func (a *Actor) initStates() {
+	// basic states
+
+	sStand := state.New(state.STAND, a, a.anim)
+	sWalk := state.New(state.WALK, a, a.anim)
+	sRun := state.New(state.RUN, a, a.anim)
+	sIdle := state.New(state.IDLE, a, a.anim)
+	sJump := state.New(state.JUMP, a, a.anim)
+	sFall := state.New(state.FALL, a, a.anim)
+	sDead := state.New(state.DEAD, a, a.anim)
+	sHit := state.New(state.HIT, a, a.anim)
+
+	a.states = map[int]Stater{
+		state.STAND: sStand,
+		state.IDLE:  sIdle,
+		state.WALK:  sWalk,
+		state.RUN:   sRun,
+		state.FALL:  sFall,
+		state.JUMP:  sJump,
+		state.HIT:   sHit,
+		state.DEAD:  sDead,
+	}
+
+	// apply state machine
+	for _, st := range a.sm.GetStates() {
+		if _, ok := a.states[st]; !ok {
+			sState := state.New(st, a, a.anim)
+			a.states[st] = sState
+		}
+	}
+
+	a.SetState(state.STAND)
+}
+
+func (a *Actor) GetTransition(state int) statemachine.Transition {
+	return a.sm.GetTransition(state)
 }
 
 func (a *Actor) GetId() int {
@@ -83,15 +124,31 @@ func (a *Actor) Notify(e int, v pixel.Vec) {
 			a.dir = -1
 		}
 		if !a.isShift {
-			v.X *= 2
+			if math.Abs(a.vel.X) < a.runspeed {
+				v.X *= a.runspeed / 20
+			} else {
+				v.X = 0
+			}
+
+		} else {
+			if math.Abs(a.vel.X) < a.walkspeed*19/20 {
+				v.X *= a.walkspeed / 20
+			} else {
+				v.X = 0
+			}
 		}
+	}
+
+	if v.Y > 0 {
+		v.Y *= a.grav * a.jumpforce
 	}
 
 	if e == events.SHIFT {
 		a.isShift = !a.isShift
 	}
 
-	a.state.Notify(e, &v)
+	a.state.Notify(e, &a.vel)
+
 	a.vec = v
 }
 
@@ -105,7 +162,7 @@ func (a *Actor) Update(dt float64) {
 	var event int
 	if math.Abs(newspeed.X) <= a.runspeed && math.Abs(newspeed.X) > a.walkspeed {
 		event = events.RUN
-	} else if (math.Abs(a.vel.X) > a.walkspeed && math.Abs(newspeed.X) <= a.walkspeed) || (a.vel.X == 0 && math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed) {
+	} else if (math.Abs(a.vel.X) >= a.walkspeed && math.Abs(newspeed.X) <= a.walkspeed) || (a.vel.X == 0 && math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed) {
 		event = events.WALK
 	}
 	a.state.Notify(event, newspeed)

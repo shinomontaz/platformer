@@ -22,17 +22,10 @@ type Worlder interface {
 	GetQt() *common.Quadtree // temporary solution, we will check collision in the world ?
 }
 
-type ActorStater interface {
+type Stater interface {
 	GetId() int
 	Start()
 	Update(dt float64)
 	Notify(e int, v *pixel.Vec)
 	GetSprite() *pixel.Sprite
-}
-
-type AnimStater interface {
-	GetId() int
-	Start()
-	Update(dt float64)
-	Notify(e int)
 }

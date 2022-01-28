@@ -1,4 +1,4 @@
-package actor
+package state
 
 import (
 	"fmt"
@@ -8,8 +8,8 @@ import (
 	"github.com/faiface/pixel"
 )
 
-type AttackState struct {
-	CommonState
+type Attack struct {
+	Common
 	time          float64
 	idleLimit     float64
 	attackidx     int
@@ -17,12 +17,13 @@ type AttackState struct {
 	sprite        *pixel.Sprite
 }
 
-func NewAttackState(a *Actor, an Animater) *AttackState {
-	fs := &AttackState{
-		CommonState: CommonState{
-			id:    STATE_ATTACK,
+func NewAttack(a Actor, an Animater) *Attack {
+	fs := &Attack{
+		Common: Common{
+			id:    ATTACK,
 			a:     a,
 			anims: an,
+			trs:   a.GetTransition(ATTACK),
 		},
 		idleLimit: 0.5, // seconds before idle
 	}
@@ -30,18 +31,20 @@ func NewAttackState(a *Actor, an Animater) *AttackState {
 	return fs
 }
 
-func (s *AttackState) Start() {
+func (s *Attack) Start() {
 	s.time = 0.0
 	s.attackidx = rand.Intn(2) + 1
 }
 
-func (s *AttackState) Notify(e int, v *pixel.Vec) {
+func (s *Attack) Notify(e int, v *pixel.Vec) {
 	// here we don't care of any controller event
+	s.checkTransitions(e)
 }
 
-func (s *AttackState) Update(dt float64) {
+func (s *Attack) Update(dt float64) {
 	if s.time > s.idleLimit {
-		s.a.SetState(STATE_FREE)
+		// TODO: return to specific "free" where actual state will be detected
+		s.a.SetState(STAND)
 		return
 	}
 
@@ -51,7 +54,7 @@ func (s *AttackState) Update(dt float64) {
 	//	s.pc.SetCmd(STRIKE)
 }
 
-func (s *AttackState) GetSprite() *pixel.Sprite {
+func (s *Attack) GetSprite() *pixel.Sprite {
 	if s.sprite == nil {
 		s.sprite = pixel.NewSprite(nil, pixel.Rect{})
 	}

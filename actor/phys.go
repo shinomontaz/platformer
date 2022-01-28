@@ -12,26 +12,22 @@ import (
 )
 
 type Phys struct {
-	rect      pixel.Rect
-	vel       pixel.Vec
-	runSpeed  float64
-	walkSpeed float64
-	jumpSpeed float64
-	gravity   float64
-	ground    bool
-	color     color.Color
-	qt        *common.Quadtree
+	rect     pixel.Rect
+	vel      pixel.Vec
+	maxspeed float64
+	gravity  float64
+	ground   bool
+	color    color.Color
+	qt       *common.Quadtree
 }
 
-func NewPhys(r pixel.Rect, run, walk, jump, gravity float64) Phys {
+func NewPhys(r pixel.Rect, run, gravity float64) Phys {
 	return Phys{
-		rect:      r,
-		color:     colorful.HappyColor(),
-		ground:    false,
-		runSpeed:  run,
-		walkSpeed: walk,
-		jumpSpeed: jump,
-		gravity:   gravity,
+		rect:     r,
+		color:    colorful.HappyColor(),
+		ground:   false,
+		maxspeed: run,
+		gravity:  gravity,
 	}
 }
 
@@ -46,31 +42,12 @@ func (p *Phys) GetVel() *pixel.Vec {
 func (p *Phys) Update(dt float64, move *pixel.Vec) {
 	// do speed update by move vec
 	if p.ground {
-		switch {
-		case math.Abs(move.X) == 1:
-			p.vel.X += move.X * p.walkSpeed / 20
-			if math.Abs(p.vel.X) > p.walkSpeed {
-				if p.vel.X > 0 {
-					p.vel.X = p.walkSpeed
-				} else {
-					p.vel.X = -p.walkSpeed
-				}
-			}
-		case math.Abs(move.X) == 2:
-			p.vel.X += move.X * p.runSpeed / 20
-			if math.Abs(p.vel.X) > p.runSpeed {
-				if p.vel.X > 0 {
-					p.vel.X = p.runSpeed
-				} else {
-					p.vel.X = -p.runSpeed
-				}
-			}
-		default:
-			if p.ground {
-				p.vel.X /= 1.1
-				if math.Abs(p.vel.X) <= p.runSpeed/20 {
-					p.vel.X = 0
-				}
+		if move.X != 0 {
+			p.vel.X += move.X
+		} else {
+			p.vel.X /= 1.1
+			if math.Abs(p.vel.X) <= p.maxspeed/20 {
+				p.vel.X = 0
 			}
 		}
 	}
@@ -79,7 +56,7 @@ func (p *Phys) Update(dt float64, move *pixel.Vec) {
 		p.vel.Y -= p.gravity
 	}
 	if p.ground && move.Y > 0 {
-		p.vel.Y = p.jumpSpeed
+		p.vel.Y = move.Y
 	}
 
 	if p.vel.X != 0 || p.vel.Y != 0 {

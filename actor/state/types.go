@@ -16,6 +16,10 @@ const (
 	HIT
 	DEAD
 	ATTACK
+	MELEE
+	MELEEMOVE
+	RANGED
+	CAST
 )
 
 type Stater interface {
@@ -33,5 +37,6 @@ type Actor interface {
 
 type Animater interface {
 	GetSprite(name string, idx int) (pixel.Picture, pixel.Rect)
-	GetLen(name string) int
+	GetGroupSprite(group, name string, idx int) (pixel.Picture, pixel.Rect)
+	GetGroupLen(name string) int
 }

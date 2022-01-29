@@ -26,10 +26,16 @@ type Player struct {
 	Run    float64 `json:"run"`
 }
 
+type AnGroup struct {
+	Name string `json:"name"`
+	List []Anim `json:"group"`
+}
+
 type Anims struct {
-	Name   string `json:"type"`
-	Width  int    `json:"width"`
-	Height int    `json:"height"`
-	Margin int    `json:"margin"`
-	List   []Anim `json:"list"`
+	Name   string    `json:"type"`
+	Width  int       `json:"width"`
+	Height int       `json:"height"`
+	Margin int       `json:"margin"`
+	List   []Anim    `json:"list"`
+	Groups []AnGroup `json:"groups"`
 }

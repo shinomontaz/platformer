@@ -29,6 +29,7 @@ func NewWalk(a Actor, an Animater) *Walk {
 }
 
 func (s *Walk) Start() {
+	s.counter = 0
 }
 
 func (s *Walk) Update(dt float64) {

@@ -21,9 +21,10 @@ type Anim struct {
 
 type Anims struct {
 	items  map[string]*Anim
+	groups map[string]map[string]*Anim
 	rect   pixel.Rect
 	sprite *pixel.Sprite
-	m      float64
+	m      float64 // margin
 }
 
 func Load(cfg AnimatingConfig) {
@@ -31,8 +32,25 @@ func Load(cfg AnimatingConfig) {
 	a := New(animRect, cfg.M())
 	names, files, frames := cfg.Get()
 	for i := 0; i < len(names); i++ {
-		a.SetAnim(names[i], files[i], frames[i])
+		an, err := a.PrepareAnim(names[i], files[i], frames[i])
+		if err == nil {
+			a.items[names[i]] = an
+		}
 	}
+
+	grnames, grfiles, grframes := cfg.GetGroups()
+	for grname, animnames := range grnames {
+		if _, ok := a.groups[grname]; !ok {
+			a.groups[grname] = make(map[string]*Anim)
+			for i := 0; i < len(animnames); i++ {
+				an, err := a.PrepareAnim(animnames[i], grfiles[grname][i], grframes[grname][i])
+				if err == nil {
+					a.groups[grname][animnames[i]] = an
+				}
+			}
+		}
+	}
+
 	anims[cfg.N()] = a
 }
 
@@ -40,13 +58,28 @@ func Get(name string) *Anims {
 	return anims[name]
 }
 
+func GetGroup(name string) *Anims {
+	return anims[name]
+}
+
 func New(rect pixel.Rect, margin float64) *Anims {
 	return &Anims{
 		rect:   rect,
 		items:  make(map[string]*Anim),
+		groups: make(map[string]map[string]*Anim),
 		sprite: pixel.NewSprite(nil, pixel.Rect{}),
 		m:      margin,
 	}
+}
+
+func (a *Anims) GetGroupSprite(group, name string, num int) (pixel.Picture, pixel.Rect) {
+	_, ok := a.groups[group]
+	if !ok {
+		return a.GetSprite("idle", num)
+	}
+
+	idx := num % len(a.groups[group][name].frames)
+	return a.groups[group][name].sheet, a.groups[group][name].frames[idx]
 }
 
 func (a *Anims) GetSprite(name string, num int) (pixel.Picture, pixel.Rect) {
@@ -64,10 +97,14 @@ func (a *Anims) GetLen(name string) int {
 	return a.items[name].GetLen()
 }
 
-func (a *Anims) SetAnim(name, file string, frames []int) error {
+func (a *Anims) GetGroupLen(name string) int {
+	return len(a.groups[name])
+}
+
+func (a *Anims) PrepareAnim(name, file string, frames []int) (*Anim, error) {
 	spritesheet, err := loadPicture(file)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	frs := make([]pixel.Rect, 0, frames[0])
@@ -83,13 +120,13 @@ func (a *Anims) SetAnim(name, file string, frames []int) error {
 		x += a.m
 	}
 
-	a.items[name] = &Anim{
+	//	a.items[name] =
+
+	return &Anim{
 		sheet:  spritesheet,
 		frames: frs[frames[1]:frames[2]],
 		sprite: pixel.NewSprite(nil, pixel.Rect{}),
-	}
-
-	return nil
+	}, nil
 }
 
 func (a *Anim) GetFrames() []pixel.Rect {

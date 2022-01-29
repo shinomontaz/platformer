@@ -73,3 +73,24 @@ func (a *Anims) Get() ([]string, []string, [][]int) {
 
 	return names, files, frames
 }
+
+func (a *Anims) GetGroups() (map[string][]string, map[string][]string, map[string][][]int) {
+	group_names := make(map[string][]string)
+	group_files := make(map[string][]string)
+	group_frames := make(map[string][][]int)
+
+	for _, gr := range a.Groups {
+		if _, ok := group_names[gr.Name]; !ok {
+			group_names[gr.Name] = make([]string, 0)
+			group_files[gr.Name] = make([]string, 0)
+			group_frames[gr.Name] = make([][]int, 0)
+		}
+		for _, an := range gr.List {
+			group_names[gr.Name] = append(group_names[gr.Name], an.Name)
+			group_files[gr.Name] = append(group_files[gr.Name], an.File)
+			group_frames[gr.Name] = append(group_frames[gr.Name], an.Frames)
+		}
+	}
+
+	return group_names, group_files, group_frames
+}

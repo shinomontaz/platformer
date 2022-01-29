@@ -1,25 +1,23 @@
 package state
 
 import (
-	"fmt"
 	"math"
-	"math/rand"
 
 	"github.com/faiface/pixel"
 )
 
-type Attack struct {
+type Meleemove struct {
 	Common
 	time          float64
 	idleLimit     float64
 	attackidx     int
 	animSpriteNum int
 	sprite        *pixel.Sprite
-	variants      int
+	vel           float64
 }
 
-func NewAttack(a Actor, an Animater) *Attack {
-	fs := &Attack{
+func NewMeleemove(a Actor, an Animater) *Meleemove {
+	fs := &Meleemove{
 		Common: Common{
 			id:    ATTACK,
 			a:     a,
@@ -27,29 +25,30 @@ func NewAttack(a Actor, an Animater) *Attack {
 			trs:   a.GetTransition(ATTACK),
 		},
 		idleLimit: 0.5, // seconds before idle
-		variants:  an.GetGroupLen("melee"),
 	}
 
 	return fs
 }
 
-func (s *Attack) Start() {
+func (s *Meleemove) Start() {
 	s.time = 0.0
-	s.attackidx = 1
-	if s.variants > 1 {
-		s.attackidx += rand.Intn(s.variants)
-	}
+	s.attackidx = 3
 }
 
-func (s *Attack) Notify(e int, v *pixel.Vec) {
+func (s *Meleemove) Notify(e int, v *pixel.Vec) {
 	// here we don't care of any controller event
+	s.vel = v.Len()
 	s.checkTransitions(e)
 }
 
-func (s *Attack) Update(dt float64) {
+func (s *Meleemove) Update(dt float64) {
 	if s.time > s.idleLimit {
 		// TODO: return to specific "free" where actual state will be detected
-		s.a.SetState(STAND)
+		if s.vel > 0 {
+			s.a.SetState(WALK)
+		} else {
+			s.a.SetState(STAND)
+		}
 		return
 	}
 
@@ -59,11 +58,11 @@ func (s *Attack) Update(dt float64) {
 	//	s.pc.SetCmd(STRIKE)
 }
 
-func (s *Attack) GetSprite() *pixel.Sprite {
+func (s *Meleemove) GetSprite() *pixel.Sprite {
 	if s.sprite == nil {
 		s.sprite = pixel.NewSprite(nil, pixel.Rect{})
 	}
-	pic, rect := s.anims.GetGroupSprite("melee", fmt.Sprintf("attack%d", s.attackidx), s.animSpriteNum)
+	pic, rect := s.anims.GetSprite("meleemove", s.animSpriteNum)
 	s.sprite.Set(pic, rect)
 
 	return s.sprite

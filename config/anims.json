@@ -41,21 +41,6 @@
             "frames": [4, 0, 4]
         },
         {
-            "name": "attack1",
-            "file":"assets/characters/graverobber/GraveRobber_attack1.png",
-            "frames": [6, 0, 6]
-        },
-        {
-            "name": "attack2",
-            "file":"assets/characters/graverobber/GraveRobber_attack2.png",
-            "frames": [6, 0, 6]
-        },
-        {
-            "name": "attack3",
-            "file":"assets/characters/graverobber/GraveRobber_attack3.png",
-            "frames": [6, 0, 6]
-        },
-        {
             "name": "hurt",
             "file":"assets/characters/graverobber/GraveRobber_hurt.png",
             "frames": [3, 0, 3]
@@ -69,7 +54,29 @@
             "name": "dead",
             "file":"assets/characters/graverobber/GraveRobber_death.png",
             "frames": [6, 5, 6]
+        },
+        {
+            "name": "meleemove",
+            "file":"assets/characters/graverobber/GraveRobber_attack3.png",
+            "frames": [6, 0, 6]
         }
+        ],
+        "groups": [
+            {
+            "name": "melee",
+            "group": [
+                {
+                    "name": "attack1",
+                    "file":"assets/characters/graverobber/GraveRobber_attack1.png",
+                    "frames": [6, 0, 6]
+                },
+                {
+                    "name": "attack2",
+                    "file":"assets/characters/graverobber/GraveRobber_attack2.png",
+                    "frames": [6, 0, 6]
+                }
+                ]
+            }
         ]
     },
     {
@@ -94,11 +101,6 @@
             "frames": [4, 0, 4]
         },
         {
-            "name": "attack1",
-            "file":"assets/enemies/mummy/Mummy_attack1.png",
-            "frames": [6, 0, 6]
-        },
-        {
             "name": "hurt",
             "file":"assets/enemies/mummy/Mummy_hurt.png",
             "frames": [2, 0, 2]
@@ -113,6 +115,18 @@
             "file":"assets/enemies/mummy/Mummy_death.png",
             "frames": [6, 5, 6]
         }
+        ],
+        "groups": [
+            {
+            "name": "melee",
+            "group": [
+                {
+                    "name": "attack1",
+                    "file":"assets/enemies/mummy/Mummy_attack1.png",
+                    "frames": [6, 0, 6]
+                }        
+            ]
+            }
         ]
     },
     {
@@ -137,11 +151,6 @@
             "frames": [4, 0, 4]
         },
         {
-            "name": "attack1",
-            "file":"assets/enemies/deceased/Deceased_attack1.png",
-            "frames": [6, 0, 6]
-        },
-        {
             "name": "hurt",
             "file":"assets/enemies/deceased/Deceased_hurt.png",
             "frames": [2, 0, 2]
@@ -156,6 +165,18 @@
             "file":"assets/enemies/deceased/Deceased_death.png",
             "frames": [6, 5, 6]
         }
+        ],
+        "groups": [
+            {
+            "name": "melee",
+            "group": [
+                {
+                    "name": "attack1",
+                    "file":"assets/enemies/deceased/Deceased_attack1.png",
+                    "frames": [6, 0, 6]
+                }              
+            ]
+            }
         ]
     },
     {
@@ -185,26 +206,6 @@
             "frames": [4, 0, 4]
         },
         {
-            "name": "attack1",
-            "file":"assets/bosses/bigbloated/Big_bloated_attack1.png",
-            "frames": [6, 0, 6]
-        },
-        {
-            "name": "attack2",
-            "file":"assets/bosses/bigbloated/Big_bloated_attack2.png",
-            "frames": [6, 0, 6]
-        },
-        {
-            "name": "attack3",
-            "file":"assets/bosses/bigbloated/Big_bloated_attack3.png",
-            "frames": [4, 0, 4]
-        },
-        {
-            "name": "attack4",
-            "file":"assets/bosses/bigbloated/Big_bloated_attack4.png",
-            "frames": [6, 0, 6]
-        },
-        {
             "name": "hurt",
             "file":"assets/bosses/bigbloated/Big_bloated_hurt.png",
             "frames": [2, 0, 2]
@@ -219,6 +220,38 @@
             "file":"assets/bosses/bigbloated/Big_bloated_death.png",
             "frames": [4, 3, 4]
         }
+        ],
+        "groups": [
+            {
+            "name": "melee",
+            "group": [
+                {
+                    "name": "attack3",
+                    "file":"assets/bosses/bigbloated/Big_bloated_attack3.png",
+                    "frames": [4, 0, 4]
+                },
+                {
+                    "name": "attack4",
+                    "file":"assets/bosses/bigbloated/Big_bloated_attack4.png",
+                    "frames": [6, 0, 6]
+                }
+            ]
+            },
+            {
+                "name": "ranged",
+                "group": [
+                    {
+                        "name": "attack1",
+                        "file":"assets/bosses/bigbloated/Big_bloated_attack1.png",
+                        "frames": [6, 0, 6]
+                    },
+                    {
+                        "name": "attack2",
+                        "file":"assets/bosses/bigbloated/Big_bloated_attack2.png",
+                        "frames": [6, 0, 6]
+                    }
+                ]
+                }
         ]
     }
 ]

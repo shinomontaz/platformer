@@ -2,9 +2,9 @@
 Writing a strategy game ends with a platformer.
 
 ---
-Demo:
-https://youtu.be/ct5y-nLBAYc
-
+Demo 
+v0.5: https://youtu.be/ct5y-nLBAYc
+v0.6: https://youtu.be/0A-ymLfqyKA
 ---
 
 Features ( suppose it can be used as an example due to code simplicity ):

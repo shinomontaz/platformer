@@ -81,9 +81,9 @@
     },
     {
         "type": "mummy",
-        "width": 48,
-        "height": 48,
-        "margin": 14,    
+        "width": 40,
+        "height": 40,
+        "margin": 8,    
         "list":  [
         {
             "name": "stand",
@@ -122,7 +122,7 @@
             "group": [
                 {
                     "name": "attack1",
-                    "file":"assets/enemies/mummy/Mummy_attack1.png",
+                    "file":"assets/enemies/mummy/Mummy_attack.png",
                     "frames": [6, 0, 6]
                 }        
             ]
@@ -131,8 +131,8 @@
     },
     {
         "type": "deceased",
-        "width": 48,
-        "height": 48,
+        "width": 40,
+        "height": 40,
         "margin": 8,    
         "list":  [
         {
@@ -164,26 +164,19 @@
             "name": "dead",
             "file":"assets/enemies/deceased/Deceased_death.png",
             "frames": [6, 5, 6]
+        },
+        {
+            "name": "ranged",
+            "file":"assets/enemies/deceased/Deceased_attack.png",
+            "frames": [4, 0, 4]
         }
-        ],
-        "groups": [
-            {
-            "name": "melee",
-            "group": [
-                {
-                    "name": "attack1",
-                    "file":"assets/enemies/deceased/Deceased_attack1.png",
-                    "frames": [6, 0, 6]
-                }              
-            ]
-            }
         ]
     },
     {
         "type": "bigbloated",
         "width": 72,
         "height": 72,
-        "margin": 8,    
+        "margin": 0,
         "list":  [
         {
             "name": "stand",

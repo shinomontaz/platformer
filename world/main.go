@@ -1,7 +1,6 @@
 package world
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/faiface/pixel"
@@ -11,9 +10,6 @@ import (
 	"platformer/animation"
 	"platformer/common"
 	"platformer/config"
-
-	"image/png"
-	"os"
 
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/salviati/go-tmx/tmx"
@@ -41,11 +37,16 @@ type World struct {
 	phys        map[int]tmx.Object
 	tiles       map[int]*tmx.DecodedTile
 
-	enmeta  []tmx.Object
-	enemies []*actor.Actor
+	viewport pixel.Rect
+	lastpos  pixel.Vec
+	enmeta   []tmx.Object
+	enemies  []*actor.Actor
+	hero     *actor.Actor
 
 	visibleTiles []common.Objecter
 	visibleObjs  []common.Objecter
+
+	alerts []Alert
 }
 
 func New(source string) *World {
@@ -85,7 +86,6 @@ func (w *World) init() {
 				}
 				if o.Type == "enemy" {
 					w.enmeta = append(w.enmeta, o)
-					//					w.AddEnemy(o)
 				}
 			}
 		}
@@ -216,16 +216,20 @@ func (w *World) initObjs() {
 	}
 }
 
-func (w *World) Update(rect pixel.Rect) {
+func (w *World) Update(rect pixel.Rect, dt float64) {
 	w.visibleTiles = w.qtTile.Retrieve(rect)
 	w.visibleObjs = w.qtObjs.Retrieve(rect)
-}
 
-func (w *World) DoEnemies(dt float64) {
+	if w.hero != nil {
+		w.hero.Update(dt)
+	}
+
 	ai.Update()
 	for _, en := range w.enemies {
 		en.Update(dt)
 	}
+
+	updateAlerts(dt)
 }
 
 func (w *World) GetQt() *common.Quadtree {
@@ -251,15 +255,41 @@ func (w *World) Data() pixel.Rect {
 	return rect
 }
 
+func (w *World) AddHero(h *actor.Actor) {
+	w.hero = h
+}
+
+func (w *World) GetHero() pixel.Vec {
+	return w.hero.GetPos()
+}
+
+func (w *World) IsSee(from, to pixel.Vec) bool {
+	box := Box(from, to) // create broadbox
+	objs := w.qtPhys.Retrieve(box)
+	line := pixel.L(from, to)
+	for _, o := range objs { // check collision for line from -> to against physic layer
+		if len(o.R.IntersectionPoints(line)) > 0 {
+			return false
+		}
+	}
+
+	return true
+}
+
 func (w *World) AddEnemy(meta tmx.Object) {
 	rect := pixel.R(meta.X, w.Height-meta.Y, meta.X+meta.Width, w.Height-meta.Y+meta.Height)
 	enemy := actor.New(w, animation.Get(meta.Name), rect,
 		actor.WithRun(config.PlayerConfig.Run),
 		actor.WithWalk(config.PlayerConfig.Walk),
+		actor.WithAnimDir(-1.0),
 	)
+	ai.New(enemy, w)
 	w.enemies = append(w.enemies, enemy)
-	ai := ai.New()
-	ai.Subscribe(enemy)
+}
+
+func (w *World) AddAlert(pos pixel.Vec, force float64) {
+	// do nothing for now
+	addAlert(pos, force)
 }
 
 func (w *World) Draw(win *pixelgl.Window) {
@@ -308,38 +338,11 @@ func (w *World) Draw(win *pixelgl.Window) {
 	for _, batch := range w.batches {
 		batch.Draw(win)
 	}
-
 	for _, e := range w.enemies {
 		e.Draw(win)
 	}
-}
-
-func tileIDToCoord(tID int, numColumns int, numRows int) (x int, y int) {
-	x = tID % numColumns
-	y = numRows - (tID / numColumns) - 1
-	return
-}
-
-func indexToGamePos(idx int, width int, height int) pixel.Vec {
-	gamePos := pixel.V(
-		float64(idx%width),
-		float64(height)-float64(idx/width)-1,
-	)
-	return gamePos
-}
-
-func loadSprite(path string) (*pixel.Sprite, *pixel.PictureData) {
-	f, err := os.Open(path)
-	if err != nil {
-		fmt.Println(path)
-		panic(err)
+	drawAlerts(win)
+	if w.hero != nil {
+		w.hero.Draw(win)
 	}
-
-	img, err := png.Decode(f)
-	if err != nil {
-		panic(err)
-	}
-
-	pd := pixel.PictureDataFromImage(img)
-	return pixel.NewSprite(pd, pd.Bounds()), pd
 }

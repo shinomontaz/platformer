@@ -64,7 +64,7 @@ func gameLoop(win *pixelgl.Window) {
 		deltaVec := lastPos.To(pos)
 		//		if !tolerantBounds.Contains(pos) {
 		camPos = pixel.Lerp(camPos, initialCenter.Sub(pos).Sub(pixel.V(0, 150)), 1-math.Pow(1.0/128, dt)) // standart with moving cam slightly down
-		tolerantBounds = tolerantBounds.Moved(deltaVec)
+		//		tolerantBounds = tolerantBounds.Moved(deltaVec)
 		//		}
 		cam := pixel.IM.Moved(camPos)
 
@@ -72,14 +72,10 @@ func gameLoop(win *pixelgl.Window) {
 		currBounds = currBounds.Moved(deltaVec)
 
 		ctrl.Update() // - here we capture control signals, so actor physics receive input from controller
-		hero.Update(dt)
-		w.Update(currBounds)
-		w.DoEnemies(dt)
+		w.Update(currBounds, dt)
 
 		b.Draw(win, pos, camPos)
-
 		w.Draw(win)
-		hero.Draw(win)
 
 		lastPos = pos
 		win.Update()
@@ -128,6 +124,7 @@ func run() {
 		actor.WithStatemachine(st),
 	)
 	ctrl.Subscribe(hero)
+	w.AddHero(hero)
 
 	lastPos = hero.GetPos()
 	b = background.New(lastPos, currBounds.Moved(pixel.Vec{0, 100}), "assets/gamebackground.png")

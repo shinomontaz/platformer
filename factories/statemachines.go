@@ -16,6 +16,11 @@ func NewPlayer() statemachine.Machine {
 			events.CTRL: state.MELEE,
 		},
 	})
+	m.Set(state.IDLE, statemachine.Transition{
+		List: map[int]int{
+			events.CTRL: state.MELEE,
+		},
+	})
 	m.Set(state.WALK, statemachine.Transition{
 		List: map[int]int{
 			events.CTRL: state.MELEEMOVE,

@@ -1,22 +1,43 @@
 package ai
 
 import (
-	"github.com/faiface/pixel"
+	"platformer/events"
 )
 
 var list []*Ai
 
 type Ai struct {
-	vec  pixel.Vec
-	sbrs map[int]Subscriber
+	obj    Manageder
+	w      Worlder
+	state  Stater
+	states map[int]Stater
 }
 
-func New() *Ai {
+func New(obj Manageder, w Worlder) *Ai {
 	a := &Ai{
-		sbrs: make(map[int]Subscriber),
+		obj:    obj,
+		w:      w,
+		states: make(map[int]Stater),
 	}
+	a.initStates()
+	a.Notify(events.SHIFT)
 	list = append(list, a)
 	return a
+}
+
+func (ai *Ai) initStates() {
+	sIdle := NewIdle(ai, ai.w)
+	ai.states[IDLE] = sIdle
+
+	sAttack := NewAttack(ai, ai.w)
+	ai.states[ATTACK] = sAttack
+
+	ai.SetState(IDLE)
+}
+
+func (ai *Ai) SetState(state int) {
+	ai.state = ai.states[state]
+	ai.state.Start()
 }
 
 func Update() {
@@ -26,17 +47,11 @@ func Update() {
 }
 
 func (a *Ai) Update() {
-
-}
-
-func (a *Ai) Subscribe(s Subscriber) {
-	a.sbrs[s.GetId()] = s
+	a.state.Update(0.0)
 }
 
 func (a *Ai) Notify(e int) {
-	for _, s := range a.sbrs {
-		s.Notify(e, a.vec)
-	}
+	a.obj.Notify(e, a.state.GetVec())
 }
 
 // func (ai *Ai) SetGround(g bool) {

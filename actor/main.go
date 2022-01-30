@@ -38,6 +38,7 @@ type Actor struct {
 
 	rect pixel.Rect
 
+	animdir   float64
 	anim      Animater
 	sprite    *pixel.Sprite
 	dir       float64
@@ -54,11 +55,12 @@ type Actor struct {
 
 func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
 	a := &Actor{
-		anim: anim,
-		rect: rect,
-		dir:  1,
-		vel:  pixel.ZV,
-		grav: w.GetGravity(),
+		anim:    anim,
+		rect:    rect,
+		dir:     1,
+		animdir: 1,
+		vel:     pixel.ZV,
+		grav:    w.GetGravity(),
 	}
 
 	for _, opt := range opts {
@@ -177,6 +179,10 @@ func (a *Actor) SetState(id int) {
 	a.state.Start()
 }
 
+func (a *Actor) GetDir() int {
+	return int(a.dir)
+}
+
 func (a *Actor) Draw(t pixel.Target) {
 	a.sprite = a.state.GetSprite()
 	drawrect := a.rect.ResizedMin(pixel.Vec{a.rect.W() * 1.25, a.rect.H() * 1.25})
@@ -185,7 +191,7 @@ func (a *Actor) Draw(t pixel.Target) {
 			drawrect.W()/a.sprite.Frame().W(),
 			drawrect.H()/a.sprite.Frame().H(),
 		)).
-		ScaledXY(pixel.ZV, pixel.V(a.dir, 1)).
+		ScaledXY(pixel.ZV, pixel.V(a.animdir*a.dir, 1)).
 		Moved(drawrect.Center()),
 	)
 	//	a.phys.Draw(t)

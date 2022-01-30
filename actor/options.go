@@ -29,3 +29,9 @@ func WithStatemachine(sm statemachine.Machine) Option {
 		a.sm = sm
 	}
 }
+
+func WithAnimDir(animdir float64) Option {
+	return func(a *Actor) {
+		a.animdir = animdir
+	}
+}

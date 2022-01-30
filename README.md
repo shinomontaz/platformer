@@ -28,7 +28,7 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] release [v0.5](https://github.com/shinomontaz/platformer/releases/tag/v0.5.0)
 - [x] speed and impulse + phys fix [8d23525b](https://github.com/shinomontaz/platformer/commit/8d23525bc50f5c9711592c528ab755570c03714d)
 - [x] fix attack state ( no anim supported ) [9f476d90](https://github.com/shinomontaz/platformer/commit/9f476d9012ce9a3f1dcd1c4046164608adc781e6)
-- [x] enemies v2 ( still stupid AI, x-proximity based )
+- [x] enemies v2 ( still stupid AI, x-proximity based ) [232086d0](https://github.com/shinomontaz/platformer/commit/232086d07d1cc6ded87198fddb02b2b8f6ba696c)
 - [x] release v0.6 [v0.6](https://github.com/shinomontaz/platformer/releases/tag/v0.6.0)
 - [ ] characteristics and some UI
 - [ ] hit and strike

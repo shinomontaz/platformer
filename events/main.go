@@ -8,4 +8,5 @@ const (
 	WALK
 	RUN
 	ALERT
+	DIE
 )

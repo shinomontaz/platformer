@@ -26,6 +26,7 @@ func New(obj Manageder, w Worlder) *Ai {
 	a.initStates()
 	list[obj] = a
 
+	obj.SetAi(a)
 	//	list = append(list, a)
 	return a
 }

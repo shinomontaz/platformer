@@ -2,6 +2,7 @@ package actor
 
 import (
 	"math"
+	"platformer/ai"
 	"platformer/events"
 
 	"platformer/actor/state"
@@ -52,6 +53,7 @@ type Actor struct {
 
 	sm *statemachine.Machine
 	w  Worlder
+	ai *ai.Ai
 
 	hp       int
 	strength int
@@ -183,6 +185,7 @@ func (a *Actor) GetRect() pixel.Rect {
 
 func (a *Actor) Update(dt float64) {
 	a.phys.Update(dt, &a.vec)
+	a.vec = pixel.ZV
 	newspeed := a.phys.GetVel()
 	var event int
 	if math.Abs(newspeed.X) <= a.runspeed && math.Abs(newspeed.X) > a.walkspeed {
@@ -236,14 +239,24 @@ func (a *Actor) Strike() {
 	a.w.AddStrike(a, rect, power)
 }
 
+func (a *Actor) SetAi(ai *ai.Ai) {
+	a.ai = ai
+}
+
 func (a *Actor) Hit(vec pixel.Vec, power int) {
 	if _, ok := a.states[state.HIT]; !ok { // cannot hit unhittable
 		return
 	}
-	vec.X *= a.walkspeed / 50
+	vec.X *= a.walkspeed * float64(a.strength+1)
 	vec.Y = 100
 	a.vec = vec
-	a.phys.Stop()
-	// set state
+	a.hp -= power
+	if a.hp <= 0 {
+		a.SetState(state.DEAD)
+		if a.ai != nil {
+			a.ai.Notify(events.DIE, pixel.ZV)
+		}
+		return
+	}
 	a.SetState(state.HIT)
 }

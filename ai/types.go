@@ -24,6 +24,7 @@ type Manageder interface {
 	GetPos() pixel.Vec
 	GetDir() int
 	Notify(e int, v pixel.Vec)
+	SetAi(a *Ai)
 }
 
 type Alerter interface {

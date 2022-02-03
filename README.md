@@ -5,6 +5,7 @@ Writing a strategy game ends with a platformer.
 Demo
 - v0.5: https://youtu.be/ct5y-nLBAYc
 - v0.6: https://youtu.be/0A-ymLfqyKA
+- v0.7: https://youtu.be/soDQNzjUdEM
 
 ---
 

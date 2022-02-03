@@ -24,7 +24,7 @@ func WithJump(force float64) Option {
 	}
 }
 
-func WithStatemachine(sm statemachine.Machine) Option {
+func WithStatemachine(sm *statemachine.Machine) Option {
 	return func(a *Actor) {
 		a.sm = sm
 	}
@@ -33,5 +33,16 @@ func WithStatemachine(sm statemachine.Machine) Option {
 func WithAnimDir(animdir float64) Option {
 	return func(a *Actor) {
 		a.animdir = animdir
+	}
+}
+func WithHP(hp int) Option {
+	return func(a *Actor) {
+		a.hp = hp
+	}
+}
+
+func WithStrength(strength int) Option {
+	return func(a *Actor) {
+		a.strength = strength
 	}
 }

@@ -34,7 +34,6 @@ type Stater interface {
 type Actor interface {
 	SetState(int)
 	GetTransition(int) statemachine.Transition
-	Hit(vec pixel.Vec, power float64)
 	Strike()
 }
 

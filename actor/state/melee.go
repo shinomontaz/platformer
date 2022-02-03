@@ -17,15 +17,16 @@ type Melee struct {
 	sprite        *pixel.Sprite
 	variants      int
 	vel           float64
+	striked       bool
 }
 
 func NewMelee(a Actor, an Animater) *Melee {
 	fs := &Melee{
 		Common: Common{
-			id:    ATTACK,
+			id:    MELEE,
 			a:     a,
 			anims: an,
-			trs:   a.GetTransition(ATTACK),
+			trs:   a.GetTransition(MELEE),
 		},
 		idleLimit: 0.5, // seconds before idle
 		variants:  an.GetGroupLen("melee"),
@@ -37,11 +38,11 @@ func NewMelee(a Actor, an Animater) *Melee {
 func (s *Melee) Start() {
 	s.time = 0.0
 	s.attackidx = 1
+	s.striked = false
 	if s.variants > 1 {
 		s.attackidx += rand.Intn(s.variants)
 	}
 	// here add hitbox!
-	s.a.Strike()
 }
 
 func (s *Melee) Notify(e int, v *pixel.Vec) {
@@ -62,8 +63,10 @@ func (s *Melee) Update(dt float64) {
 
 	s.time += dt
 	s.animSpriteNum = int(math.Floor(s.time / 0.1))
-	//	s.pc.SetVec(pixel.ZV)
-	//	s.pc.SetCmd(STRIKE)
+	if s.animSpriteNum == 3 && !s.striked {
+		s.a.Strike()
+		s.striked = true
+	}
 }
 
 func (s *Melee) GetSprite() *pixel.Sprite {

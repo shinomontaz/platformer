@@ -11,7 +11,7 @@ type HitBox struct {
 	rect   pixel.Rect
 	ttl    float64
 	timer  float64
-	power  float64
+	power  int
 	owner  *actor.Actor
 	hitted map[*actor.Actor]struct{}
 	dir    pixel.Line
@@ -25,7 +25,7 @@ func init() {
 	plboxes = make([]*HitBox, 0)
 }
 
-func AddStrike(owner *actor.Actor, rect pixel.Rect, power float64) *HitBox {
+func AddStrike(owner *actor.Actor, rect pixel.Rect, power int) *HitBox {
 	center := rect.Center()
 	from := pixel.V(rect.Min.X, center.Y)
 	to := pixel.V(rect.Max.X, center.Y)
@@ -100,9 +100,9 @@ func updateEnStrikes(dt float64, hittable []*actor.Actor) {
 			r := hh.GetRect()
 			if b.rect.Intersects(r) {
 				vec := pixel.ZV // TODO: detect hit vector
-				vec.X = -b.power
-				if r.Center().X > b.owner.GetPos().X {
-					vec.X = b.power
+				vec.X = -float64(b.power)
+				if b.dir.A.X > b.dir.B.X {
+					vec.X = float64(b.power)
 				}
 				hh.Hit(vec, b.power)
 				b.hitted[hh] = struct{}{}

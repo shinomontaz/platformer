@@ -116,6 +116,10 @@ func (p *Phys) collide(v *pixel.Vec) {
 	}
 }
 
+func (p *Phys) Stop() {
+	p.vel.X = 0
+}
+
 func (p *Phys) Move(v pixel.Vec) {
 	p.rect = p.rect.Moved(v)
 }

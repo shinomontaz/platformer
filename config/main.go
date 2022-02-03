@@ -9,9 +9,10 @@ import (
 )
 
 var (
-	MainConfig   Main
-	PlayerConfig Player
-	AnimConfig   []Anims
+	MainConfig Main
+	//	PlayerConfig Player
+	AnimConfig []Anims
+	Profiles   map[string]Profile
 )
 
 func init() {
@@ -34,14 +35,30 @@ func init() {
 	byteValue, _ = ioutil.ReadAll(fanims)
 	json.Unmarshal(byteValue, &AnimConfig)
 
-	fplayer, err := os.Open(fmt.Sprintf("config/%s", MainConfig.PlayerCfg))
+	fprofiles, err := os.Open(fmt.Sprintf("config/%s", MainConfig.Profiles))
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer fplayer.Close()
+	defer fprofiles.Close()
 
-	byteValue, _ = ioutil.ReadAll(fplayer)
-	json.Unmarshal(byteValue, &PlayerConfig)
+	sliceProfiles := make([]Profile, 0)
+	byteValue, _ = ioutil.ReadAll(fprofiles)
+	json.Unmarshal(byteValue, &sliceProfiles)
+
+	Profiles = make(map[string]Profile)
+	for _, pr := range sliceProfiles {
+		Profiles[pr.Type] = pr
+	}
+
+	/*
+		fplayer, err := os.Open(fmt.Sprintf("config/%s", MainConfig.PlayerCfg))
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer fplayer.Close()
+
+		byteValue, _ = ioutil.ReadAll(fplayer)
+		json.Unmarshal(byteValue, &PlayerConfig)*/
 }
 
 func (a *Anims) W() float64 {

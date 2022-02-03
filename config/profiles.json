@@ -1,0 +1,59 @@
+[
+    {
+        "type": "player",
+        "anim": "player",
+        "dir": 1,
+        "hp": 3,
+        "strength": 1,
+        "width": 40,
+        "height": 40,
+        "margin": 8,
+        "mass": 50,
+        "jump": 30,
+        "walk": 80,
+        "run": 200
+    },
+    {
+        "type": "mummy",
+        "anim": "mummy",
+        "dir": -1,
+        "hp": 2,
+        "strength": 1,
+        "width": 40,
+        "height": 40,
+        "margin": 8,
+        "mass": 25,
+        "jump": 0,
+        "walk": 60,
+        "run": 60
+    },
+    {
+        "type": "deceased",
+        "anim": "deceased",
+        "dir": -1,
+        "hp": 1,
+        "strength": 1,
+        "width": 40,
+        "height": 40,
+        "margin": 8,
+        "mass": 25,
+        "jump": 0,
+        "walk": 60,
+        "run": 60
+    },
+    {
+        "type": "bigbloated",
+        "anim": "bigbloated",
+        "dir": -1,
+        "hp": 5,
+        "strength": 2,
+        "width": 72,
+        "height": 72,
+        "margin": 0,
+        "mass": 200,
+        "jump": 0,
+        "walk": 50,
+        "run": 50
+    }
+
+]

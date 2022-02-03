@@ -6,7 +6,15 @@ import (
 	"platformer/events"
 )
 
-func NewPlayer() statemachine.Machine {
+func Machine(name string) *statemachine.Machine {
+	switch name {
+	case "player":
+		return newPlayer()
+	}
+	return nil
+}
+
+func newPlayer() *statemachine.Machine {
 	m := statemachine.New()
 
 	m.Set(state.MELEE, statemachine.Transition{})
@@ -32,5 +40,5 @@ func NewPlayer() statemachine.Machine {
 	// 	},
 	// })
 
-	return m
+	return &m
 }

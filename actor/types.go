@@ -21,7 +21,7 @@ type Animation interface {
 type Worlder interface {
 	GetGravity() float64
 	GetQt() *common.Quadtree // temporary solution, we will check collision in the world ?
-	AddStrike(owner *Actor, r pixel.Rect, power float64)
+	AddStrike(owner *Actor, r pixel.Rect, power int)
 }
 
 type Stater interface {

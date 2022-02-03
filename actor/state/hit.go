@@ -40,7 +40,7 @@ func (s *Hit) Notify(e int, v *pixel.Vec) {
 
 func (s *Hit) Update(dt float64) {
 	s.counter += dt
-	s.animSpriteNum = int(math.Floor(s.counter / 0.2))
+	s.animSpriteNum = int(math.Floor(s.counter / 0.05))
 	if s.counter > s.timeout {
 		s.a.SetState(STAND)
 	}

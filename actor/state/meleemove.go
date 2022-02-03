@@ -14,15 +14,16 @@ type Meleemove struct {
 	animSpriteNum int
 	sprite        *pixel.Sprite
 	vel           float64
+	striked       bool
 }
 
 func NewMeleemove(a Actor, an Animater) *Meleemove {
 	fs := &Meleemove{
 		Common: Common{
-			id:    ATTACK,
+			id:    MELEEMOVE,
 			a:     a,
 			anims: an,
-			trs:   a.GetTransition(ATTACK),
+			trs:   a.GetTransition(MELEEMOVE),
 		},
 		idleLimit: 0.5, // seconds before idle
 	}
@@ -33,6 +34,7 @@ func NewMeleemove(a Actor, an Animater) *Meleemove {
 func (s *Meleemove) Start() {
 	s.time = 0.0
 	s.attackidx = 3
+	s.striked = false
 }
 
 func (s *Meleemove) Notify(e int, v *pixel.Vec) {
@@ -54,8 +56,10 @@ func (s *Meleemove) Update(dt float64) {
 
 	s.time += dt
 	s.animSpriteNum = int(math.Floor(s.time / 0.1))
-	//	s.pc.SetVec(pixel.ZV)
-	//	s.pc.SetCmd(STRIKE)
+	if s.animSpriteNum == 3 && !s.striked {
+		s.a.Strike()
+		s.striked = true
+	}
 }
 
 func (s *Meleemove) GetSprite() *pixel.Sprite {

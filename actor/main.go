@@ -50,8 +50,11 @@ type Actor struct {
 	jumpforce float64
 	isShift   bool
 
-	sm statemachine.Machine
+	sm *statemachine.Machine
 	w  Worlder
+
+	hp       int
+	strength int
 }
 
 func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
@@ -102,10 +105,12 @@ func (a *Actor) initStates() {
 	}
 
 	// apply state machine
-	for _, st := range a.sm.GetStates() {
-		if _, ok := a.states[st]; !ok {
-			sState := state.New(st, a, a.anim)
-			a.states[st] = sState
+	if a.sm != nil {
+		for _, st := range a.sm.GetStates() {
+			if _, ok := a.states[st]; !ok {
+				sState := state.New(st, a, a.anim)
+				a.states[st] = sState
+			}
 		}
 	}
 
@@ -113,7 +118,10 @@ func (a *Actor) initStates() {
 }
 
 func (a *Actor) GetTransition(state int) statemachine.Transition {
-	return a.sm.GetTransition(state)
+	if a.sm != nil {
+		return a.sm.GetTransition(state)
+	}
+	return statemachine.Transition{}
 }
 
 func (a *Actor) GetId() int {
@@ -157,6 +165,12 @@ func (a *Actor) Notify(e int, v pixel.Vec) {
 	a.state.Notify(e, &a.vel)
 
 	a.vec = v
+}
+
+func (a *Actor) Move(v pixel.Vec) {
+	//	a.rect = pixel.R(pos.X, pos.Y, pos.X+a.rect.W(), pos.Y+a.rect.Y())
+	a.rect = a.rect.Moved(v)
+	a.phys.Move(v)
 }
 
 func (a *Actor) GetPos() pixel.Vec {
@@ -207,7 +221,7 @@ func (a *Actor) Draw(t pixel.Target) {
 }
 
 func (a *Actor) Strike() {
-	power := 10.0
+	power := a.strength
 	//	 create a hitbox
 	center := a.rect.Center()
 	w := 15.0
@@ -222,14 +236,14 @@ func (a *Actor) Strike() {
 	a.w.AddStrike(a, rect, power)
 }
 
-func (a *Actor) Hit(vec pixel.Vec, power float64) {
+func (a *Actor) Hit(vec pixel.Vec, power int) {
 	if _, ok := a.states[state.HIT]; !ok { // cannot hit unhittable
 		return
 	}
 	vec.X *= a.walkspeed / 50
-	//	vec.Y = 100
+	vec.Y = 100
 	a.vec = vec
-	a.vel = pixel.ZV
+	a.phys.Stop()
 	// set state
 	a.SetState(state.HIT)
 }

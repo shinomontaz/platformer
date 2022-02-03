@@ -32,12 +32,12 @@ var (
 	//	b *background.Pback
 	b *background.Back
 
-	w              *world.World
-	hero           *actor.Actor
-	ctrl           *controller.Controller
-	title          string     = "platformer"
-	currBounds     pixel.Rect // current viewport
-	tolerantBounds pixel.Rect // moving inside this rect will not result in camera update
+	w          *world.World
+	hero       *actor.Actor
+	ctrl       *controller.Controller
+	title      string     = "platformer"
+	currBounds pixel.Rect // current viewport
+	//	tolerantBounds pixel.Rect // moving inside this rect will not result in camera update
 
 	initialCenter pixel.Vec
 	lastPos       pixel.Vec
@@ -97,7 +97,7 @@ func run() {
 	w.InitEnemies()
 
 	currBounds = w.Data()
-	tolerantBounds = currBounds.Resized(currBounds.Center(), pixel.Vec{currBounds.W() * 0.35, currBounds.H() * 0.35})
+	//	tolerantBounds = currBounds.Resized(currBounds.Center(), pixel.Vec{currBounds.W() * 0.35, currBounds.H() * 0.35})
 
 	cfg := pixelgl.WindowConfig{
 		Title:  title,
@@ -115,14 +115,8 @@ func run() {
 	ctrl = controller.New(win)
 
 	initialCenter = currBounds.Center()
-	st := factories.NewPlayer()
-	playerRect := pixel.R(initialCenter.X, initialCenter.Y, initialCenter.X+config.PlayerConfig.Width, initialCenter.Y+config.PlayerConfig.Height)
-	hero = actor.New(w, animation.Get("player"), playerRect,
-		actor.WithRun(config.PlayerConfig.Run),
-		actor.WithWalk(config.PlayerConfig.Walk),
-		actor.WithJump(30),
-		actor.WithStatemachine(st),
-	)
+	hero = factories.NewActor(config.Profiles["player"], w)
+	hero.Move(initialCenter)
 	ctrl.Subscribe(hero)
 	w.AddHero(hero)
 

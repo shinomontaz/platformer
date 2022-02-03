@@ -7,10 +7,10 @@ import (
 
 	"platformer/actor"
 	"platformer/ai"
-	"platformer/animation"
 	"platformer/common"
 	"platformer/config"
 	"platformer/events"
+	"platformer/factories"
 
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/salviati/go-tmx/tmx"
@@ -287,12 +287,8 @@ func (w *World) IsSee(from, to pixel.Vec) bool {
 }
 
 func (w *World) AddEnemy(meta tmx.Object) {
-	rect := pixel.R(meta.X, w.Height-meta.Y, meta.X+meta.Width, w.Height-meta.Y+meta.Height)
-	enemy := actor.New(w, animation.Get(meta.Name), rect,
-		actor.WithRun(config.PlayerConfig.Run),
-		actor.WithWalk(config.PlayerConfig.Walk),
-		actor.WithAnimDir(-1.0),
-	)
+	enemy := factories.NewActor(config.Profiles[meta.Name], w)
+	enemy.Move(pixel.V(meta.X, w.Height-meta.Y))
 	ai.New(enemy, w)
 	w.enemies = append(w.enemies, enemy)
 }
@@ -310,7 +306,7 @@ func (w *World) AddAlert(pos pixel.Vec, force float64) {
 	}
 }
 
-func (w *World) AddStrike(owner *actor.Actor, r pixel.Rect, power float64) {
+func (w *World) AddStrike(owner *actor.Actor, r pixel.Rect, power int) {
 	AddStrike(owner, r, power)
 }
 

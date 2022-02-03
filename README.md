@@ -31,8 +31,8 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] fix attack state ( no anim supported ) [9f476d90](https://github.com/shinomontaz/platformer/commit/9f476d9012ce9a3f1dcd1c4046164608adc781e6)
 - [x] enemies v2 ( still stupid AI, x-proximity based ) [232086d0](https://github.com/shinomontaz/platformer/commit/232086d07d1cc6ded87198fddb02b2b8f6ba696c)
 - [x] release v0.6 [v0.6](https://github.com/shinomontaz/platformer/releases/tag/v0.6.0)
+- [x] hit and strike [70086f02](https://github.com/shinomontaz/platformer/commit/70086f022dd1fc2fb2c757e50270f5ed76f2ba53)
 - [ ] characteristics and some UI
-- [ ] hit and strike
 - [ ] release v0.7
 - [ ] sounds
 - [ ] some shaders: spot lights

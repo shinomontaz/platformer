@@ -48,12 +48,12 @@ func (s *StateAttack) Update(dt float64) {
 		s.vec = pixel.Vec{1, 0}
 	}
 
-	if math.Abs(s.lastpos.X-pos.X) < 2 {
+	if math.Abs(s.lastpos.X-pos.X) < 20 {
 		s.vec = pixel.ZV
+		s.ai.obj.Notify(events.CTRL, s.vec)
+	} else {
+		s.ai.obj.Notify(events.WALK, s.vec)
 	}
-
-	//	s.ai.Notify(events.WALK, s.vec)
-	s.ai.obj.Notify(events.WALK, s.vec)
 }
 
 func (s *StateAttack) Start(poi pixel.Vec) {

@@ -243,6 +243,10 @@ func (a *Actor) SetAi(ai *ai.Ai) {
 	a.ai = ai
 }
 
+func (a *Actor) GetHp() int {
+	return a.hp
+}
+
 func (a *Actor) Hit(vec pixel.Vec, power int) {
 	if _, ok := a.states[state.HIT]; !ok { // cannot hit unhittable
 		return

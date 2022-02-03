@@ -12,6 +12,7 @@ import (
 	"platformer/background"
 	"platformer/config"
 	"platformer/factories"
+	"platformer/ui"
 	"platformer/world"
 
 	"platformer/controller"
@@ -30,8 +31,8 @@ func init() {
 
 var (
 	//	b *background.Pback
-	b *background.Back
-
+	b          *background.Back
+	u          *ui.Ui
 	w          *world.World
 	hero       *actor.Actor
 	ctrl       *controller.Controller
@@ -76,6 +77,7 @@ func gameLoop(win *pixelgl.Window) {
 
 		b.Draw(win, pos, camPos)
 		w.Draw(win)
+		u.Draw(win, pos, camPos)
 
 		lastPos = pos
 		win.Update()
@@ -120,6 +122,7 @@ func run() {
 	ctrl.Subscribe(hero)
 	w.AddHero(hero)
 
+	u = ui.New(hero, currBounds, "assets/icons/37.png")
 	lastPos = hero.GetPos()
 	b = background.New(lastPos, currBounds.Moved(pixel.Vec{0, 100}), "assets/gamebackground.png")
 	//	b = background.NewParallax(lastPos, currBounds.Moved(pixel.Vec{0, 100}))

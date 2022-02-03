@@ -1,6 +1,10 @@
 package ai
 
-import "github.com/faiface/pixel"
+import (
+	"platformer/events"
+
+	"github.com/faiface/pixel"
+)
 
 type StateIdle struct {
 	id int
@@ -24,15 +28,25 @@ func (s *StateIdle) Update(dt float64) {
 		// check if we see target
 		if s.w.IsSee(pos, hero) {
 			s.w.AddAlert(pos, 100)
-			s.ai.SetState(ATTACK)
+			s.ai.SetState(ATTACK, hero)
 		}
 	}
 }
 
-func (s *StateIdle) Start() {
+func (s *StateIdle) Start(poi pixel.Vec) {
 
+}
+
+func (s *StateIdle) Notify(e int, v pixel.Vec) {
+	if e == events.ALERT {
+		s.ai.SetState(INVESTIGATE, v)
+	}
 }
 
 func (s *StateIdle) GetVec() pixel.Vec {
 	return pixel.ZV
+}
+
+func (s *StateIdle) IsAlerted() bool {
+	return false
 }

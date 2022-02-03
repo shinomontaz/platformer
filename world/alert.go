@@ -16,20 +16,22 @@ type Alert struct {
 	ttl   float64
 }
 
-var alerts []Alert
+var alerts []*Alert
 var atlas *text.Atlas
 
 func init() {
-	alerts = make([]Alert, 0)
+	alerts = make([]*Alert, 0)
 	atlas = text.NewAtlas(basicfont.Face7x13, text.ASCII)
 }
 
-func addAlert(pos pixel.Vec, force float64) {
+func addAlert(pos pixel.Vec, force float64) *Alert {
 	rect := pixel.R(pos.X-force, pos.Y-force, pos.X+force, pos.Y+force)
-	alerts = append(alerts, Alert{
+	al := &Alert{
 		rect: rect,
 		ttl:  2.0,
-	})
+	}
+	alerts = append(alerts, al)
+	return al
 }
 
 func updateAlerts(dt float64) {
@@ -59,4 +61,8 @@ func drawAlerts(t pixel.Target) {
 		imd.Draw(t)
 		txt.Draw(t, pixel.IM.Scaled(txt.Orig, 1.5))
 	}
+}
+
+func (a *Alert) GetRect() pixel.Rect {
+	return a.rect
 }

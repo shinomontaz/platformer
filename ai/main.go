@@ -1,10 +1,14 @@
 package ai
 
 import (
-	"platformer/events"
+	"github.com/faiface/pixel"
 )
 
-var list []*Ai
+var list map[Manageder]*Ai
+
+func init() {
+	list = make(map[Manageder]*Ai)
+}
 
 type Ai struct {
 	obj    Manageder
@@ -20,8 +24,9 @@ func New(obj Manageder, w Worlder) *Ai {
 		states: make(map[int]Stater),
 	}
 	a.initStates()
-	a.Notify(events.SHIFT)
-	list = append(list, a)
+	list[obj] = a
+
+	//	list = append(list, a)
 	return a
 }
 
@@ -32,48 +37,45 @@ func (ai *Ai) initStates() {
 	sAttack := NewAttack(ai, ai.w)
 	ai.states[ATTACK] = sAttack
 
-	ai.SetState(IDLE)
+	// sInactive := NewInactive(ai, ai.w)
+	// ai.states[INACTIVE] = sInactive
+
+	sInvestigate := NewInvestigate(ai, ai.w)
+	ai.states[INVESTIGATE] = sInvestigate
+
+	ai.SetState(IDLE, pixel.ZV)
 }
 
-func (ai *Ai) SetState(state int) {
+func GetByObj(obj Manageder) *Ai {
+	if a, ok := list[obj]; ok {
+		return a
+	}
+	return nil
+}
+
+func (ai *Ai) SetState(state int, poi pixel.Vec) {
 	ai.state = ai.states[state]
-	ai.state.Start()
+	ai.state.Start(poi)
 }
 
-func Update() {
+func (ai *Ai) IsAlerted() bool {
+	return ai.state.IsAlerted()
+}
+
+func Update(dt float64) {
 	for _, a := range list {
-		a.Update()
+		a.Update(dt)
 	}
 }
 
-func (a *Ai) Update() {
-	a.state.Update(0.0)
+func (a *Ai) Update(dt float64) {
+	a.state.Update(dt)
 }
 
-func (a *Ai) Notify(e int) {
-	a.obj.Notify(e, a.state.GetVec())
+func (a *Ai) GetPos() pixel.Vec {
+	return a.obj.GetPos()
 }
 
-// func (ai *Ai) SetGround(g bool) {
-// 	ai.ground = g
-// }
-
-// func (ai *Ai) Update(target pixel.Vec, objs []Objecter) {
-// 	ai.cmd = NOACTION
-// 	ai.vec = pixel.ZV
-
-// 	pos := ai.pers.rect.Center()
-// 	move := 0.0
-// 	if math.Abs(pos.X-target.X) > 5 {
-// 		if math.Signbit(pos.X - target.X) {
-// 			move = 1.0
-// 		} else {
-// 			move = -1.0
-// 		}
-// 	}
-// 	ai.vec.X += move
-
-// 	if ai.pers.rect.Contains(target) {
-// 		ai.cmd = STRIKE
-// 	}
-// }
+func (a *Ai) Notify(e int, v pixel.Vec) {
+	a.state.Notify(e, v)
+}

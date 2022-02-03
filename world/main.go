@@ -10,6 +10,7 @@ import (
 	"platformer/animation"
 	"platformer/common"
 	"platformer/config"
+	"platformer/events"
 
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/salviati/go-tmx/tmx"
@@ -38,7 +39,6 @@ type World struct {
 	tiles       map[int]*tmx.DecodedTile
 
 	viewport pixel.Rect
-	lastpos  pixel.Vec
 	enmeta   []tmx.Object
 	enemies  []*actor.Actor
 	hero     *actor.Actor
@@ -217,6 +217,7 @@ func (w *World) initObjs() {
 }
 
 func (w *World) Update(rect pixel.Rect, dt float64) {
+	w.viewport = rect
 	w.visibleTiles = w.qtTile.Retrieve(rect)
 	w.visibleObjs = w.qtObjs.Retrieve(rect)
 
@@ -224,11 +225,12 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 		w.hero.Update(dt)
 	}
 
-	ai.Update()
+	ai.Update(dt)
 	for _, en := range w.enemies {
 		en.Update(dt)
 	}
 
+	updateStrikes(dt, w.enemies, w.hero)
 	updateAlerts(dt)
 }
 
@@ -264,9 +266,17 @@ func (w *World) GetHero() pixel.Vec {
 }
 
 func (w *World) IsSee(from, to pixel.Vec) bool {
+	if !w.viewport.Contains(from) { // check offscreen conditions 1
+		return false
+	}
+	line := pixel.L(from, to)
+	if line.Len() > w.viewport.W() { // check offscreen conditions 2
+		return false
+	}
+
 	box := Box(from, to) // create broadbox
 	objs := w.qtPhys.Retrieve(box)
-	line := pixel.L(from, to)
+
 	for _, o := range objs { // check collision for line from -> to against physic layer
 		if len(o.R.IntersectionPoints(line)) > 0 {
 			return false
@@ -288,8 +298,20 @@ func (w *World) AddEnemy(meta tmx.Object) {
 }
 
 func (w *World) AddAlert(pos pixel.Vec, force float64) {
-	// do nothing for now
-	addAlert(pos, force)
+	al := addAlert(pos, force)
+	for _, en := range w.enemies {
+		alrect := al.GetRect()
+		if alrect.Contains(en.GetPos()) {
+			a := ai.GetByObj(en)
+			if a != nil {
+				a.Notify(events.ALERT, alrect.Center())
+			}
+		}
+	}
+}
+
+func (w *World) AddStrike(owner *actor.Actor, r pixel.Rect, power float64) {
+	AddStrike(owner, r, power)
 }
 
 func (w *World) Draw(win *pixelgl.Window) {

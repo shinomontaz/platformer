@@ -57,7 +57,7 @@ func (s *Stand) Notify(e int, v *pixel.Vec) {
 		s.a.SetState(FALL)
 	}
 
-	s.checkTransitions(e)
+	s.checkTransitions(e, v)
 }
 
 func (s *Stand) GetSprite() *pixel.Sprite {

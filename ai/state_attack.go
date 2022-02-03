@@ -1,6 +1,7 @@
 package ai
 
 import (
+	"math"
 	"platformer/events"
 
 	"github.com/faiface/pixel"
@@ -34,7 +35,7 @@ func (s *StateAttack) Update(dt float64) {
 		if !isSee {
 			s.timer += dt
 			if s.timer > s.nonseelimit {
-				s.ai.SetState(IDLE)
+				s.ai.SetState(INVESTIGATE, s.lastpos)
 			}
 		} else {
 			s.lastpos = heropos
@@ -47,14 +48,22 @@ func (s *StateAttack) Update(dt float64) {
 		s.vec = pixel.Vec{1, 0}
 	}
 
-	s.ai.Notify(events.WALK)
+	if math.Abs(s.lastpos.X-pos.X) < 2 {
+		s.vec = pixel.ZV
+	}
+
+	//	s.ai.Notify(events.WALK, s.vec)
+	s.ai.obj.Notify(events.WALK, s.vec)
+}
+
+func (s *StateAttack) Start(poi pixel.Vec) {
+	s.lastpos = poi
+}
+
+func (s *StateAttack) Notify(e int, v pixel.Vec) {
 
 }
 
-func (s *StateAttack) Start() {
-
-}
-
-func (s *StateAttack) GetVec() pixel.Vec {
-	return s.vec
+func (s *StateAttack) IsAlerted() bool {
+	return true
 }

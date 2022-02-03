@@ -40,12 +40,14 @@ func (s *Melee) Start() {
 	if s.variants > 1 {
 		s.attackidx += rand.Intn(s.variants)
 	}
+	// here add hitbox!
+	s.a.Strike()
 }
 
 func (s *Melee) Notify(e int, v *pixel.Vec) {
 	// here we don't care of any controller event
 	s.vel = v.Len()
-	s.checkTransitions(e)
+	s.checkTransitions(e, v)
 }
 
 func (s *Melee) Update(dt float64) {

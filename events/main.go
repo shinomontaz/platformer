@@ -7,4 +7,5 @@ const (
 	ESCAPE
 	WALK
 	RUN
+	ALERT
 )

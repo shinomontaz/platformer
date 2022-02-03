@@ -4,8 +4,9 @@ import "github.com/faiface/pixel"
 
 type Stater interface {
 	Update(dt float64)
-	Start()
-	GetVec() pixel.Vec
+	Start(poi pixel.Vec)
+	IsAlerted() bool
+	Notify(e int, v pixel.Vec)
 }
 
 type Subscriber interface {
@@ -23,4 +24,8 @@ type Manageder interface {
 	GetPos() pixel.Vec
 	GetDir() int
 	Notify(e int, v pixel.Vec)
+}
+
+type Alerter interface {
+	GetRect() pixel.Rect
 }

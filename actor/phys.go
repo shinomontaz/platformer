@@ -94,9 +94,8 @@ func (p *Phys) collide(v *pixel.Vec) {
 					} else if n.Y < 0 {
 						p.vel.Y = -p.vel.Y * 0.5
 					}
-					if n.X != 0 {
+					if n.X != 0 && !p.ground {
 						p.vel.X = -p.vel.X * 0.5
-						//						p.vel.X = 0
 					}
 				}
 			}

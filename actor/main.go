@@ -51,6 +51,7 @@ type Actor struct {
 	isShift   bool
 
 	sm statemachine.Machine
+	w  Worlder
 }
 
 func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
@@ -61,6 +62,7 @@ func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
 		animdir: 1,
 		vel:     pixel.ZV,
 		grav:    w.GetGravity(),
+		w:       w,
 	}
 
 	for _, opt := range opts {
@@ -119,19 +121,22 @@ func (a *Actor) GetId() int {
 }
 
 func (a *Actor) Notify(e int, v pixel.Vec) {
+	if a.state.Busy() {
+		return
+	}
+
 	if v.X != 0 {
 		if v.X > 0 {
 			a.dir = 1
 		} else {
 			a.dir = -1
 		}
-		if !a.isShift {
+		if a.isShift {
 			if math.Abs(a.vel.X) < a.runspeed {
 				v.X *= a.runspeed / 20
 			} else {
 				v.X = 0
 			}
-
 		} else {
 			if math.Abs(a.vel.X) < a.walkspeed*19/20 {
 				v.X *= a.walkspeed / 20
@@ -156,6 +161,10 @@ func (a *Actor) Notify(e int, v pixel.Vec) {
 
 func (a *Actor) GetPos() pixel.Vec {
 	return a.rect.Center()
+}
+
+func (a *Actor) GetRect() pixel.Rect {
+	return a.rect
 }
 
 func (a *Actor) Update(dt float64) {
@@ -197,5 +206,30 @@ func (a *Actor) Draw(t pixel.Target) {
 	//	a.phys.Draw(t)
 }
 
-func (a *Actor) Hit(pos, vec pixel.Vec, power int) {
+func (a *Actor) Strike() {
+	power := 10.0
+	//	 create a hitbox
+	center := a.rect.Center()
+	w := 15.0
+	h := 10.0
+	minx := center.X + 5.0
+	miny := center.Y - h
+	if a.dir > 0 {
+		minx = center.X - 5.0 - w
+	}
+	rect := pixel.R(minx, miny, minx+w, miny+h)
+
+	a.w.AddStrike(a, rect, power)
+}
+
+func (a *Actor) Hit(vec pixel.Vec, power float64) {
+	if _, ok := a.states[state.HIT]; !ok { // cannot hit unhittable
+		return
+	}
+	vec.X *= a.walkspeed / 50
+	//	vec.Y = 100
+	a.vec = vec
+	a.vel = pixel.ZV
+	// set state
+	a.SetState(state.HIT)
 }

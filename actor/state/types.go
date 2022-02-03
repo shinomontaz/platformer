@@ -28,11 +28,14 @@ type Stater interface {
 	Update(dt float64)
 	Notify(e int, v *pixel.Vec)
 	GetSprite() *pixel.Sprite
+	Busy() bool
 }
 
 type Actor interface {
 	SetState(int)
 	GetTransition(int) statemachine.Transition
+	Hit(vec pixel.Vec, power float64)
+	Strike()
 }
 
 type Animater interface {

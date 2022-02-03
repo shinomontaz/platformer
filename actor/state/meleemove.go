@@ -38,7 +38,7 @@ func (s *Meleemove) Start() {
 func (s *Meleemove) Notify(e int, v *pixel.Vec) {
 	// here we don't care of any controller event
 	s.vel = v.Len()
-	s.checkTransitions(e)
+	s.checkTransitions(e, v)
 }
 
 func (s *Meleemove) Update(dt float64) {

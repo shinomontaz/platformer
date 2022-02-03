@@ -43,7 +43,7 @@ func (s *Attack) Start() {
 
 func (s *Attack) Notify(e int, v *pixel.Vec) {
 	// here we don't care of any controller event
-	s.checkTransitions(e)
+	s.checkTransitions(e, v)
 }
 
 func (s *Attack) Update(dt float64) {

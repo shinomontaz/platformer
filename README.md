@@ -1,6 +1,8 @@
 # platformer
 Writing a strategy game ends with a platformer.
 
+![image](https://raw.github.com/shinomontaz/platformer/master/docs/pic.png?raw=true)
+
 ---
 Demo
 - v0.7: https://youtu.be/soDQNzjUdEM

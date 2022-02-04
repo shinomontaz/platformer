@@ -3,9 +3,9 @@ Writing a strategy game ends with a platformer.
 
 ---
 Demo
-- v0.5: https://youtu.be/ct5y-nLBAYc
-- v0.6: https://youtu.be/0A-ymLfqyKA
 - v0.7: https://youtu.be/soDQNzjUdEM
+- v0.6: https://youtu.be/0A-ymLfqyKA
+- v0.5: https://youtu.be/ct5y-nLBAYc
 
 ---
 
@@ -34,13 +34,13 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] release v0.6 [v0.6](https://github.com/shinomontaz/platformer/releases/tag/v0.6.0)
 - [x] hit and strike [70086f02](https://github.com/shinomontaz/platformer/commit/70086f022dd1fc2fb2c757e50270f5ed76f2ba53)
 - [x] characteristics and some UI [4dc63aa7](https://github.com/shinomontaz/platformer/commit/4dc63aa7cc04d1c8ea991494f725b2e97ef909ad)
-- [ ] release v0.7
+- [x] release v0.7 [v0.7](https://github.com/shinomontaz/platformer/releases/tag/v0.7.0)
 - [ ] sounds
-- [ ] some shaders: spot lights
+- [ ] some fragment shaders
 - [ ] release v0.8
-- [ ] advanced physic behaviour ( step up/down )
 - [ ] main menu
-- [ ] save/load
+- [ ] advanced physic behaviour ( step up/down )
+- [ ] endgame, victory screen
 - [ ] interactive objects, inventory
 - [ ] release v0.9
 

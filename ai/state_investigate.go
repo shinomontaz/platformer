@@ -29,11 +29,12 @@ func (s *StateInvestigate) Update(dt float64) {
 	pos := s.ai.obj.GetPos()
 
 	// look for hero
-	hero := s.w.GetHero()
+	herohp := s.w.GetHeroHp()
+	hero := s.w.GetHeroPos()
 	dir := s.ai.obj.GetDir()
 	if (hero.X < pos.X && dir < 0) || (hero.X > pos.X && dir > 0) {
 		// check if we see hero
-		if s.w.IsSee(pos, hero) {
+		if s.w.IsSee(pos, hero) && herohp > 0 {
 			// s.w.AddAlert(pos, 100)
 			s.ai.SetState(ATTACK, hero)
 		}

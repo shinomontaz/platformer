@@ -1,6 +1,8 @@
 package ai
 
-import "github.com/faiface/pixel"
+import (
+	"github.com/faiface/pixel"
+)
 
 type Stater interface {
 	Update(dt float64)
@@ -15,7 +17,8 @@ type Subscriber interface {
 }
 
 type Worlder interface {
-	GetHero() pixel.Vec
+	GetHeroPos() pixel.Vec
+	GetHeroHp() int
 	IsSee(from, to pixel.Vec) bool
 	AddAlert(place pixel.Vec, raduis float64)
 }
@@ -25,6 +28,7 @@ type Manageder interface {
 	GetDir() int
 	Notify(e int, v pixel.Vec)
 	SetAi(a *Ai)
+	GetHp() int
 }
 
 type Alerter interface {

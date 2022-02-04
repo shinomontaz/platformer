@@ -57,6 +57,7 @@ type Actor struct {
 
 	hp       int
 	strength int
+	portrait *pixel.Sprite
 }
 
 func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
@@ -245,6 +246,10 @@ func (a *Actor) SetAi(ai *ai.Ai) {
 
 func (a *Actor) GetHp() int {
 	return a.hp
+}
+
+func (a *Actor) GetPortrait() *pixel.Sprite {
+	return a.portrait
 }
 
 func (a *Actor) Hit(vec pixel.Vec, power int) {

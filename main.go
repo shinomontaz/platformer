@@ -122,7 +122,7 @@ func run() {
 	ctrl.Subscribe(hero)
 	w.AddHero(hero)
 
-	u = ui.New(hero, currBounds, "assets/icons/37.png")
+	u = ui.New(hero, currBounds)
 	lastPos = hero.GetPos()
 	b = background.New(lastPos, currBounds.Moved(pixel.Vec{0, 100}), "assets/gamebackground.png")
 	//	b = background.NewParallax(lastPos, currBounds.Moved(pixel.Vec{0, 100}))

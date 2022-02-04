@@ -1,8 +1,7 @@
 package animation
 
 import (
-	"image/png"
-	"os"
+	"platformer/common"
 
 	"github.com/faiface/pixel"
 )
@@ -102,7 +101,7 @@ func (a *Anims) GetGroupLen(name string) int {
 }
 
 func (a *Anims) PrepareAnim(name, file string, frames []int) (*Anim, error) {
-	spritesheet, err := loadPicture(file)
+	spritesheet, err := common.LoadPicture(file)
 	if err != nil {
 		return nil, err
 	}
@@ -140,18 +139,4 @@ func (a *Anim) GetLen() int {
 func (a *Anim) GetSprite(idx int) *pixel.Sprite {
 	a.sprite.Set(a.sheet, a.frames[idx])
 	return a.sprite
-}
-
-func loadPicture(path string) (pixel.Picture, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-	img, err := png.Decode(file)
-	if err != nil {
-		return nil, err
-	}
-
-	return pixel.PictureDataFromImage(img), nil
 }

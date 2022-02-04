@@ -26,5 +26,6 @@ func NewActor(prof config.Profile, w Worlder) *actor.Actor {
 		actor.WithJump(prof.Jump),
 		actor.WithStatemachine(st),
 		actor.WithAnimDir(prof.Dir),
+		actor.WithPortrait(prof.Portrait),
 	)
 }

@@ -2,6 +2,7 @@ package background
 
 import (
 	"math"
+	"platformer/common"
 
 	"github.com/faiface/pixel"
 )
@@ -38,7 +39,7 @@ func New(start pixel.Vec, viewport pixel.Rect, path string) *Back {
 		steps: 0,
 	}
 
-	bg, err := loadPicture(path)
+	bg, err := common.LoadPicture(path)
 	if err != nil {
 		panic(err)
 	}

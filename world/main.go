@@ -261,8 +261,12 @@ func (w *World) AddHero(h *actor.Actor) {
 	w.hero = h
 }
 
-func (w *World) GetHero() pixel.Vec {
+func (w *World) GetHeroPos() pixel.Vec {
 	return w.hero.GetPos()
+}
+
+func (w *World) GetHeroHp() int {
+	return w.hero.GetHp()
 }
 
 func (w *World) IsSee(from, to pixel.Vec) bool {

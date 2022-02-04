@@ -2,6 +2,7 @@
     {
         "type": "player",
         "anim": "player",
+        "portrait": "assets/portraits/Icons_02.png",
         "dir": 1,
         "hp": 3,
         "strength": 1,

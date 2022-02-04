@@ -6,6 +6,7 @@
 *.dll
 *.so
 *.dylib
+platformer.*
 
 platformer
 

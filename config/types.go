@@ -44,6 +44,7 @@ type Anims struct {
 type Profile struct {
 	Type     string  `json:"type"`
 	Anim     string  `json:"anim"`
+	Portrait string  `json:"portrait"`
 	Dir      float64 `json:"dir"`
 	Hp       int     `json:"hp"`
 	Strength int     `json:"strength"`

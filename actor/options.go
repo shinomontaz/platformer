@@ -2,6 +2,9 @@ package actor
 
 import (
 	"platformer/actor/statemachine"
+	"platformer/common"
+
+	"github.com/faiface/pixel"
 )
 
 type Option func(*Actor)
@@ -44,5 +47,19 @@ func WithHP(hp int) Option {
 func WithStrength(strength int) Option {
 	return func(a *Actor) {
 		a.strength = strength
+	}
+}
+
+func WithPortrait(path string) Option {
+	return func(a *Actor) {
+		if path == "" {
+			return
+		}
+		prt, err := common.LoadPicture(path)
+		if err != nil {
+			panic(err)
+		}
+
+		a.portrait = pixel.NewSprite(prt, pixel.R(0, 0, prt.Bounds().W(), prt.Bounds().H()))
 	}
 }

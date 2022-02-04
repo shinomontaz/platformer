@@ -21,12 +21,13 @@ func NewIdle(ai *Ai, w Worlder) *StateIdle {
 }
 
 func (s *StateIdle) Update(dt float64) {
-	hero := s.w.GetHero()
+	herohp := s.w.GetHeroHp()
+	hero := s.w.GetHeroPos()
 	pos := s.ai.obj.GetPos()
 	dir := s.ai.obj.GetDir()
 	if (hero.X < pos.X && dir < 0) || (hero.X > pos.X && dir > 0) {
 		// check if we see target
-		if s.w.IsSee(pos, hero) {
+		if s.w.IsSee(pos, hero) && herohp > 0 {
 			s.w.AddAlert(pos, 100)
 			s.ai.SetState(ATTACK, hero)
 		}

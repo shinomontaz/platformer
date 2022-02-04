@@ -27,11 +27,17 @@ func NewAttack(ai *Ai, w Worlder) *StateAttack {
 }
 
 func (s *StateAttack) Update(dt float64) {
-	heropos := s.w.GetHero()
+	herohp := s.w.GetHeroHp()
+	if herohp <= 0 {
+		s.ai.SetState(IDLE, s.lastpos)
+		return
+	}
+	heropos := s.w.GetHeroPos()
 	pos := s.ai.obj.GetPos()
 	dir := s.ai.obj.GetDir()
+	var isSee bool
 	if (heropos.X < pos.X && dir < 0) || (heropos.X > pos.X && dir > 0) {
-		isSee := s.w.IsSee(pos, heropos)
+		isSee = s.w.IsSee(pos, heropos)
 		if !isSee {
 			s.timer += dt
 			if s.timer > s.nonseelimit {
@@ -48,7 +54,7 @@ func (s *StateAttack) Update(dt float64) {
 		s.vec = pixel.Vec{1, 0}
 	}
 
-	if math.Abs(s.lastpos.X-pos.X) < 20 {
+	if math.Abs(s.lastpos.X-pos.X) < 20 && isSee {
 		s.vec = pixel.ZV
 		s.ai.obj.Notify(events.CTRL, s.vec)
 	} else {

@@ -6,6 +6,7 @@ require (
 	github.com/aquasecurity/libbpfgo v0.2.1-libbpf-0.4.0 // indirect
 	github.com/cpuguy83/go-md2man v1.0.8 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
+	github.com/faiface/beep v1.1.0
 	github.com/faiface/pixel v0.10.0
 	github.com/go-delve/delve v1.7.2 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0

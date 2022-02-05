@@ -12,6 +12,7 @@ import (
 	"platformer/background"
 	"platformer/config"
 	"platformer/factories"
+	"platformer/sound"
 	"platformer/ui"
 	"platformer/world"
 
@@ -99,7 +100,6 @@ func run() {
 	w.InitEnemies()
 
 	currBounds = w.Data()
-	//	tolerantBounds = currBounds.Resized(currBounds.Center(), pixel.Vec{currBounds.W() * 0.35, currBounds.H() * 0.35})
 
 	cfg := pixelgl.WindowConfig{
 		Title:  title,
@@ -111,6 +111,12 @@ func run() {
 	if err != nil {
 		panic(err)
 	}
+
+	sound.PlayMusic("main")
+	// mons := pixelgl.Monitors()
+	// if len(mons) > 0 {
+	// 	win.SetMonitor(mons[0])
+	// }
 
 	win.SetSmooth(true)
 

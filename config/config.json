@@ -4,7 +4,7 @@
     "Assets": "assets",
     "Width": 640,
     "Height": 480,
-    "PlayerCfg": "player.json",
     "AllAnims": "anims.json",
+    "Sounds": "sounds.json",
     "Profiles": "profiles.json"
 }

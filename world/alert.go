@@ -22,12 +22,8 @@ var atlas *text.Atlas
 
 func init() {
 	alerts = make([]*Alert, 0)
-	fnt, err := common.LoadFont("assets/fonts/GravityBold8.ttf", 8)
-	if err != nil {
-		panic(err)
-	}
+	fnt := common.GetFont("regular")
 	atlas = text.NewAtlas(fnt, text.ASCII)
-	//	atlas = text.NewAtlas(basicfont.Face7x13, text.ASCII)
 }
 
 func addAlert(pos pixel.Vec, force float64) *Alert {
@@ -35,7 +31,7 @@ func addAlert(pos pixel.Vec, force float64) *Alert {
 	al := &Alert{
 		rect: rect,
 		ttl:  2.0,
-		txt:  randSeq([]rune("#$%&@*?arlTVXx"), 4) + "!",
+		txt:  randSeq([]rune("#$%&@*?arlTVXx"), 2+rand.Intn(3)) + "!",
 	}
 	alerts = append(alerts, al)
 	return al

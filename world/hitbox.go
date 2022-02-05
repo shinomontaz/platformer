@@ -36,7 +36,7 @@ func AddStrike(owner *actor.Actor, rect pixel.Rect, power int) *HitBox {
 	}
 	b := &HitBox{
 		rect:   rect,
-		ttl:    0.5,
+		ttl:    0.2,
 		power:  power,
 		owner:  owner,
 		dir:    pixel.L(from, to),

@@ -12,6 +12,7 @@ var (
 	MainConfig Main
 	//	PlayerConfig Player
 	AnimConfig []Anims
+	Sounds     map[string]Soundprofile
 	Profiles   map[string]Profile
 )
 
@@ -50,15 +51,20 @@ func init() {
 		Profiles[pr.Type] = pr
 	}
 
-	/*
-		fplayer, err := os.Open(fmt.Sprintf("config/%s", MainConfig.PlayerCfg))
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer fplayer.Close()
+	sprofiles, err := os.Open(fmt.Sprintf("config/%s", MainConfig.Sounds))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer sprofiles.Close()
 
-		byteValue, _ = ioutil.ReadAll(fplayer)
-		json.Unmarshal(byteValue, &PlayerConfig)*/
+	sliceSprofiles := make([]Soundprofile, 0)
+	byteValue, _ = ioutil.ReadAll(sprofiles)
+	json.Unmarshal(byteValue, &sliceSprofiles)
+
+	Sounds = make(map[string]Soundprofile)
+	for _, pr := range sliceSprofiles {
+		Sounds[pr.Type] = pr
+	}
 }
 
 func (a *Anims) W() float64 {

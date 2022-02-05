@@ -1,14 +1,14 @@
 package config
 
 type Main struct {
-	TestFlag  bool    `json:"TestFlag"`
-	Assets    string  `json:"Assets"`
-	Width     float64 `json:"Width"`
-	Height    float64 `json:"Height"`
-	PlayerCfg string  `json:"PlayerCfg"`
-	WorldCfg  string  `json:"WorldCfg"`
-	AllAnims  string  `json:"AllAnims"`
-	Profiles  string  `json:"Profiles"`
+	TestFlag bool    `json:"TestFlag"`
+	Assets   string  `json:"Assets"`
+	Width    float64 `json:"Width"`
+	Height   float64 `json:"Height"`
+	WorldCfg string  `json:"WorldCfg"`
+	AllAnims string  `json:"AllAnims"`
+	Profiles string  `json:"Profiles"`
+	Sounds   string  `json:"sounds"`
 }
 
 type Anim struct {
@@ -55,4 +55,13 @@ type Profile struct {
 	Mass     float64 `json:"mass"`
 	Walk     float64 `json:"walk"`
 	Run      float64 `json:"run"`
+}
+
+type Soundeffect struct {
+	Type string   `json:"type"`
+	List []string `json:"list"`
+}
+type Soundprofile struct {
+	Type string        `json:"type"`
+	List []Soundeffect `json:"list"`
 }

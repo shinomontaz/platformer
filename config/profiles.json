@@ -2,6 +2,7 @@
     {
         "type": "player",
         "anim": "player",
+        "sound": "player",
         "portrait": "assets/portraits/Icons_02.png",
         "dir": 1,
         "hp": 3,
@@ -17,6 +18,7 @@
     {
         "type": "mummy",
         "anim": "mummy",
+        "sound": "mummy",
         "dir": -1,
         "hp": 2,
         "strength": 1,
@@ -31,6 +33,7 @@
     {
         "type": "deceased",
         "anim": "deceased",
+        "sound": "deceased",
         "dir": -1,
         "hp": 1,
         "strength": 1,
@@ -45,6 +48,7 @@
     {
         "type": "bigbloated",
         "anim": "bigbloated",
+        "sound": "bigbloated",
         "dir": -1,
         "hp": 5,
         "strength": 2,

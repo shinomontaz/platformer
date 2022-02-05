@@ -1,9 +1,0 @@
-{
-    "anim": "player",
-    "width": 40,
-    "height": 40,
-    "margin": 8,
-    "mass": 100,
-    "walk": 80,
-    "run": 200
-}

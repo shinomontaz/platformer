@@ -1,0 +1,110 @@
+[
+    {
+        "type": "player",
+        "list": [
+            {
+                "type": "melee",
+                "list": [
+                    "assets/sounds/effects/mixkit-metal-hit-woosh-1485.wav",
+                    "assets/sounds/effects/mixkit-punch-with-short-whistle-2049.wav",
+                    "assets/sounds/effects/mixkit-sword-blade-attack-in-medieval-battle-2762.wav",
+                    "assets/sounds/effects/mixkit-sword-strikes-armor-2765.wav"
+                ]
+            },
+            {
+                "type": "hit",
+                "list": [
+                    "assets/sounds/effects/mixkit-cartoon-blood-and-gore-hit-726.wav",
+                    "assets/sounds/effects/mixkit-sword-cutting-flesh-2788.wav"
+                ]
+            },
+            {
+                "type": "jump",
+                "list": [
+                    "assets/sounds/effects/mixkit-player-jumping-in-a-video-game-2043.wav"
+                ]
+            }
+    
+        ]
+    },
+    {
+        "type": "mummy",
+        "list": [
+            {
+                "type": "melee",
+                "list": [
+                    "assets/sounds/effects/mixkit-impact-of-a-blow-2150.wav",
+                    "assets/sounds/effects/mixkit-weak-fast-blow-2145.wav",
+                    "assets/sounds/effects/mixkit-fast-blow-2144.wav"
+                ]
+            },
+            {
+                "type": "idle",
+                "list": [
+                    "assets/sounds/effects/scream/mixkit-small-monster-growl-1968.wav"
+                ]
+            },
+            {
+                "type": "hit",
+                "list": [
+                    "assets/sounds/effects/scream/mixkit-exclamation-of-pain-from-a-zombie-2207.wav",
+                    "assets/sounds/effects/mixkit-cartoon-blood-and-gore-hit-726.wav"
+                ]
+            }
+
+        ]
+    },
+    {
+        "type": "deceased",
+        "list": [
+            {
+                "type": "ranged",
+                "list": [
+                    "assets/sounds/effects/magic/mixkit-magic-bubbles-spell-2999.wav"
+                ]
+            },
+            {
+                "type":"idle",
+                "list": [
+                    "assets/sounds/effects/scream/mixkit-zombie-monster-growl-1973.wav",
+                    "assets/sounds/effects/scream/mixkit-monster-hiss-1964.wav"
+                ]
+            },
+            {
+                "type": "hit",
+                "list": [
+                    "assets/sounds/effects/scream/mixkit-enemy-death-voice-3168.wav",
+                    "assets/sounds/effects/mixkit-sword-cutting-flesh-2788.wav",
+                    "assets/sounds/effects/mixkit-cartoon-blood-and-gore-hit-726.wav"
+                ]
+            }
+        ]
+       
+    },
+    {
+        "type": "bigbloated",
+        "list": [
+            {
+                "type": "melee",
+                "list": [
+                   "assets/sounds/effects/mixkit-sword-slides-a-body-2791.wav",
+                   "assets/sounds/effects/mixkit-sword-cutting-flesh-2788.wav"
+                ]
+            },
+            {
+                "type": "idle",
+                "list": [
+                    "assets/sounds/effects/scream/mixkit-wild-creature-growl-1957.wav",
+                    "assets/sounds/effects/scream/mixkit-zombie-monster-growl-1973.wav"
+                ]
+            },
+            {
+                "type": "hit",
+                "list": [
+                    "assets/sounds/effects/scream/mixkit-enemy-death-voice-3168.wav"
+                ]
+            }
+        ]
+    }
+
+]

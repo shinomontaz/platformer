@@ -37,7 +37,7 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] hit and strike [70086f02](https://github.com/shinomontaz/platformer/commit/70086f022dd1fc2fb2c757e50270f5ed76f2ba53)
 - [x] characteristics and some UI [4dc63aa7](https://github.com/shinomontaz/platformer/commit/4dc63aa7cc04d1c8ea991494f725b2e97ef909ad)
 - [x] release [v0.7](https://github.com/shinomontaz/platformer/releases/tag/v0.7.0)
-- [ ] sounds
+- [x] sounds [815689dc](https://github.com/shinomontaz/platformer/commit/815689dc1c786dbfc4da9b0320a7bdccb821eb81)
 - [ ] some fragment shaders
 - [ ] release v0.8
 - [ ] main menu

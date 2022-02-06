@@ -31,6 +31,11 @@ func NewHit(a Actor, an Animater) *Hit {
 
 func (s *Hit) Start() {
 	s.counter = 0
+	// aa := s.a.GetAi()
+	// if aa != nil {
+	// 	aa.Notify(events.ALERT, pixel.ZV)
+	// }
+	s.a.AddSound("hit")
 }
 
 func (s *Hit) Notify(e int, v *pixel.Vec) {

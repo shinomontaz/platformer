@@ -34,6 +34,7 @@ func NewIdle(a Actor, an Animater) *Idle {
 func (s *Idle) Start() {
 	s.counter = 0
 	s.animSpriteNum = 0
+	s.a.AddSound("idle")
 }
 
 func (s *Idle) Update(dt float64) {

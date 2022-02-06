@@ -43,6 +43,7 @@ func (s *Melee) Start() {
 		s.attackidx += rand.Intn(s.variants)
 	}
 	// here add hitbox!
+	s.a.AddSound("melee")
 }
 
 func (s *Melee) Notify(e int, v *pixel.Vec) {

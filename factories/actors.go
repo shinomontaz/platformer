@@ -27,5 +27,6 @@ func NewActor(prof config.Profile, w Worlder) *actor.Actor {
 		actor.WithStatemachine(st),
 		actor.WithAnimDir(prof.Dir),
 		actor.WithPortrait(prof.Portrait),
+		actor.WithSound(config.Sounds[prof.Type].List),
 	)
 }

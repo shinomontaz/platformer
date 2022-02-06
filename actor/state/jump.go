@@ -32,6 +32,7 @@ func (s *Jump) Start() {
 	s.jumpLimit = 1.0
 	s.animSpriteNum = 0
 	s.counter = 0
+	s.a.AddSound("jump")
 }
 
 func (s *Jump) Update(dt float64) {

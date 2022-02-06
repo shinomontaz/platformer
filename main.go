@@ -63,6 +63,7 @@ func gameLoop(win *pixelgl.Window) {
 		win.Clear(rgba)
 
 		pos := hero.GetPos()
+		sound.Update(pos)
 		deltaVec := lastPos.To(pos)
 		//		if !tolerantBounds.Contains(pos) {
 		camPos = pixel.Lerp(camPos, initialCenter.Sub(pos).Sub(pixel.V(0, 150)), 1-math.Pow(1.0/128, dt)) // standart with moving cam slightly down

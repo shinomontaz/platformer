@@ -2,8 +2,10 @@ package actor
 
 import (
 	"math"
+	"math/rand"
 	"platformer/ai"
 	"platformer/events"
+	"platformer/sound"
 
 	"platformer/actor/state"
 	"platformer/actor/statemachine"
@@ -58,6 +60,7 @@ type Actor struct {
 	hp       int
 	strength int
 	portrait *pixel.Sprite
+	sounds   map[string]soundeffect
 }
 
 func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
@@ -69,6 +72,7 @@ func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
 		vel:     pixel.ZV,
 		grav:    w.GetGravity(),
 		w:       w,
+		sounds:  make(map[string]soundeffect),
 	}
 
 	for _, opt := range opts {
@@ -242,6 +246,14 @@ func (a *Actor) Strike() {
 
 func (a *Actor) SetAi(ai *ai.Ai) {
 	a.ai = ai
+}
+
+func (a *Actor) AddSound(event string) {
+	if s, ok := a.sounds[event]; ok {
+		// select random sound
+		i := rand.Intn(len(s.List))
+		sound.AddEffect(s.List[i], a.rect.Center())
+	}
 }
 
 func (a *Actor) GetHp() int {

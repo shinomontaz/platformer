@@ -45,7 +45,7 @@ func init() {
 		Silent: false,
 	}
 	volEffects = &effects.Volume{
-		Base:   1,
+		Base:   2,
 		Volume: 0,
 		Silent: false,
 	}
@@ -105,13 +105,22 @@ func Update(pos pixel.Vec) {
 }
 
 func AddEffect(name string, pos pixel.Vec) {
-	if pixel.L(listener, pos).Len() > 500 {
+	l := pixel.L(listener, pos).Len()
+	if l > 500 {
 		return
 	}
-	currEffects = append(currEffects, PosEffect{
-		s:   soundeffects[name],
-		pos: pos,
-	})
+	// currEffects = append(currEffects, PosEffect{
+	// 	s:   soundeffects[name],
+	// 	pos: pos,
+	// })
+
+	bfr := soundeffects[name].buff
+	eft := bfr.Streamer(0, bfr.Len())
+
+	volEffects.Streamer = eft
+	//	volEffects.Volume -= l / 50
+
+	speaker.Play(volEffects)
 }
 
 func PlayMusic(name string) {

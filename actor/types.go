@@ -33,3 +33,7 @@ type Stater interface {
 	GetSprite() *pixel.Sprite
 	Busy() bool
 }
+
+type soundeffect struct {
+	List []string
+}

@@ -35,6 +35,7 @@ func (s *Meleemove) Start() {
 	s.time = 0.0
 	s.attackidx = 3
 	s.striked = false
+	s.a.AddSound("melee")
 }
 
 func (s *Meleemove) Notify(e int, v *pixel.Vec) {

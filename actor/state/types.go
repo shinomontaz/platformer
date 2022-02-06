@@ -35,6 +35,7 @@ type Actor interface {
 	SetState(int)
 	GetTransition(int) statemachine.Transition
 	Strike()
+	AddSound(event string)
 }
 
 type Animater interface {

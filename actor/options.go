@@ -3,6 +3,7 @@ package actor
 import (
 	"platformer/actor/statemachine"
 	"platformer/common"
+	"platformer/config"
 
 	"github.com/faiface/pixel"
 )
@@ -61,5 +62,15 @@ func WithPortrait(path string) Option {
 		}
 
 		a.portrait = pixel.NewSprite(prt, pixel.R(0, 0, prt.Bounds().W(), prt.Bounds().H()))
+	}
+}
+
+func WithSound(seffects []config.Soundeffect) Option {
+	return func(a *Actor) {
+		for _, se := range seffects {
+			a.sounds[se.Type] = soundeffect{
+				List: se.List,
+			}
+		}
 	}
 }

@@ -30,7 +30,7 @@ func addAlert(pos pixel.Vec, force float64) *Alert {
 	rect := pixel.R(pos.X-force, pos.Y-force, pos.X+force, pos.Y+force)
 	al := &Alert{
 		rect: rect,
-		ttl:  2.0,
+		ttl:  1.0,
 		txt:  randSeq([]rune("#$%&@*?arlTVXx"), 2+rand.Intn(3)) + "!",
 	}
 	alerts = append(alerts, al)
@@ -41,6 +41,7 @@ func updateAlerts(dt float64) {
 	i := 0
 	for _, al := range alerts {
 		al.timer += dt
+		al.rect = al.rect.Moved(pixel.Vec{-10 * dt, 10 * dt})
 		if al.timer < al.ttl {
 			alerts[i] = al
 			i++

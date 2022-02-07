@@ -280,4 +280,7 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 		return
 	}
 	a.SetState(state.HIT)
+	if a.ai != nil {
+		a.ai.Notify(events.ALERT, pixel.Vec{-vec.X, vec.Y})
+	}
 }

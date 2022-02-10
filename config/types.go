@@ -55,6 +55,7 @@ type Profile struct {
 	Mass     float64 `json:"mass"`
 	Walk     float64 `json:"walk"`
 	Run      float64 `json:"run"`
+	Range    float64 `json:"range"`
 }
 
 type Soundeffect struct {

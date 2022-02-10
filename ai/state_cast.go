@@ -7,7 +7,7 @@ import (
 	"github.com/faiface/pixel"
 )
 
-type StateAttack struct {
+type StateCast struct {
 	id          int
 	w           Worlder
 	ai          *Ai
@@ -17,16 +17,16 @@ type StateAttack struct {
 	vec         pixel.Vec
 }
 
-func NewAttack(ai *Ai, w Worlder) *StateAttack {
-	return &StateAttack{
-		id:          ATTACK,
+func NewCast(ai *Ai, w Worlder) *StateCast {
+	return &StateCast{
+		id:          CAST,
 		ai:          ai,
 		w:           w,
 		nonseelimit: 1,
 	}
 }
 
-func (s *StateAttack) Update(dt float64) {
+func (s *StateCast) Update(dt float64) {
 	hero := s.w.GetHero()
 	herohp := hero.GetHp()
 	if herohp <= 0 {
@@ -54,23 +54,35 @@ func (s *StateAttack) Update(dt float64) {
 	if s.lastpos.X > pos.X {
 		s.vec = pixel.Vec{1, 0}
 	}
+	l := pixel.L(pos, heropos)
+	if l.Len() < s.ai.obj.GetAttackrange()/2 {
+		// step out of hero
+		if heropos.X < pos.X {
+			s.vec = pixel.Vec{1, 0}
+		} else {
+			s.vec = pixel.Vec{-1, 0}
+		}
+	}
 
 	if math.Abs(s.lastpos.X-pos.X) < s.ai.obj.GetAttackrange() && isSee {
-		s.vec = pixel.ZV
-		s.ai.obj.Notify(events.CTRL, s.vec)
+		m := s.ai.obj.GetMagic()
+		m.SetSpell("basic")
+		m.SetTarget(s.w.GetHero())
+
+		s.ai.obj.Notify(events.CAST, pixel.ZV)
 	} else {
 		s.ai.obj.Notify(events.WALK, s.vec)
 	}
 }
 
-func (s *StateAttack) Start(poi pixel.Vec) {
+func (s *StateCast) Start(poi pixel.Vec) {
 	s.lastpos = poi
 }
 
-func (s *StateAttack) Notify(e int, v pixel.Vec) {
+func (s *StateCast) Notify(e int, v pixel.Vec) {
 
 }
 
-func (s *StateAttack) IsAlerted() bool {
+func (s *StateCast) IsAlerted() bool {
 	return true
 }

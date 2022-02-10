@@ -17,13 +17,25 @@ type Ai struct {
 	states map[int]Stater
 }
 
-func New(obj Manageder, w Worlder) *Ai {
+func NewCommon(obj Manageder, w Worlder) *Ai {
 	a := &Ai{
 		obj:    obj,
 		w:      w,
 		states: make(map[int]Stater),
 	}
-	a.initStates()
+
+	sIdle := NewIdle(a, a.w)
+	a.states[IDLE] = sIdle
+
+	sAttack := NewAttack(a, a.w)
+	a.states[ATTACK] = sAttack
+
+	sInvestigate := NewInvestigate(a, a.w)
+	a.states[INVESTIGATE] = sInvestigate
+
+	a.SetState(IDLE, pixel.ZV)
+
+	//	a.initStates()
 	list[obj] = a
 
 	obj.SetAi(a)
@@ -31,20 +43,30 @@ func New(obj Manageder, w Worlder) *Ai {
 	return a
 }
 
-func (ai *Ai) initStates() {
-	sIdle := NewIdle(ai, ai.w)
-	ai.states[IDLE] = sIdle
+func NewMage(obj Manageder, w Worlder) *Ai {
+	a := &Ai{
+		obj:    obj,
+		w:      w,
+		states: make(map[int]Stater),
+	}
 
-	sAttack := NewAttack(ai, ai.w)
-	ai.states[ATTACK] = sAttack
+	sIdle := NewIdle(a, a.w)
+	a.states[IDLE] = sIdle
 
-	// sInactive := NewInactive(ai, ai.w)
-	// ai.states[INACTIVE] = sInactive
+	sAttack := NewCast(a, a.w)
+	a.states[CAST] = sAttack
 
-	sInvestigate := NewInvestigate(ai, ai.w)
-	ai.states[INVESTIGATE] = sInvestigate
+	sInvestigate := NewInvestigate(a, a.w)
+	a.states[INVESTIGATE] = sInvestigate
 
-	ai.SetState(IDLE, pixel.ZV)
+	a.SetState(IDLE, pixel.ZV)
+
+	//	a.initStates()
+	list[obj] = a
+
+	obj.SetAi(a)
+	//	list = append(list, a)
+	return a
 }
 
 func GetByObj(obj Manageder) *Ai {

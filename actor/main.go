@@ -10,6 +10,8 @@ import (
 	"platformer/actor/state"
 	"platformer/actor/statemachine"
 
+	"platformer/magic"
+
 	"github.com/faiface/pixel"
 )
 
@@ -57,10 +59,12 @@ type Actor struct {
 	w  Worlder
 	ai *ai.Ai
 
-	hp       int
-	strength int
-	portrait *pixel.Sprite
-	sounds   map[string]soundeffect
+	hp          int
+	strength    int
+	portrait    *pixel.Sprite
+	sounds      map[string]soundeffect
+	attackrange float64
+	m           *magic.Magic
 }
 
 func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
@@ -186,6 +190,14 @@ func (a *Actor) GetPos() pixel.Vec {
 
 func (a *Actor) GetRect() pixel.Rect {
 	return a.rect
+}
+
+func (a *Actor) GetMagic() *magic.Magic {
+	return a.m
+}
+
+func (a *Actor) GetAttackrange() float64 {
+	return a.attackrange
 }
 
 func (a *Actor) Update(dt float64) {

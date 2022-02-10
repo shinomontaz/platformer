@@ -169,6 +169,11 @@
             "name": "ranged",
             "file":"assets/enemies/deceased/Deceased_attack.png",
             "frames": [4, 0, 4]
+        },
+        {
+            "name": "cast",
+            "file":"assets/enemies/deceased/Deceased_attack.png",
+            "frames": [4, 0, 4]
         }
         ]
     },

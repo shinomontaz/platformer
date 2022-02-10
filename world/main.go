@@ -265,6 +265,10 @@ func (w *World) GetHeroPos() pixel.Vec {
 	return w.hero.GetPos()
 }
 
+func (w *World) GetHero() *actor.Actor {
+	return w.hero
+}
+
 func (w *World) GetHeroHp() int {
 	return w.hero.GetHp()
 }
@@ -293,7 +297,8 @@ func (w *World) IsSee(from, to pixel.Vec) bool {
 func (w *World) AddEnemy(meta tmx.Object) {
 	enemy := factories.NewActor(config.Profiles[meta.Name], w)
 	enemy.Move(pixel.V(meta.X, w.Height-meta.Y))
-	ai.New(enemy, w)
+	factories.NewAi(config.Profiles[meta.Name].Type, enemy, w)
+	//	ai.New(enemy, w)
 	w.enemies = append(w.enemies, enemy)
 }
 

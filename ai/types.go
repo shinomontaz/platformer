@@ -1,6 +1,8 @@
 package ai
 
 import (
+	"platformer/magic"
+
 	"github.com/faiface/pixel"
 )
 
@@ -17,8 +19,7 @@ type Subscriber interface {
 }
 
 type Worlder interface {
-	GetHeroPos() pixel.Vec
-	GetHeroHp() int
+	GetHero() Manageder
 	IsSee(from, to pixel.Vec) bool
 	AddAlert(place pixel.Vec, raduis float64)
 }
@@ -29,6 +30,8 @@ type Manageder interface {
 	Notify(e int, v pixel.Vec)
 	SetAi(a *Ai)
 	GetHp() int
+	GetAttackrange() float64
+	GetMagic() *magic.Magic
 }
 
 type Alerter interface {

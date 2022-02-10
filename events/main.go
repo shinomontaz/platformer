@@ -9,4 +9,5 @@ const (
 	RUN
 	ALERT
 	DIE
+	CAST
 )

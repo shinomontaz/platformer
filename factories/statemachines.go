@@ -10,6 +10,8 @@ func Machine(name string) *statemachine.Machine {
 	switch name {
 	case "player":
 		return newPlayer()
+	case "deceased":
+		return newDeceased()
 	default:
 		return newEnemy()
 	}
@@ -62,6 +64,29 @@ func newEnemy() *statemachine.Machine {
 	m.Set(state.WALK, statemachine.Transition{
 		List: map[int]int{
 			events.CTRL: state.MELEE,
+		},
+	})
+
+	return &m
+}
+
+func newDeceased() *statemachine.Machine {
+	m := statemachine.New()
+
+	m.Set(state.CAST, statemachine.Transition{})
+	m.Set(state.STAND, statemachine.Transition{
+		List: map[int]int{
+			events.CTRL: state.CAST,
+		},
+	})
+	m.Set(state.IDLE, statemachine.Transition{
+		List: map[int]int{
+			events.CTRL: state.CAST,
+		},
+	})
+	m.Set(state.WALK, statemachine.Transition{
+		List: map[int]int{
+			events.CTRL: state.CAST,
 		},
 	})
 

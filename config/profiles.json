@@ -13,7 +13,8 @@
         "mass": 50,
         "jump": 30,
         "walk": 80,
-        "run": 200
+        "run": 200,
+        "range": 19
     },
     {
         "type": "mummy",
@@ -28,7 +29,8 @@
         "mass": 25,
         "jump": 0,
         "walk": 60,
-        "run": 60
+        "run": 60,
+        "range": 19
     },
     {
         "type": "deceased",
@@ -43,7 +45,8 @@
         "mass": 25,
         "jump": 0,
         "walk": 60,
-        "run": 60
+        "run": 60,
+        "range": 100
     },
     {
         "type": "bigbloated",
@@ -58,7 +61,8 @@
         "mass": 200,
         "jump": 0,
         "walk": 50,
-        "run": 50
+        "run": 50,
+        "range": 30
     }
 
 ]

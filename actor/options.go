@@ -51,6 +51,12 @@ func WithStrength(strength int) Option {
 	}
 }
 
+func WithAttackrange(attackrange float64) Option {
+	return func(a *Actor) {
+		a.attackrange = attackrange
+	}
+}
+
 func WithPortrait(path string) Option {
 	return func(a *Actor) {
 		if path == "" {

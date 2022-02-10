@@ -28,15 +28,16 @@ func (s *StateInvestigate) Update(dt float64) {
 	//	fmt.Println("*StateInvestigate Update")
 	pos := s.ai.obj.GetPos()
 
+	hero := s.w.GetHero()
 	// look for hero
-	herohp := s.w.GetHeroHp()
-	hero := s.w.GetHeroPos()
+	herohp := hero.GetHp()
+	heropos := hero.GetPos()
 	dir := s.ai.obj.GetDir()
-	if (hero.X < pos.X && dir < 0) || (hero.X > pos.X && dir > 0) {
+	if (heropos.X < pos.X && dir < 0) || (heropos.X > pos.X && dir > 0) {
 		// check if we see hero
-		if s.w.IsSee(pos, hero) && herohp > 0 {
+		if s.w.IsSee(pos, heropos) && herohp > 0 {
 			// s.w.AddAlert(pos, 100)
-			s.ai.SetState(ATTACK, hero)
+			s.ai.SetState(ATTACK, heropos)
 		}
 	}
 

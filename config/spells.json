@@ -1,0 +1,12 @@
+[
+    {
+        "type": "deathstrike",
+        "anim": "deathstrike",
+        "sound": "deathstrike"
+    },
+    {
+        "type": "deathbolt",
+        "anim": "deathbolt",
+        "sound": "deathbolt"
+    }
+]

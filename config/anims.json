@@ -251,5 +251,33 @@
                 ]
                 }
         ]
+    },
+    {
+        "type": "deathstrike",
+        "width": 48,
+        "height": 64,
+        "margin": 0,    
+        "list":  [
+            {
+                "name": "spell",
+                "file":"assets/effects/Dark VFX 2 (48x64).png",
+                "frames": [15, 0, 15]
+            }
+        ]
+    },
+    {
+        "type": "deathbolt",
+        "width": 8,
+        "height": 6,
+        "margin": 0,    
+        "list":  [
+            {
+                "name": "spell",
+                "file":"assets/projectiles/deceased_ball.png",
+                "frames": [1, 0, 1]
+            }
+        ]
     }
+    
+    
 ]

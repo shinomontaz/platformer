@@ -105,6 +105,23 @@
                 ]
             }
         ]
+    },
+    {
+        "type": "magic",
+        "list": [
+            {
+                "type": "deathstrike",
+                "list": [
+                    "assets/sounds/effects/mixkit-sword-strikes-armor-2765.wav"
+                ]
+            },
+            {
+                "type": "deathbolt",
+                "list": [
+                    "assets/sounds/effects/mixkit-cartoon-blood-and-gore-hit-726.wav",
+                    "assets/sounds/effects/mixkit-sword-cutting-flesh-2788.wav"
+                ]
+            }
+        ]
     }
-
 ]

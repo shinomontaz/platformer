@@ -14,6 +14,7 @@ var (
 	AnimConfig []Anims
 	Sounds     map[string]Soundprofile
 	Profiles   map[string]Profile
+	Spells     map[string]Spellprofile
 )
 
 func init() {
@@ -65,6 +66,15 @@ func init() {
 	for _, pr := range sliceSprofiles {
 		Sounds[pr.Type] = pr
 	}
+
+	fspells, err := os.Open(fmt.Sprintf("config/%s", MainConfig.Spells))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer fspells.Close()
+
+	byteValue, _ = ioutil.ReadAll(fspells)
+	json.Unmarshal(byteValue, &Spells)
 }
 
 func (a *Anims) W() float64 {

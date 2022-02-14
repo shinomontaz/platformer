@@ -80,3 +80,11 @@ func WithSound(seffects []config.Soundeffect) Option {
 		}
 	}
 }
+
+func WithSkills(skills []config.Skill) Option {
+	return func(a *Actor) {
+		for _, s := range skills {
+			a.skills = append(a.skills, NewSkill(s))
+		}
+	}
+}

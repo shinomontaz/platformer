@@ -23,6 +23,7 @@ type Worlder interface {
 	GetGravity() float64
 	GetQt() *common.Quadtree // temporary solution, we will check collision in the world ?
 	AddStrike(owner *Actor, r pixel.Rect, power int)
+	AddSpell(owner *Actor, t pixel.Vec, spell string)
 }
 
 type Stater interface {

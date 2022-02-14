@@ -33,9 +33,7 @@ func NewCast(a Actor, an Animater) *Cast {
 
 func (s *Cast) Start() {
 	s.time = 0.0
-	// here add hitbox!
-	//	s.a.AddSound("cast")
-	s.a.GetMagic().Cast()
+	s.a.Cast()
 }
 
 func (s *Cast) Notify(e int, v *pixel.Vec) {

@@ -1,4 +1,4 @@
-package controller
+package common
 
 import "github.com/faiface/pixel"
 

@@ -74,19 +74,23 @@ func newDeceased() *statemachine.Machine {
 	m := statemachine.New()
 
 	m.Set(state.CAST, statemachine.Transition{})
+	m.Set(state.MELEE, statemachine.Transition{})
 	m.Set(state.STAND, statemachine.Transition{
 		List: map[int]int{
-			events.CTRL: state.CAST,
+			events.CAST: state.CAST,
+			events.CTRL: state.MELEE,
 		},
 	})
 	m.Set(state.IDLE, statemachine.Transition{
 		List: map[int]int{
-			events.CTRL: state.CAST,
+			events.CAST: state.CAST,
+			events.CTRL: state.MELEE,
 		},
 	})
 	m.Set(state.WALK, statemachine.Transition{
 		List: map[int]int{
-			events.CTRL: state.CAST,
+			events.CAST: state.CAST,
+			events.CTRL: state.MELEE,
 		},
 	})
 

@@ -36,9 +36,10 @@ func (s *StateInvestigate) Update(dt float64) {
 	if (heropos.X < pos.X && dir < 0) || (heropos.X > pos.X && dir > 0) {
 		// check if we see hero
 		if s.w.IsSee(pos, heropos) && herohp > 0 {
-			// s.w.AddAlert(pos, 100)
-			s.ai.SetState(ATTACK, heropos)
+			s.ai.SetState(CHOOSEATTACK, heropos)
+			//			s.ai.SetState(ATTACK, heropos)
 		}
+		return
 	}
 
 	vec := pixel.Vec{-1, 0}

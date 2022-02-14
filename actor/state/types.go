@@ -2,7 +2,6 @@ package state
 
 import (
 	"platformer/actor/statemachine"
-	"platformer/magic"
 
 	"github.com/faiface/pixel"
 )
@@ -36,8 +35,8 @@ type Actor interface {
 	SetState(int)
 	GetTransition(int) statemachine.Transition
 	Strike()
+	Cast()
 	AddSound(event string)
-	GetMagic() *magic.Magic
 }
 
 type Animater interface {

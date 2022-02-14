@@ -12,6 +12,7 @@ import (
 	"platformer/background"
 	"platformer/config"
 	"platformer/factories"
+	"platformer/magic"
 	"platformer/sound"
 	"platformer/ui"
 	"platformer/world"
@@ -113,6 +114,7 @@ func run() {
 		panic(err)
 	}
 
+	magic.SetWorld(w)
 	sound.PlayMusic("main")
 	// mons := pixelgl.Monitors()
 	// if len(mons) > 0 {

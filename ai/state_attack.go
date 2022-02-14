@@ -1,7 +1,8 @@
 package ai
 
 import (
-	"math"
+	"fmt"
+	"math/rand"
 	"platformer/events"
 
 	"github.com/faiface/pixel"
@@ -27,6 +28,11 @@ func NewAttack(ai *Ai, w Worlder) *StateAttack {
 }
 
 func (s *StateAttack) Update(dt float64) {
+	if s.ai.attackskill == nil {
+		s.ai.SetState(CHOOSEATTACK, s.lastpos)
+		return
+	}
+
 	hero := s.w.GetHero()
 	herohp := hero.GetHp()
 	if herohp <= 0 {
@@ -34,9 +40,11 @@ func (s *StateAttack) Update(dt float64) {
 		return
 	}
 	heropos := hero.GetPos()
+
 	pos := s.ai.obj.GetPos()
 	dir := s.ai.obj.GetDir()
 	var isSee bool
+
 	if (heropos.X < pos.X && dir < 0) || (heropos.X > pos.X && dir > 0) {
 		isSee = s.w.IsSee(pos, heropos)
 		if !isSee {
@@ -44,6 +52,7 @@ func (s *StateAttack) Update(dt float64) {
 			if s.timer > s.nonseelimit {
 				s.ai.SetState(INVESTIGATE, s.lastpos)
 			}
+			return
 		} else {
 			s.lastpos = heropos
 			s.timer = 0
@@ -54,13 +63,31 @@ func (s *StateAttack) Update(dt float64) {
 	if s.lastpos.X > pos.X {
 		s.vec = pixel.Vec{1, 0}
 	}
-
-	if math.Abs(s.lastpos.X-pos.X) < s.ai.obj.GetAttackrange() && isSee {
-		s.vec = pixel.ZV
-		s.ai.obj.Notify(events.CTRL, s.vec)
-	} else {
+	l := pixel.L(pos, heropos)
+	currDist := l.Len()
+	if currDist < s.ai.attackskill.Min || currDist > s.ai.attackskill.Max {
+		// make decision - to step out or choose another attack skill
+		dice := rand.Float64()
+		if dice > 0.5 {
+			s.ai.SetState(CHOOSEATTACK, s.lastpos)
+			return
+		}
+		// step out of hero
+		if heropos.X < pos.X {
+			s.vec = pixel.Vec{1, 0}
+		} else {
+			s.vec = pixel.Vec{-1, 0}
+		}
 		s.ai.obj.Notify(events.WALK, s.vec)
+		return
 	}
+
+	// we already check that we see target and all distances are ok
+	s.vec = pixel.ZV
+	s.ai.obj.SetTarget(heropos)
+	s.ai.obj.SetSkill(s.ai.attackskill)
+	fmt.Println("attack state notify: ", s.ai.attackskill.Event, s.vec)
+	s.ai.obj.Notify(s.ai.attackskill.Event, s.vec)
 }
 
 func (s *StateAttack) Start(poi pixel.Vec) {

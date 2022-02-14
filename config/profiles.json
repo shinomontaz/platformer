@@ -13,8 +13,7 @@
         "mass": 50,
         "jump": 30,
         "walk": 80,
-        "run": 200,
-        "range": 19
+        "run": 200
     },
     {
         "type": "mummy",
@@ -30,7 +29,15 @@
         "jump": 0,
         "walk": 60,
         "run": 60,
-        "range": 19
+        "skills": [
+            {
+                "type": "melee",
+                "name": "strike",
+                "max": 19,
+                "min": 5,
+                "weight": 1
+            }
+        ]
     },
     {
         "type": "deceased",
@@ -46,7 +53,22 @@
         "jump": 0,
         "walk": 60,
         "run": 60,
-        "range": 100
+        "skills": [
+            {
+                "type": "melee",
+                "name": "strike",
+                "max": 19,
+                "min": 5,
+                "weight": 1
+            },
+            {
+                "type": "spell",
+                "name": "deathstrike",
+                "max": 250,
+                "min": 100,
+                "weight": 9
+            }
+        ]
     },
     {
         "type": "bigbloated",
@@ -62,7 +84,15 @@
         "jump": 0,
         "walk": 50,
         "run": 50,
-        "range": 30
+        "skills": [
+            {
+                "type": "melee",
+                "name": "strike",
+                "max": 35,
+                "min": 5,
+                "weight": 1
+            }
+        ]
     }
 
 ]

@@ -9,6 +9,7 @@ type Main struct {
 	AllAnims string  `json:"AllAnims"`
 	Profiles string  `json:"Profiles"`
 	Sounds   string  `json:"sounds"`
+	Spells   string  `json:"spells"`
 }
 
 type Anim struct {
@@ -41,6 +42,13 @@ type Anims struct {
 	Groups []AnGroup `json:"groups"`
 }
 
+type Skill struct {
+	Type   string  `json:"type"`
+	Name   string  `json:"name"`
+	Min    float64 `json:"min"`
+	Max    float64 `json:"max"`
+	Weight int     `json:"weight"`
+}
 type Profile struct {
 	Type     string  `json:"type"`
 	Anim     string  `json:"anim"`
@@ -55,7 +63,7 @@ type Profile struct {
 	Mass     float64 `json:"mass"`
 	Walk     float64 `json:"walk"`
 	Run      float64 `json:"run"`
-	Range    float64 `json:"range"`
+	Skills   []Skill `json:"skills"`
 }
 
 type Soundeffect struct {
@@ -65,4 +73,10 @@ type Soundeffect struct {
 type Soundprofile struct {
 	Type string        `json:"type"`
 	List []Soundeffect `json:"list"`
+}
+
+type Spellprofile struct {
+	Type  string `json:"type"`
+	Anim  string `json:"anim"`
+	Sound string `json:"sound"`
 }

@@ -5,6 +5,7 @@
     "Width": 640,
     "Height": 480,
     "AllAnims": "anims.json",
-    "Sounds": "sounds.json",
-    "Profiles": "profiles.json"
+    "Sounds": "soundprofiles.json",
+    "Profiles": "profiles.json",
+    "Spells": "spells.json"
 }

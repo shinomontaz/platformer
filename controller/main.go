@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"platformer/common"
 	"platformer/events"
 
 	"github.com/faiface/pixel"
@@ -10,19 +11,19 @@ import (
 type Controller struct {
 	win  *pixelgl.Window
 	vec  pixel.Vec
-	sbrs map[int]Subscriber
+	sbrs map[int]common.Subscriber
 }
 
 func New(win *pixelgl.Window) *Controller {
 	ctrl := &Controller{
 		win:  win,
-		sbrs: make(map[int]Subscriber),
+		sbrs: make(map[int]common.Subscriber),
 	}
 
 	return ctrl
 }
 
-func (pc *Controller) Subscribe(s Subscriber) {
+func (pc *Controller) Subscribe(s common.Subscriber) {
 	pc.sbrs[s.GetId()] = s
 }
 

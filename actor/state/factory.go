@@ -25,6 +25,8 @@ func New(code int, a Actor, an Animater) Stater {
 		st = NewMelee(a, an)
 	case MELEEMOVE:
 		st = NewMeleemove(a, an)
+	case CAST:
+		st = NewCast(a, an)
 	}
 	return st
 }

@@ -3,14 +3,12 @@ package actor
 import (
 	"math"
 	"math/rand"
-	"platformer/ai"
+	"platformer/common"
 	"platformer/events"
 	"platformer/sound"
 
 	"platformer/actor/state"
 	"platformer/actor/statemachine"
-
-	"platformer/magic"
 
 	"github.com/faiface/pixel"
 )
@@ -57,14 +55,19 @@ type Actor struct {
 
 	sm *statemachine.Machine
 	w  Worlder
-	ai *ai.Ai
 
 	hp          int
 	strength    int
 	portrait    *pixel.Sprite
 	sounds      map[string]soundeffect
 	attackrange float64
-	m           *magic.Magic
+
+	target pixel.Vec
+
+	sbrs map[int]common.Subscriber
+
+	skills      []*Skill
+	activeSkill *Skill
 }
 
 func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
@@ -77,6 +80,8 @@ func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
 		grav:    w.GetGravity(),
 		w:       w,
 		sounds:  make(map[string]soundeffect),
+		sbrs:    make(map[int]common.Subscriber),
+		skills:  make([]*Skill, 0),
 	}
 
 	for _, opt := range opts {
@@ -120,6 +125,9 @@ func (a *Actor) initStates() {
 		for _, st := range a.sm.GetStates() {
 			if _, ok := a.states[st]; !ok {
 				sState := state.New(st, a, a.anim)
+				if sState == nil {
+					panic("Fail to create actor state!")
+				}
 				a.states[st] = sState
 			}
 		}
@@ -192,14 +200,6 @@ func (a *Actor) GetRect() pixel.Rect {
 	return a.rect
 }
 
-func (a *Actor) GetMagic() *magic.Magic {
-	return a.m
-}
-
-func (a *Actor) GetAttackrange() float64 {
-	return a.attackrange
-}
-
 func (a *Actor) Update(dt float64) {
 	a.phys.Update(dt, &a.vec)
 	a.vec = pixel.ZV
@@ -240,7 +240,13 @@ func (a *Actor) Draw(t pixel.Target) {
 	//	a.phys.Draw(t)
 }
 
+func (a *Actor) GetSkills() []*Skill {
+	return a.skills
+}
+
 func (a *Actor) Strike() {
+	// TODO: get melee skill and strike by it
+
 	power := a.strength
 	//	 create a hitbox
 	center := a.rect.Center()
@@ -256,8 +262,20 @@ func (a *Actor) Strike() {
 	a.w.AddStrike(a, rect, power)
 }
 
-func (a *Actor) SetAi(ai *ai.Ai) {
-	a.ai = ai
+func (a *Actor) Cast() {
+	// TODO: get melee skill and cast spell by it
+	//	activeSkill
+	if a.activeSkill.Type == "spell" {
+		a.w.AddSpell(a, a.target, a.activeSkill.Name)
+	}
+}
+
+func (a *Actor) SetSkill(s *Skill) {
+	a.activeSkill = s
+}
+
+func (a *Actor) SetTarget(t pixel.Vec) {
+	a.target = t
 }
 
 func (a *Actor) AddSound(event string) {
@@ -276,6 +294,16 @@ func (a *Actor) GetPortrait() *pixel.Sprite {
 	return a.portrait
 }
 
+func (a *Actor) inform(e int, v pixel.Vec) {
+	for _, s := range a.sbrs {
+		s.Notify(e, v)
+	}
+}
+
+func (a *Actor) Subscribe(s common.Subscriber) {
+	a.sbrs[s.GetId()] = s
+}
+
 func (a *Actor) Hit(vec pixel.Vec, power int) {
 	if _, ok := a.states[state.HIT]; !ok { // cannot hit unhittable
 		return
@@ -286,13 +314,16 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 	a.hp -= power
 	if a.hp <= 0 {
 		a.SetState(state.DEAD)
-		if a.ai != nil {
-			a.ai.Notify(events.DIE, pixel.ZV)
-		}
+		a.inform(events.DIE, pixel.ZV)
+		// if a.ai != nil {
+		// 	a.ai.Notify(events.DIE, pixel.ZV)
+		// }
 		return
 	}
 	a.SetState(state.HIT)
-	if a.ai != nil {
-		a.ai.Notify(events.ALERT, pixel.Vec{-vec.X, vec.Y})
-	}
+	a.inform(events.ALERT, pixel.Vec{-vec.X, vec.Y})
+
+	// if a.ai != nil {
+	// 	a.ai.Notify(events.ALERT, pixel.Vec{-vec.X, vec.Y})
+	// }
 }

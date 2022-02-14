@@ -2,7 +2,6 @@ package factories
 
 import (
 	"platformer/actor"
-	"platformer/ai"
 	"platformer/animation"
 	"platformer/common"
 	"platformer/config"
@@ -14,9 +13,10 @@ type Worlder interface {
 	GetGravity() float64
 	GetQt() *common.Quadtree // temporary solution, we will check collision in the world ?
 	AddStrike(owner *actor.Actor, r pixel.Rect, power int)
+	AddSpell(owner *actor.Actor, t pixel.Vec, spell string)
 	AddAlert(pos pixel.Vec, force float64)
 	IsSee(from, to pixel.Vec) bool
-	GetHero() ai.Manageder
+	GetHero() *actor.Actor
 }
 
 func NewActor(prof config.Profile, w Worlder) *actor.Actor {
@@ -32,6 +32,6 @@ func NewActor(prof config.Profile, w Worlder) *actor.Actor {
 		actor.WithAnimDir(prof.Dir),
 		actor.WithPortrait(prof.Portrait),
 		actor.WithSound(config.Sounds[prof.Type].List),
-		actor.WithAttackrange(prof.Range),
+		actor.WithSkills(prof.Skills),
 	)
 }

@@ -298,7 +298,6 @@ func (w *World) AddEnemy(meta tmx.Object) {
 	enemy := factories.NewActor(config.Profiles[meta.Name], w)
 	enemy.Move(pixel.V(meta.X, w.Height-meta.Y))
 	factories.NewAi(config.Profiles[meta.Name].Type, enemy, w)
-	//	ai.New(enemy, w)
 	w.enemies = append(w.enemies, enemy)
 }
 
@@ -317,6 +316,10 @@ func (w *World) AddAlert(pos pixel.Vec, force float64) {
 
 func (w *World) AddStrike(owner *actor.Actor, r pixel.Rect, power int) {
 	AddStrike(owner, r, power)
+}
+
+func (w *World) AddSpell(owner *actor.Actor, t pixel.Vec, spell string) {
+	AddSpell(owner, t, spell)
 }
 
 func (w *World) Draw(win *pixelgl.Window) {

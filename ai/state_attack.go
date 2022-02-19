@@ -1,7 +1,6 @@
 package ai
 
 import (
-	"fmt"
 	"math/rand"
 	"platformer/events"
 
@@ -72,11 +71,11 @@ func (s *StateAttack) Update(dt float64) {
 			s.ai.SetState(CHOOSEATTACK, s.lastpos)
 			return
 		}
-		// step out of hero
+
 		if heropos.X < pos.X {
-			s.vec = pixel.Vec{1, 0}
-		} else {
 			s.vec = pixel.Vec{-1, 0}
+		} else {
+			s.vec = pixel.Vec{1, 0}
 		}
 		s.ai.obj.Notify(events.WALK, s.vec)
 		return
@@ -86,7 +85,7 @@ func (s *StateAttack) Update(dt float64) {
 	s.vec = pixel.ZV
 	s.ai.obj.SetTarget(heropos)
 	s.ai.obj.SetSkill(s.ai.attackskill)
-	fmt.Println("attack state notify: ", s.ai.attackskill.Event, s.vec)
+	//	fmt.Println("attack state notify: ", s.ai.attackskill.Event, s.vec)
 	s.ai.obj.Notify(s.ai.attackskill.Event, s.vec)
 }
 

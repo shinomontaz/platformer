@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"platformer/events"
 
 	"github.com/faiface/pixel"
 )
@@ -36,6 +37,7 @@ func NewMelee(a Actor, an Animater) *Melee {
 }
 
 func (s *Melee) Start() {
+	s.a.Inform(events.BUSY, pixel.ZV)
 	s.time = 0.0
 	s.attackidx = 1
 	s.striked = false
@@ -46,7 +48,7 @@ func (s *Melee) Start() {
 	s.a.AddSound("melee")
 }
 
-func (s *Melee) Notify(e int, v *pixel.Vec) {
+func (s *Melee) Listen(e int, v *pixel.Vec) {
 	// here we don't care of any controller event
 	s.vel = v.Len()
 	s.checkTransitions(e, v)

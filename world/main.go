@@ -231,6 +231,7 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 	}
 
 	updateStrikes(dt, w.enemies, w.hero)
+	updateSpells(dt, w.enemies, w.hero)
 	updateAlerts(dt)
 }
 
@@ -308,7 +309,7 @@ func (w *World) AddAlert(pos pixel.Vec, force float64) {
 		if alrect.Contains(en.GetPos()) {
 			a := ai.GetByObj(en)
 			if a != nil {
-				a.Notify(events.ALERT, alrect.Center())
+				a.Listen(events.ALERT, alrect.Center())
 			}
 		}
 	}
@@ -375,4 +376,6 @@ func (w *World) Draw(win *pixelgl.Window) {
 	if w.hero != nil {
 		w.hero.Draw(win)
 	}
+
+	drawSpells(win)
 }

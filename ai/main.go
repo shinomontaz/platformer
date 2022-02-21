@@ -45,7 +45,7 @@ func NewCommon(obj *actor.Actor, w Worlder) *Ai {
 	a.SetState(IDLE, pixel.ZV)
 
 	list[obj] = a
-	obj.Subscribe(a)
+	obj.AddListener(a)
 
 	counter++
 	return a
@@ -69,7 +69,7 @@ func NewMage(obj *actor.Actor, w Worlder) *Ai {
 
 	//	a.initStates()
 	list[obj] = a
-	obj.Subscribe(a)
+	obj.AddListener(a)
 
 	counter++
 	//	list = append(list, a)
@@ -110,6 +110,6 @@ func (a *Ai) GetPos() pixel.Vec {
 	return a.obj.GetPos()
 }
 
-func (a *Ai) Notify(e int, v pixel.Vec) {
-	a.state.Notify(e, v)
+func (a *Ai) Listen(e int, v pixel.Vec) {
+	a.state.Listen(e, v)
 }

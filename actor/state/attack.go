@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"platformer/events"
 
 	"github.com/faiface/pixel"
 )
@@ -41,7 +42,8 @@ func (s *Attack) Start() {
 	}
 }
 
-func (s *Attack) Notify(e int, v *pixel.Vec) {
+func (s *Attack) Listen(e int, v *pixel.Vec) {
+	s.a.Inform(events.BUSY, pixel.ZV)
 	// here we don't care of any controller event
 	s.checkTransitions(e, v)
 }

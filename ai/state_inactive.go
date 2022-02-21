@@ -24,7 +24,7 @@ func (s *StateInactive) Start(poi pixel.Vec) {
 
 }
 
-func (s *StateInactive) Notify(e int, v pixel.Vec) {
+func (s *StateInactive) Listen(e int, v pixel.Vec) {
 
 }
 

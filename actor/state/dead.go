@@ -2,6 +2,7 @@ package state
 
 import (
 	"math"
+	"platformer/events"
 
 	"github.com/faiface/pixel"
 )
@@ -29,10 +30,11 @@ func NewDead(a Actor, an Animater) *Dead {
 }
 
 func (s *Dead) Start() {
+	s.a.Inform(events.BUSY, pixel.ZV)
 	s.counter = 0
 }
 
-func (s *Dead) Notify(e int, v *pixel.Vec) {
+func (s *Dead) Listen(e int, v *pixel.Vec) {
 	// here we don't care of any controller event
 }
 

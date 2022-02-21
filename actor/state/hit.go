@@ -2,6 +2,7 @@ package state
 
 import (
 	"math"
+	"platformer/events"
 
 	"github.com/faiface/pixel"
 )
@@ -30,6 +31,7 @@ func NewHit(a Actor, an Animater) *Hit {
 }
 
 func (s *Hit) Start() {
+	s.a.Inform(events.BUSY, pixel.ZV)
 	s.counter = 0
 	// aa := s.a.GetAi()
 	// if aa != nil {
@@ -38,7 +40,7 @@ func (s *Hit) Start() {
 	s.a.AddSound("hit")
 }
 
-func (s *Hit) Notify(e int, v *pixel.Vec) {
+func (s *Hit) Listen(e int, v *pixel.Vec) {
 	// here we don't care of any controller event
 	//	s.checkTransitions(e, v)
 }

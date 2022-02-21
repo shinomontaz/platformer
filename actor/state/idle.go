@@ -32,6 +32,7 @@ func NewIdle(a Actor, an Animater) *Idle {
 }
 
 func (s *Idle) Start() {
+	s.a.Inform(events.RELEASED, pixel.ZV)
 	s.counter = 0
 	s.animSpriteNum = 0
 	s.a.AddSound("idle")
@@ -45,7 +46,7 @@ func (s *Idle) Update(dt float64) {
 	}
 }
 
-func (s *Idle) Notify(e int, v *pixel.Vec) {
+func (s *Idle) Listen(e int, v *pixel.Vec) {
 	switch e {
 	case events.WALK:
 		s.a.SetState(WALK)

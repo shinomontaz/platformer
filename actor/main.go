@@ -147,7 +147,7 @@ func (a *Actor) GetId() int {
 	return a.id
 }
 
-func (a *Actor) Notify(e int, v pixel.Vec) {
+func (a *Actor) Listen(e int, v pixel.Vec) {
 	if a.state.Busy() {
 		return
 	}
@@ -181,7 +181,7 @@ func (a *Actor) Notify(e int, v pixel.Vec) {
 		a.isShift = !a.isShift
 	}
 
-	a.state.Notify(e, &a.vel)
+	a.state.Listen(e, &a.vel)
 
 	a.vec = v
 }
@@ -210,7 +210,7 @@ func (a *Actor) Update(dt float64) {
 	} else if (math.Abs(a.vel.X) >= a.walkspeed && math.Abs(newspeed.X) <= a.walkspeed) || (a.vel.X == 0 && math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed) {
 		event = events.WALK
 	}
-	a.state.Notify(event, newspeed)
+	a.state.Listen(event, newspeed)
 	a.vel = *newspeed
 
 	a.rect = a.phys.GetRect()
@@ -294,13 +294,13 @@ func (a *Actor) GetPortrait() *pixel.Sprite {
 	return a.portrait
 }
 
-func (a *Actor) inform(e int, v pixel.Vec) {
+func (a *Actor) Inform(e int, v pixel.Vec) {
 	for _, s := range a.sbrs {
-		s.Notify(e, v)
+		s.Listen(e, v)
 	}
 }
 
-func (a *Actor) Subscribe(s common.Subscriber) {
+func (a *Actor) AddListener(s common.Subscriber) {
 	a.sbrs[s.GetId()] = s
 }
 
@@ -314,14 +314,14 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 	a.hp -= power
 	if a.hp <= 0 {
 		a.SetState(state.DEAD)
-		a.inform(events.DIE, pixel.ZV)
+		a.Inform(events.DIE, pixel.ZV)
 		// if a.ai != nil {
 		// 	a.ai.Notify(events.DIE, pixel.ZV)
 		// }
 		return
 	}
 	a.SetState(state.HIT)
-	a.inform(events.ALERT, pixel.Vec{-vec.X, vec.Y})
+	a.Inform(events.ALERT, pixel.Vec{-vec.X, vec.Y})
 
 	// if a.ai != nil {
 	// 	a.ai.Notify(events.ALERT, pixel.Vec{-vec.X, vec.Y})

@@ -104,7 +104,7 @@ func (s *StateChooseAttack) Start(poi pixel.Vec) {
 	s.lastpos = poi
 }
 
-func (s *StateChooseAttack) Notify(e int, v pixel.Vec) {
+func (s *StateChooseAttack) Listen(e int, v pixel.Vec) {
 
 }
 

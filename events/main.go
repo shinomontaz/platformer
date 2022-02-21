@@ -10,4 +10,6 @@ const (
 	ALERT
 	DIE
 	CAST
+	BUSY
+	RELEASED
 )

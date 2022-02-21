@@ -26,7 +26,7 @@ type Stater interface {
 	GetId() int
 	Start()
 	Update(dt float64)
-	Notify(e int, v *pixel.Vec)
+	Listen(e int, v *pixel.Vec)
 	GetSprite() *pixel.Sprite
 	Busy() bool
 }
@@ -37,6 +37,7 @@ type Actor interface {
 	Strike()
 	Cast()
 	AddSound(event string)
+	Inform(e int, v pixel.Vec)
 }
 
 type Animater interface {

@@ -2,6 +2,7 @@ package state
 
 import (
 	"math"
+	"platformer/events"
 
 	"github.com/faiface/pixel"
 )
@@ -29,6 +30,7 @@ func NewJump(a Actor, an Animater) *Jump {
 }
 
 func (s *Jump) Start() {
+	s.a.Inform(events.BUSY, pixel.ZV)
 	s.jumpLimit = 1.0
 	s.animSpriteNum = 0
 	s.counter = 0
@@ -42,7 +44,7 @@ func (s *Jump) Update(dt float64) {
 	}
 }
 
-func (s *Jump) Notify(e int, v *pixel.Vec) {
+func (s *Jump) Listen(e int, v *pixel.Vec) {
 	// switch e {
 	// case events.WALK:
 	// 	s.a.SetState(WALK)

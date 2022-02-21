@@ -30,6 +30,7 @@ func NewStand(a Actor, an Animater) *Stand {
 }
 
 func (s *Stand) Start() {
+	s.a.Inform(events.RELEASED, pixel.ZV)
 	s.counter = 0
 }
 
@@ -40,7 +41,7 @@ func (s *Stand) Update(dt float64) {
 	}
 }
 
-func (s *Stand) Notify(e int, v *pixel.Vec) {
+func (s *Stand) Listen(e int, v *pixel.Vec) {
 	switch e {
 	case events.WALK:
 		s.a.SetState(WALK)

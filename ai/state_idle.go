@@ -39,7 +39,7 @@ func (s *StateIdle) Start(poi pixel.Vec) {
 
 }
 
-func (s *StateIdle) Notify(e int, v pixel.Vec) {
+func (s *StateIdle) Listen(e int, v pixel.Vec) {
 	if e == events.ALERT {
 		s.ai.SetState(INVESTIGATE, v)
 	}

@@ -77,7 +77,7 @@ func (s *StateAttack) Update(dt float64) {
 		} else {
 			s.vec = pixel.Vec{1, 0}
 		}
-		s.ai.obj.Notify(events.WALK, s.vec)
+		s.ai.obj.Listen(events.WALK, s.vec)
 		return
 	}
 
@@ -86,15 +86,15 @@ func (s *StateAttack) Update(dt float64) {
 	s.ai.obj.SetTarget(heropos)
 	s.ai.obj.SetSkill(s.ai.attackskill)
 	//	fmt.Println("attack state notify: ", s.ai.attackskill.Event, s.vec)
-	s.ai.obj.Notify(s.ai.attackskill.Event, s.vec)
+	s.ai.obj.Listen(s.ai.attackskill.Event, s.vec)
 }
 
 func (s *StateAttack) Start(poi pixel.Vec) {
 	s.lastpos = poi
 }
 
-func (s *StateAttack) Notify(e int, v pixel.Vec) {
-
+func (s *StateAttack) Listen(e int, v pixel.Vec) {
+	// handle event dead
 }
 
 func (s *StateAttack) IsAlerted() bool {

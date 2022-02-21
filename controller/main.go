@@ -29,7 +29,7 @@ func (pc *Controller) Subscribe(s common.Subscriber) {
 
 func (pc *Controller) Notify(e int) {
 	for _, s := range pc.sbrs {
-		s.Notify(e, pc.vec)
+		s.Listen(e, pc.vec)
 	}
 }
 

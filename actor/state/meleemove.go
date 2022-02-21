@@ -2,6 +2,7 @@ package state
 
 import (
 	"math"
+	"platformer/events"
 
 	"github.com/faiface/pixel"
 )
@@ -32,13 +33,14 @@ func NewMeleemove(a Actor, an Animater) *Meleemove {
 }
 
 func (s *Meleemove) Start() {
+	s.a.Inform(events.BUSY, pixel.ZV)
 	s.time = 0.0
 	s.attackidx = 3
 	s.striked = false
 	s.a.AddSound("melee")
 }
 
-func (s *Meleemove) Notify(e int, v *pixel.Vec) {
+func (s *Meleemove) Listen(e int, v *pixel.Vec) {
 	// here we don't care of any controller event
 	s.vel = v.Len()
 	s.checkTransitions(e, v)

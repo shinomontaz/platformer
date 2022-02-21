@@ -29,6 +29,7 @@ func NewFall(a Actor, an Animater) *Fall {
 }
 
 func (s *Fall) Start() {
+	s.a.Inform(events.BUSY, pixel.ZV)
 	s.fallLimit = 1.0
 	s.animSpriteNum = 3
 }
@@ -40,7 +41,7 @@ func (s *Fall) Update(dt float64) {
 	}
 }
 
-func (s *Fall) Notify(e int, v *pixel.Vec) {
+func (s *Fall) Listen(e int, v *pixel.Vec) {
 	if v.Y == 0 {
 		switch e {
 		case events.WALK:

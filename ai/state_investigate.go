@@ -53,11 +53,11 @@ func (s *StateInvestigate) Update(dt float64) {
 	if s.timer > s.timeout {
 		s.ai.SetState(IDLE, pixel.ZV)
 	} else {
-		s.ai.obj.Notify(events.WALK, vec)
+		s.ai.obj.Listen(events.WALK, vec)
 	}
 }
 
-func (s *StateInvestigate) Notify(e int, v pixel.Vec) {
+func (s *StateInvestigate) Listen(e int, v pixel.Vec) {
 }
 
 func (s *StateInvestigate) Start(poi pixel.Vec) {

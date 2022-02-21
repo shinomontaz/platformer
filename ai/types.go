@@ -10,13 +10,13 @@ type Stater interface {
 	Update(dt float64)
 	Start(poi pixel.Vec)
 	IsAlerted() bool
-	Notify(e int, v pixel.Vec)
+	Listen(e int, v pixel.Vec)
 }
 
-type Subscriber interface {
-	GetId() int
-	Notify(e int, v pixel.Vec)
-}
+// type Subscriber interface {
+// 	GetId() int
+// 	Listen(e int, v pixel.Vec)
+// }
 
 type Worlder interface {
 	GetHero() *actor.Actor

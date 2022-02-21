@@ -29,6 +29,7 @@ func NewRun(a Actor, an Animater) *Run {
 }
 
 func (s *Run) Start() {
+	s.a.Inform(events.RELEASED, pixel.ZV)
 	s.counter = 0
 }
 
@@ -37,7 +38,7 @@ func (s *Run) Update(dt float64) {
 	s.animSpriteNum = int(math.Floor(s.counter / 0.1))
 }
 
-func (s *Run) Notify(e int, v *pixel.Vec) {
+func (s *Run) Listen(e int, v *pixel.Vec) {
 	switch e {
 	case events.WALK:
 		s.a.SetState(WALK)

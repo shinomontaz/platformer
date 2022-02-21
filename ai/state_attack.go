@@ -15,6 +15,7 @@ type StateAttack struct {
 	nonseelimit float64
 	lastpos     pixel.Vec
 	vec         pixel.Vec
+	isbusy      bool
 }
 
 func NewAttack(ai *Ai, w Worlder) *StateAttack {
@@ -27,6 +28,10 @@ func NewAttack(ai *Ai, w Worlder) *StateAttack {
 }
 
 func (s *StateAttack) Update(dt float64) {
+	if s.isbusy {
+		return
+	}
+
 	if s.ai.attackskill == nil {
 		s.ai.SetState(CHOOSEATTACK, s.lastpos)
 		return
@@ -94,7 +99,12 @@ func (s *StateAttack) Start(poi pixel.Vec) {
 }
 
 func (s *StateAttack) Listen(e int, v pixel.Vec) {
-	// handle event dead
+	if e == events.BUSY {
+		s.isbusy = true
+	}
+	if e == events.RELEASED {
+		s.isbusy = false
+	}
 }
 
 func (s *StateAttack) IsAlerted() bool {

@@ -7,9 +7,10 @@ import (
 )
 
 type StateIdle struct {
-	id int
-	w  Worlder
-	ai *Ai
+	id     int
+	w      Worlder
+	ai     *Ai
+	isbusy bool
 }
 
 func NewIdle(ai *Ai, w Worlder) *StateIdle {
@@ -21,6 +22,10 @@ func NewIdle(ai *Ai, w Worlder) *StateIdle {
 }
 
 func (s *StateIdle) Update(dt float64) {
+	if s.isbusy {
+		return
+	}
+
 	hero := s.w.GetHero()
 	herohp := hero.GetHp()
 	heropos := hero.GetPos()
@@ -42,6 +47,12 @@ func (s *StateIdle) Start(poi pixel.Vec) {
 func (s *StateIdle) Listen(e int, v pixel.Vec) {
 	if e == events.ALERT {
 		s.ai.SetState(INVESTIGATE, v)
+	}
+	if e == events.BUSY {
+		s.isbusy = true
+	}
+	if e == events.RELEASED {
+		s.isbusy = false
 	}
 }
 

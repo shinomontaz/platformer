@@ -1,7 +1,6 @@
 package world
 
 import (
-	"fmt"
 	"platformer/actor"
 	"platformer/ai"
 	"platformer/magic"
@@ -24,10 +23,9 @@ func init() {
 }
 
 func AddSpell(owner *actor.Actor, t pixel.Vec, spell string) {
-	fmt.Println("add spell!")
 	// add spell here
 	//	s string, source, target pixel.Vec
-	sp := magic.Create(spell, owner.GetPos(), t)
+	sp := magic.Create(spell, owner, t)
 
 	if ai.GetByObj(owner) != nil {
 		enspells = append(enspells, sp)
@@ -36,30 +34,54 @@ func AddSpell(owner *actor.Actor, t pixel.Vec, spell string) {
 	}
 }
 
-/*
-func (m *Magic) Update(dt float64) {
-	i := 0
-	for _, s := range m.spells {
-		s.Update(dt)
-		if !s.IsFinished() {
-			m.spells[i] = s
-			i++
-		}
-	}
-
-	m.spells = m.spells[:i]
-}
-*/
-
 func updateSpells(dt float64, enemies []*actor.Actor, player *actor.Actor) {
 	updatePlSpells(dt, enemies)
 	updateEnSpells(dt, []*actor.Actor{player})
 }
 
 func updatePlSpells(dt float64, hittable []*actor.Actor) {
+	i := 0
+	for _, s := range plspells {
+		//		for _, hh := range hittable {
+		// if hh == s.GetOwner() {
+		// 	continue
+		// }
+		// if s.GetHitted(hh) {
+		// 	continue
+		// }
+
+		//			r := hh.GetRect()
+		// if s.GetRect().Intersects(r) {
+		// 	vec := pixel.ZV // TODO: detect hit vector
+		// 	vec.X = -1
+		// 	if r.Center().X > b.dir.A.X {
+		// 		vec.X = 1
+		// 	}
+		// 	hh.Hit(vec, s.GetPower())
+		// 	b.hitted[hh] = struct{}{}
+		// }
+		//		}
+		s.Update(dt)
+		if !s.IsFinished() {
+			plspells[i] = s
+			i++
+		}
+	}
+
+	plspells = plspells[:i]
 }
 
 func updateEnSpells(dt float64, hittable []*actor.Actor) {
+	i := 0
+	for _, s := range enspells {
+		s.Update(dt)
+		if !s.IsFinished() {
+			enspells[i] = s
+			i++
+		}
+	}
+
+	enspells = enspells[:i]
 }
 
 func drawSpells(t pixel.Target) {

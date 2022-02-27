@@ -23,6 +23,18 @@ func init() {
 	}
 	fonts["regular"] = reg
 
+	menu, err := loadFont("assets/fonts/capture.ttf", 20)
+	if err != nil {
+		panic(err)
+	}
+	fonts["menu"] = menu
+
+	menusmall, err := loadFont("assets/fonts/capture.ttf", 12)
+	if err != nil {
+		panic(err)
+	}
+	fonts["menusmall"] = menusmall
+
 }
 
 func GetFont(s string) font.Face {
@@ -40,8 +52,9 @@ func loadFont(path string, size float64) (font.Face, error) {
 		return nil, err
 	}
 	face := truetype.NewFace(f, &truetype.Options{
-		Size:    size,
-		Hinting: font.HintingFull,
+		Size:              size,
+		Hinting:           font.HintingFull,
+		GlyphCacheEntries: 1,
 	})
 	return face, nil
 }

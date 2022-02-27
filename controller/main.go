@@ -11,20 +11,20 @@ import (
 type Controller struct {
 	win  *pixelgl.Window
 	vec  pixel.Vec
-	sbrs map[int]common.Subscriber
+	sbrs []common.Subscriber
 }
 
 func New(win *pixelgl.Window) *Controller {
 	ctrl := &Controller{
 		win:  win,
-		sbrs: make(map[int]common.Subscriber),
+		sbrs: make([]common.Subscriber, 0),
 	}
 
 	return ctrl
 }
 
 func (pc *Controller) Subscribe(s common.Subscriber) {
-	pc.sbrs[s.GetId()] = s
+	pc.sbrs = append(pc.sbrs, s)
 }
 
 func (pc *Controller) Notify(e int) {
@@ -57,9 +57,17 @@ func (pc *Controller) Update() {
 		isMoved = true
 	}
 
-	if pc.win.Pressed(pixelgl.KeyUp) {
+	if pc.win.JustPressed(pixelgl.KeyUp) {
 		pc.vec.Y++
 		isMoved = true
+	}
+	if pc.win.JustPressed(pixelgl.KeyDown) {
+		pc.vec.Y--
+		isMoved = true
+	}
+
+	if pc.win.JustPressed(pixelgl.KeyEnter) {
+		pc.Notify(events.ENTER)
 	}
 
 	if pc.win.JustReleased(pixelgl.KeyLeft) || pc.win.JustReleased(pixelgl.KeyRight) || pc.win.JustReleased(pixelgl.KeyUp) {

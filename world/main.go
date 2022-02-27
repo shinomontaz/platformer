@@ -243,21 +243,6 @@ func (w *World) GetGravity() float64 {
 	return w.gravity
 }
 
-func (w *World) Data() pixel.Rect {
-	rect := pixel.Rect{
-		Min: pixel.V(
-			float64(w.meta.X),
-			w.Height-float64(w.meta.Y)-float64(w.meta.Height),
-		),
-		Max: pixel.V(
-			float64(w.meta.X)+float64(w.meta.Width),
-			w.Height-float64(w.meta.Y),
-		),
-	}
-
-	return rect
-}
-
 func (w *World) AddHero(h *actor.Actor) {
 	w.hero = h
 }
@@ -321,6 +306,22 @@ func (w *World) AddStrike(owner *actor.Actor, r pixel.Rect, power int) {
 
 func (w *World) AddSpell(owner *actor.Actor, t pixel.Vec, spell string) {
 	AddSpell(owner, t, spell)
+}
+
+func (w *World) GetCenter() pixel.Vec {
+	rect := pixel.Rect{
+		Min: pixel.V(
+			float64(w.meta.X),
+			w.Height-float64(w.meta.Y)-float64(w.meta.Height),
+		),
+		Max: pixel.V(
+			float64(w.meta.X)+float64(w.meta.Width),
+			w.Height-float64(w.meta.Y),
+		),
+	}
+	return rect.Center()
+	//	return pixel.V(float64(w.meta.X), w.Height-float64(w.meta.Y)-float64(w.meta.Height))
+
 }
 
 func (w *World) Draw(win *pixelgl.Window) {

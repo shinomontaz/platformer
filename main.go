@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"image/color"
-	"math"
 	"math/rand"
 	"time"
 
@@ -11,9 +8,6 @@ import (
 	"platformer/animation"
 	"platformer/background"
 	"platformer/config"
-	"platformer/factories"
-	"platformer/magic"
-	"platformer/sound"
 	"platformer/ui"
 	"platformer/world"
 
@@ -29,6 +23,8 @@ func init() {
 	for _, anim := range config.AnimConfig {
 		animation.Load(&anim)
 	}
+	// load video mode and sound volumes
+	initRuntime()
 }
 
 var (
@@ -40,69 +36,30 @@ var (
 	ctrl       *controller.Controller
 	title      string     = "platformer"
 	currBounds pixel.Rect // current viewport
-	//	tolerantBounds pixel.Rect // moving inside this rect will not result in camera update
 
 	initialCenter pixel.Vec
 	lastPos       pixel.Vec
+	ismenu        bool
 )
 
 func gameLoop(win *pixelgl.Window) {
-
-	var (
-		camPos    = pixel.ZV
-		frames    = 0
-		second    = time.Tick(time.Second)
-		frametime = time.Tick(120 * time.Millisecond)
-	)
-
 	last := time.Now()
-	rgba := color.RGBA{123, 175, 213, 1}
 
 	for !win.Closed() {
 		dt := time.Since(last).Seconds()
 		last = time.Now()
-		win.Clear(rgba)
-
-		pos := hero.GetPos()
-		sound.Update(pos)
-		deltaVec := lastPos.To(pos)
-		//		if !tolerantBounds.Contains(pos) {
-		camPos = pixel.Lerp(camPos, initialCenter.Sub(pos).Sub(pixel.V(0, 150)), 1-math.Pow(1.0/128, dt)) // standart with moving cam slightly down
-		//		tolerantBounds = tolerantBounds.Moved(deltaVec)
-		//		}
-		cam := pixel.IM.Moved(camPos)
-
-		win.SetMatrix(cam)
-		currBounds = currBounds.Moved(deltaVec)
-
 		ctrl.Update() // - here we capture control signals, so actor physics receive input from controller
-		w.Update(currBounds, dt)
 
-		b.Draw(win, pos, camPos)
-		w.Draw(win)
-		u.Draw(win, pos, camPos)
-
-		lastPos = pos
-		win.Update()
-
-		frames++
-		select {
-		case <-frametime:
-			//			hero.Tick()
-		case <-second:
-			win.SetTitle(fmt.Sprintf("%s | FPS: %d", title, frames))
-			frames = 0
-		default:
+		if ismenu {
+			menuFunc(win, dt)
+		} else {
+			gameFunc(win, dt)
 		}
+		win.Update()
 	}
 }
 
 func run() {
-	w = world.New("my.tmx")
-	w.InitEnemies()
-
-	currBounds = w.Data()
-
 	cfg := pixelgl.WindowConfig{
 		Title:  title,
 		Bounds: currBounds,
@@ -113,28 +70,13 @@ func run() {
 	if err != nil {
 		panic(err)
 	}
-
-	magic.SetWorld(w)
-	sound.PlayMusic("main")
-	// mons := pixelgl.Monitors()
-	// if len(mons) > 0 {
-	// 	win.SetMonitor(mons[0])
-	// }
-
 	win.SetSmooth(true)
-
 	ctrl = controller.New(win)
 
-	initialCenter = currBounds.Center()
-	hero = factories.NewActor(config.Profiles["player"], w)
-	hero.Move(initialCenter)
-	ctrl.Subscribe(hero)
-	w.AddHero(hero)
+	initGame(win)
+	initMenu(win)
 
-	u = ui.New(hero, currBounds)
-	lastPos = hero.GetPos()
-	b = background.New(lastPos, currBounds.Moved(pixel.Vec{0, 100}), "assets/gamebackground.png")
-	//	b = background.NewParallax(lastPos, currBounds.Moved(pixel.Vec{0, 100}))
+	ismenu = true
 
 	gameLoop(win)
 }

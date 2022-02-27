@@ -33,7 +33,6 @@ const (
 )
 
 type Actor struct {
-	id   int
 	phys Phys
 
 	state  Stater
@@ -64,7 +63,7 @@ type Actor struct {
 
 	target pixel.Vec
 
-	sbrs map[int]common.Subscriber
+	sbrs []common.Subscriber
 
 	skills      []*Skill
 	activeSkill *Skill
@@ -80,7 +79,7 @@ func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
 		grav:    w.GetGravity(),
 		w:       w,
 		sounds:  make(map[string]soundeffect),
-		sbrs:    make(map[int]common.Subscriber),
+		sbrs:    make([]common.Subscriber, 0),
 		skills:  make([]*Skill, 0),
 	}
 
@@ -141,10 +140,6 @@ func (a *Actor) GetTransition(state int) statemachine.Transition {
 		return a.sm.GetTransition(state)
 	}
 	return statemachine.Transition{}
-}
-
-func (a *Actor) GetId() int {
-	return a.id
 }
 
 func (a *Actor) Listen(e int, v pixel.Vec) {
@@ -301,7 +296,7 @@ func (a *Actor) Inform(e int, v pixel.Vec) {
 }
 
 func (a *Actor) AddListener(s common.Subscriber) {
-	a.sbrs[s.GetId()] = s
+	a.sbrs = append(a.sbrs, s)
 }
 
 func (a *Actor) Hit(vec pixel.Vec, power int) {

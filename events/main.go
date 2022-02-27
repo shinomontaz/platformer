@@ -12,4 +12,5 @@ const (
 	CAST
 	BUSY
 	RELEASED
+	ENTER
 )

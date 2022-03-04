@@ -40,12 +40,13 @@ var (
 	initialCenter pixel.Vec
 	lastPos       pixel.Vec
 	ismenu        bool
+	isquit        bool
 )
 
 func gameLoop(win *pixelgl.Window) {
 	last := time.Now()
 
-	for !win.Closed() {
+	for !win.Closed() && !isquit {
 		dt := time.Since(last).Seconds()
 		last = time.Now()
 		ctrl.Update() // - here we capture control signals, so actor physics receive input from controller

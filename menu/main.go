@@ -1,94 +1,82 @@
 package menu
 
 import (
-	"platformer/common"
-	"platformer/menu/submenu"
+	"platformer/events"
 
 	"github.com/faiface/pixel"
 )
 
 type Menu struct {
-	currmenu Menuer
-	submenus map[int]Menuer
+	items    []*Item
+	curr     int
 	rect     pixel.Rect
-	sbrs     []common.Subscriber
-	vc       func(bool) // video mode callback
-	smc      func(int)  // sound music callback
-	sec      func(int)  // sound effects callback
+	isactive bool
 }
 
-func NewMain(r pixel.Rect) *Menu {
-	m := &Menu{
-		rect: r,
-		sbrs: make([]common.Subscriber, 0),
+func New(r pixel.Rect) *Menu {
+	return &Menu{
+		items: make([]*Item, 0),
+		rect:  r,
 	}
-
-	smMain := submenu.NewMain(m)
-	smVideo := submenu.NewVideo(m)
-
-	m.submenus = map[int]Menuer{
-		submenu.MAIN:  smMain,
-		submenu.VIDEO: smVideo,
-	}
-
-	m.SetState(submenu.MAIN)
-
-	return m
-}
-
-func (m *Menu) inform(e int, v pixel.Vec) {
-	for _, s := range m.sbrs {
-		s.Listen(e, v)
-	}
-}
-
-func (m *Menu) AddListener(s common.Subscriber) {
-	m.sbrs = append(m.sbrs, s)
-}
-
-func (m *Menu) SetState(id int) {
-	m.currmenu = m.submenus[id]
-	m.currmenu.Start()
 }
 
 func (m *Menu) GetRect() pixel.Rect {
 	return m.rect
 }
 
-func (m *Menu) Update(dt float64) {
-	m.currmenu.Update(dt)
+func (m *Menu) SetActive(a bool) {
+	m.isactive = a
 }
 
 func (m *Menu) Listen(e int, v pixel.Vec) {
-	m.currmenu.Listen(e, v)
+	if !m.isactive {
+		return
+	}
+
+	// if up or down - handle just here, otherwise make item handle it
+	prevcurr := m.curr
+	ismoved := false
+	if v.Y > 0 {
+		m.curr = (m.curr - 1 + len(m.items)) % len(m.items)
+		ismoved = true
+	}
+	if v.Y < 0 {
+		m.curr = (m.curr + 1) % len(m.items)
+		ismoved = true
+	}
+	if ismoved {
+		m.items[prevcurr].Select(false)
+		m.items[m.curr].Select(true)
+		return
+	}
+	if e == events.ENTER {
+		m.items[m.curr].Action()
+		return
+	}
+
+	m.items[m.curr].Listen(e, v)
 }
 
-func (m *Menu) Draw(t pixel.Target) {
-	m.currmenu.Draw(t)
+func (m *Menu) AddItem(it *Item) {
+	offsetY := m.rect.H() / 1.6
+	b := it.Bounds()
+	i := len(m.items)
+	c := m.rect.Center()
+	pos := pixel.V(c.X-b.W()/2, offsetY-float64(i)*b.H())
+
+	it.Place(pos)
+
+	m.items = append(m.items, it)
 }
 
-func (m *Menu) VideoCallback(fs func(bool)) {
-	m.vc = fs
-}
-
-func (m *Menu) AudioCallback(ch string, fs func(int)) {
-	switch ch {
-	case "music":
-		m.smc = fs
-	case "effects":
-		m.sec = fs
+func (m *Menu) Update(dt float64) {
+	for _, it := range m.items {
+		it.Update(dt)
 	}
 }
 
-func (m *Menu) OnVideo(isfullscreen bool) {
-	m.vc(isfullscreen)
-}
-
-func (m *Menu) OnAudio(ch string, volume int) {
-	switch ch {
-	case "music":
-		m.smc(volume)
-	case "effects":
-		m.sec(volume)
+func (m *Menu) Draw(t pixel.Target) {
+	for _, it := range m.items {
+		it.Draw(t)
 	}
 }

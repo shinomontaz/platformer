@@ -277,7 +277,19 @@
                 "frames": [1, 0, 1]
             }
         ]
+    },
+    {
+        "type": "scenery",
+        "width": 64,
+        "height": 64,
+        "margin": 0,    
+        "list":  [
+            {
+                "name": "campfire",
+                "file":"assets/scenery/spr_FirePlace_strip.png",
+                "frames": [6, 0, 6]
+            }
+        ]
     }
-    
     
 ]

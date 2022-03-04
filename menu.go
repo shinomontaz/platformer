@@ -2,22 +2,37 @@ package main
 
 import (
 	"fmt"
+	"image/color"
+	"math"
+	"platformer/animation"
 	"platformer/common"
 	"platformer/menu"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
+	"golang.org/x/image/colornames"
 )
 
-var mainmenu *menu.Menu
-var displaymenu *menu.Menu
-var activemenu *menu.Menu
+var (
+	mainmenu       *menu.Menu
+	displaymenu    *menu.Menu
+	activemenu     *menu.Menu
+	mainmenurba    color.Color
+	anims          *animation.Anims
+	animSpriteNum  int
+	currtime       float64
+	campfiresprite *pixel.Sprite
+)
 
 func initMenu(win *pixelgl.Window) {
 	videoModes := pixelgl.PrimaryMonitor().VideoModes()
 	currentVideoMode := len(videoModes) - 1
 	isFullscreen := false
+	mainmenurba = colornames.Black
+
+	anims = animation.Get("scenery")
+	campfiresprite = pixel.NewSprite(nil, pixel.Rect{})
 
 	// main menu
 	mainmenu = menu.New(currBounds)
@@ -83,9 +98,15 @@ func initMenu(win *pixelgl.Window) {
 }
 
 func menuFunc(win *pixelgl.Window, dt float64) {
-	win.Clear(rgba)
+	win.Clear(mainmenurba)
+
+	currtime += dt
+	animSpriteNum = int(math.Floor(currtime / 0.2))
+	pic, rect := anims.GetSprite("campfire", animSpriteNum)
+	campfiresprite.Set(pic, rect)
+	c := currBounds.Min
+	campfiresprite.Draw(win, pixel.IM.Moved(pixel.V(c.X+100, c.Y+100)))
 
 	activemenu.Update(dt)
-	// draw menu background
 	activemenu.Draw(win)
 }

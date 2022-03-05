@@ -289,6 +289,10 @@ func (a *Actor) GetPortrait() *pixel.Sprite {
 	return a.portrait
 }
 
+func (a *Actor) IsGround() bool {
+	return a.phys.ground
+}
+
 func (a *Actor) Inform(e int, v pixel.Vec) {
 	for _, s := range a.sbrs {
 		s.Listen(e, v)
@@ -310,15 +314,8 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 	if a.hp <= 0 {
 		a.SetState(state.DEAD)
 		a.Inform(events.DIE, pixel.ZV)
-		// if a.ai != nil {
-		// 	a.ai.Notify(events.DIE, pixel.ZV)
-		// }
 		return
 	}
 	a.SetState(state.HIT)
 	a.Inform(events.ALERT, pixel.Vec{-vec.X, vec.Y})
-
-	// if a.ai != nil {
-	// 	a.ai.Notify(events.ALERT, pixel.Vec{-vec.X, vec.Y})
-	// }
 }

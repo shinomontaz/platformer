@@ -13,6 +13,7 @@ type StateInvestigate struct {
 	target  pixel.Vec
 	timer   float64
 	timeout float64
+	isbusy  bool
 }
 
 func NewInvestigate(ai *Ai, w Worlder) *StateInvestigate {
@@ -25,7 +26,9 @@ func NewInvestigate(ai *Ai, w Worlder) *StateInvestigate {
 }
 
 func (s *StateInvestigate) Update(dt float64) {
-	//	fmt.Println("*StateInvestigate Update")
+	if s.isbusy {
+		return
+	}
 	pos := s.ai.obj.GetPos()
 
 	hero := s.w.GetHero()
@@ -37,7 +40,6 @@ func (s *StateInvestigate) Update(dt float64) {
 		// check if we see hero
 		if s.w.IsSee(pos, heropos) && herohp > 0 {
 			s.ai.SetState(CHOOSEATTACK, heropos)
-			//			s.ai.SetState(ATTACK, heropos)
 		}
 		return
 	}
@@ -58,6 +60,12 @@ func (s *StateInvestigate) Update(dt float64) {
 }
 
 func (s *StateInvestigate) Listen(e int, v pixel.Vec) {
+	if e == events.BUSY {
+		s.isbusy = true
+	}
+	if e == events.RELEASED {
+		s.isbusy = false
+	}
 }
 
 func (s *StateInvestigate) Start(poi pixel.Vec) {

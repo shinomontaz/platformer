@@ -13,11 +13,6 @@ type Stater interface {
 	Listen(e int, v pixel.Vec)
 }
 
-// type Subscriber interface {
-// 	GetId() int
-// 	Listen(e int, v pixel.Vec)
-// }
-
 type Worlder interface {
 	GetHero() *actor.Actor
 	IsSee(from, to pixel.Vec) bool

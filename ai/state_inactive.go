@@ -3,9 +3,10 @@ package ai
 import "github.com/faiface/pixel"
 
 type StateInactive struct {
-	id int
-	w  Worlder
-	ai *Ai
+	id     int
+	w      Worlder
+	ai     *Ai
+	isbusy bool
 }
 
 func NewInactive(ai *Ai, w Worlder) *StateInactive {

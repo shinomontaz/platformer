@@ -1,6 +1,8 @@
 package magic
 
 import (
+	"platformer/actor"
+
 	"github.com/faiface/pixel"
 )
 
@@ -10,10 +12,10 @@ func SetWorld(ww Worlder) {
 	w = ww
 }
 
-func Create(s string, source, target pixel.Vec) Speller {
+func Create(s string, owner *actor.Actor, target pixel.Vec) Speller {
 	switch s {
 	case "deathstrike":
-		return NewDeathstrike(s, source, target)
+		return NewDeathstrike(s, owner, target)
 	default:
 		return nil
 	}

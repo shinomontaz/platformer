@@ -3,6 +3,7 @@ package ai
 import (
 	"math/rand"
 	"platformer/actor"
+	"platformer/events"
 	"sort"
 
 	"github.com/faiface/pixel"
@@ -16,6 +17,7 @@ type StateChooseAttack struct {
 	nonseelimit float64
 	lastpos     pixel.Vec
 	vec         pixel.Vec
+	isbusy      bool
 }
 
 func NewChooseAttack(ai *Ai, w Worlder) *StateChooseAttack {
@@ -28,7 +30,16 @@ func NewChooseAttack(ai *Ai, w Worlder) *StateChooseAttack {
 }
 
 func (s *StateChooseAttack) Update(dt float64) {
+	if s.isbusy {
+		return
+	}
+
 	hero := s.w.GetHero()
+
+	if !hero.IsGround() {
+		return
+	}
+
 	heropos := hero.GetPos()
 	pos := s.ai.obj.GetPos()
 	dir := s.ai.obj.GetDir()
@@ -105,7 +116,12 @@ func (s *StateChooseAttack) Start(poi pixel.Vec) {
 }
 
 func (s *StateChooseAttack) Listen(e int, v pixel.Vec) {
-
+	if e == events.BUSY {
+		s.isbusy = true
+	}
+	if e == events.RELEASED {
+		s.isbusy = false
+	}
 }
 
 func (s *StateChooseAttack) IsAlerted() bool {

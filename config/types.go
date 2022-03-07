@@ -80,3 +80,11 @@ type Spellprofile struct {
 	Anim  string `json:"anim"`
 	Sound string `json:"sound"`
 }
+
+type Options struct {
+	Vsync        bool    `json:"Vsync"`
+	Fullscreen   bool    `json:"Fullscreen"`
+	WindowHeight float64 `json:"WindowHeight"`
+	WindowWidth  float64 `json:"WindowWidth"`
+	CurrentMap   int     `json:"CurrentMap"`
+}

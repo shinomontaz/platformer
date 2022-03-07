@@ -74,6 +74,7 @@ func run() {
 	win.SetSmooth(true)
 	ctrl = controller.New(win)
 
+	initScreen(win)
 	initGame(win)
 	initMenu(win)
 

@@ -15,6 +15,7 @@ var (
 	Sounds     map[string]Soundprofile
 	Profiles   map[string]Profile
 	Spells     map[string]Spellprofile
+	Opts       Options
 )
 
 func init() {
@@ -75,6 +76,15 @@ func init() {
 
 	byteValue, _ = ioutil.ReadAll(fspells)
 	json.Unmarshal(byteValue, &Spells)
+
+	foptions, err := os.Open("config/options.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer foptions.Close()
+
+	byteValue, _ = ioutil.ReadAll(foptions)
+	json.Unmarshal(byteValue, &Opts)
 }
 
 func (a *Anims) W() float64 {

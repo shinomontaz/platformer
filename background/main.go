@@ -67,9 +67,14 @@ func (b *Back) Draw(t pixel.Target, pos pixel.Vec, cam pixel.Vec) {
 
 	b.pos = pixel.V(x, 0)
 
-	// b.part1.Draw(t, pixel.IM.Moved(b.vector1.Sub(b.pos).Sub(cam)).ScaledXY(b.vector1.Sub(b.pos).Sub(cam), pixel.Vec{b.width / b.p.Bounds().W() / 2, b.height / b.p.Bounds().H()}))
-	// b.part2.Draw(t, pixel.IM.Moved(b.vector2.Sub(b.pos).Sub(cam)).ScaledXY(b.vector2.Sub(b.pos).Sub(cam), pixel.Vec{b.width / b.p.Bounds().W() / 2, b.height / b.p.Bounds().H()}))
-
-	b.part1.Draw(t, pixel.IM.Moved(b.vector1.Sub(b.pos).Sub(cam)))
-	b.part2.Draw(t, pixel.IM.Moved(b.vector2.Sub(b.pos).Sub(cam)))
+	mtx1 := pixel.IM.ScaledXY(pixel.ZV, pixel.V(
+		b.width/b.part1.Frame().W(),
+		b.height/b.part1.Frame().H(),
+	)).Moved(b.vector1.Sub(b.pos).Sub(cam))
+	mtx2 := pixel.IM.ScaledXY(pixel.ZV, pixel.V(
+		b.width/b.part2.Frame().W(),
+		b.height/b.part2.Frame().H(),
+	)).Moved(b.vector2.Sub(b.pos).Sub(cam))
+	b.part1.Draw(t, mtx1)
+	b.part2.Draw(t, mtx2)
 }

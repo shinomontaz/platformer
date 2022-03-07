@@ -28,6 +28,10 @@ func (m *Menu) SetActive(a bool) {
 	m.isactive = a
 }
 
+func (m *Menu) UpdateSelectedItemText(title string) {
+	m.items[m.curr].title = title
+}
+
 func (m *Menu) Listen(e int, v pixel.Vec) {
 	if !m.isactive {
 		return
@@ -62,7 +66,9 @@ func (m *Menu) AddItem(it *Item) {
 	b := it.Bounds()
 	i := len(m.items)
 	c := m.rect.Center()
-	pos := pixel.V(c.X-b.W()/2, offsetY-float64(i)*b.H())
+
+	//	pos := pixel.V(c.X-b.W()/2, offsetY-float64(i)*b.H())
+	pos := pixel.V(c.X, offsetY-float64(i)*b.H())
 
 	it.Place(pos)
 

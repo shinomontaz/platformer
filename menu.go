@@ -2,37 +2,28 @@ package main
 
 import (
 	"fmt"
-	"image/color"
-	"math"
-	"platformer/animation"
 	"platformer/common"
+	"platformer/config"
 	"platformer/menu"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
-	"golang.org/x/image/colornames"
 )
 
 var (
-	mainmenu       *menu.Menu
-	displaymenu    *menu.Menu
-	activemenu     *menu.Menu
-	mainmenurba    color.Color
-	anims          *animation.Anims
-	animSpriteNum  int
-	currtime       float64
-	campfiresprite *pixel.Sprite
+	mainmenu    *menu.Menu
+	displaymenu *menu.Menu
+	activemenu  *menu.Menu
+
+	mainmenuback *menu.Back
 )
 
 func initMenu(win *pixelgl.Window) {
 	videoModes := pixelgl.PrimaryMonitor().VideoModes()
 	currentVideoMode := len(videoModes) - 1
-	isFullscreen := false
-	mainmenurba = colornames.Black
 
-	anims = animation.Get("scenery")
-	campfiresprite = pixel.NewSprite(nil, pixel.Rect{})
+	mainmenuback = menu.NewBack(currBounds)
 
 	// main menu
 	mainmenu = menu.New(currBounds)
@@ -54,7 +45,7 @@ func initMenu(win *pixelgl.Window) {
 	it = menu.NewItem("Display", txt, menu.WithAction(func() {
 		activemenu = displaymenu
 		mainmenu.SetActive(false)
-		activemenu.SetActive(true)
+		displaymenu.SetActive(true)
 	}))
 	mainmenu.AddItem(it)
 
@@ -73,21 +64,31 @@ func initMenu(win *pixelgl.Window) {
 	txt = text.New(pixel.V(0, 0), atlas)
 
 	mode := videoModes[currentVideoMode]
-	it = menu.NewItem(fmt.Sprintf("%20v: %-10v", "Resolution", fmt.Sprintf("%v x %v", mode.Width, mode.Height)), txt, menu.WithAction(func() {
-		fmt.Println("action!!!")
-	}))
+	it = menu.NewItem(fmt.Sprintf("%v: %-10v", "Resolution", fmt.Sprintf("%v x %v", mode.Width, mode.Height)), txt,
+		menu.WithAction(func() {
+			fmt.Println("action!!!")
+		}))
 	displaymenu.AddItem(it)
 	it.Select(true)
 
 	txt = text.New(pixel.V(0, 0), atlas)
-	it = menu.NewItem(fmt.Sprintf("%20v: %-10v", "Fullscreen", isFullscreen), txt)
+	it = menu.NewItem(fmt.Sprintf("%v: %-10v", "Fullscreen", config.Opts.Fullscreen), txt,
+		menu.WithHandle(func(e int, v pixel.Vec) {
+			config.Opts.Fullscreen = !config.Opts.Fullscreen
+			displaymenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", "Fullscreen", config.Opts.Fullscreen))
+		}),
+		menu.WithAction(func() {
+			// fullscreen toggle
+			initScreen(win)
+			SaveOptions()
+		}))
 	displaymenu.AddItem(it)
 
 	txt = text.New(pixel.V(0, 0), atlas)
 	it = menu.NewItem("Quit", txt, menu.WithAction(func() {
 		activemenu = mainmenu
 		displaymenu.SetActive(false)
-		activemenu.SetActive(true)
+		mainmenu.SetActive(true)
 	}))
 	displaymenu.AddItem(it)
 
@@ -98,14 +99,10 @@ func initMenu(win *pixelgl.Window) {
 }
 
 func menuFunc(win *pixelgl.Window, dt float64) {
-	win.Clear(mainmenurba)
+	win.Clear(rgba)
 
-	currtime += dt
-	animSpriteNum = int(math.Floor(currtime / 0.2))
-	pic, rect := anims.GetSprite("campfire", animSpriteNum)
-	campfiresprite.Set(pic, rect)
-	c := currBounds.Min
-	campfiresprite.Draw(win, pixel.IM.Moved(pixel.V(c.X+100, c.Y+100)))
+	mainmenuback.Update(dt)
+	mainmenuback.Draw(win)
 
 	activemenu.Update(dt)
 	activemenu.Draw(win)

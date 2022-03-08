@@ -1,6 +1,6 @@
 #version 330 core
 
-#define LIGHT_RANGE 90.
+// inspired by https://www.shadertoy.com/view/ltKfWz
 
 in vec2 vTexCoords;
 out vec4 fragColor;
@@ -10,18 +10,18 @@ uniform vec4      uTexBounds;
 uniform sampler2D uTexture;
 
 // Our custom uniforms
-uniform float uTime;
+uniform float uLightX;
+uniform float uLightY;
 
 void main()
 {
-    vec2 uv = gl_FragCoord.xy / uTexBounds.zw;
+    vec2 uv = vTexCoords / uTexBounds.zw;
 
-    vec2 light = vec2(.2,.2);
+    vec2 light = vec2(uLightX,uLightY) / uTexBounds.zw;
+    vec3 pixelColor = texture(uTexture, uv).rgb;
+
+   	float distanceToLight = distance(light.xy, vTexCoords.xy);
+    float lightIntencive = ( 1.0 - distanceToLight / 200.0 );
     
-    light = vec2(abs(sin(uTime)),.2);
-    
-    vec3 finalColor = vec3(.8,.8,.8) * pow(max(dot(normalize(light),normalize(uv)),0.),LIGHT_RANGE);
-    vec3 bg = texture(uTexture, uv).xyz / 4.;
-    
-	fragColor = vec4(bg + finalColor.xyz,1.);
+    fragColor = vec4(pixelColor * lightIntencive, 1.0);
 }

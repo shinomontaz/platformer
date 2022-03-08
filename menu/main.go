@@ -67,8 +67,7 @@ func (m *Menu) AddItem(it *Item) {
 	i := len(m.items)
 	c := m.rect.Center()
 
-	//	pos := pixel.V(c.X-b.W()/2, offsetY-float64(i)*b.H())
-	pos := pixel.V(c.X, offsetY-float64(i)*b.H())
+	pos := pixel.V(c.X-m.rect.W()/16, offsetY-float64(i)*b.H())
 
 	it.Place(pos)
 

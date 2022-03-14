@@ -12,16 +12,19 @@ uniform sampler2D uTexture;
 // Our custom uniforms
 uniform float uLightX;
 uniform float uLightY;
+uniform float uTime;
+
+// TODO: use time
 
 void main()
 {
     vec2 uv = vTexCoords / uTexBounds.zw;
 
-    vec2 light = vec2(uLightX,uLightY) / uTexBounds.zw;
-    vec3 pixelColor = texture(uTexture, uv).rgb;
+    vec2 light = vec2(uLightX,uLightY);
+    vec4 pixelColor = texture(uTexture, uv.xy);
 
    	float distanceToLight = distance(light.xy, vTexCoords.xy);
     float lightIntencive = ( 1.0 - distanceToLight / 200.0 );
     
-    fragColor = vec4(pixelColor * lightIntencive, 1.0);
+    fragColor = pixelColor * lightIntencive;
 }

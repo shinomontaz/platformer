@@ -70,6 +70,8 @@ func initGame(win *pixelgl.Window) {
 
 	initialCenter = w.GetCenter()
 	currBounds = currBounds.Moved(initialCenter.Sub(pixel.V(currBounds.W()/2, currBounds.H()/2)))
+	//	currBounds = currBounds.Moved(pixel.V(200, 0))
+
 	win.SetBounds(currBounds)
 
 	hero = factories.NewActor(config.Profiles["player"], w)

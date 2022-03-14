@@ -1,7 +1,6 @@
 package menu
 
 import (
-	"fmt"
 	"image/color"
 	"io/ioutil"
 	"math"
@@ -20,7 +19,8 @@ type Scenery struct {
 }
 
 var (
-	uTime   float32
+	uTime float32
+
 	uLightX float32
 	uLightY float32
 )
@@ -30,7 +30,9 @@ type Back struct {
 	animSpriteNum int
 	currtime      float64
 	rect          pixel.Rect
+	intercanvas   *pixelgl.Canvas
 	canvas        *pixelgl.Canvas
+	bg            *pixel.Sprite
 
 	//-------from world------------
 	tm           *tmx.Map
@@ -60,10 +62,14 @@ func NewBack(rect pixel.Rect) *Back {
 	}
 
 	b := &Back{
-		canvas: pixelgl.NewCanvas(rect),
-		rect:   rect,
-		rgba:   colornames.Black,
-		tm:     tm,
+		// intercanvas: pixelgl.NewCanvas(rect),
+		// canvas:      pixelgl.NewCanvas(rect),
+		intercanvas: pixelgl.NewCanvas(pixel.R(0, 0, rect.W(), rect.H())),
+		canvas:      pixelgl.NewCanvas(pixel.R(0, 0, rect.W(), rect.H())),
+
+		rect: rect,
+		rgba: colornames.Black,
+		tm:   tm,
 
 		batches:      make([]*pixel.Batch, 0),
 		batchIndices: make(map[string]int),
@@ -88,7 +94,9 @@ func (b *Back) init() {
 	b.Height = float64(b.tm.TileHeight * b.tm.Height)
 	b.Width = float64(b.tm.TileWidth * b.tm.Width)
 
-	r := pixel.R(0.0+b.rect.Min.X, 0.0+b.rect.Min.Y, b.Width+b.rect.Min.X, b.Height+b.rect.Min.Y)
+	//	r := pixel.R(0.0+b.rect.Min.X, 0.0+b.rect.Min.Y, b.Width+b.rect.Min.X, b.Height+b.rect.Min.Y)
+	r := pixel.R(0.0, 0.0, b.Width, b.Height)
+
 	b.qtTile = common.New(1, r)
 	b.qtObjs = common.New(1, r)
 
@@ -97,6 +105,7 @@ func (b *Back) init() {
 		panic(err)
 	}
 
+	b.canvas.SetUniform("uTime", &uTime)
 	b.canvas.SetUniform("uLightX", &uLightX)
 	b.canvas.SetUniform("uLightY", &uLightY)
 
@@ -105,6 +114,13 @@ func (b *Back) init() {
 	b.initSets()
 	b.initTiles()
 	b.initObjs()
+
+	bg, err := common.LoadPicture("assets/gamebackground.png")
+	if err != nil {
+		panic(err)
+	}
+
+	b.bg = pixel.NewSprite(bg, pixel.R(0, 0, bg.Bounds().W(), bg.Bounds().H()))
 }
 
 func LoadFileToString(filename string) (string, error) {
@@ -152,10 +168,9 @@ func (b *Back) initTiles() {
 			pos := gamePos.ScaledXY(pixel.V(float64(ts.TileWidth), float64(ts.TileHeight)))
 			b.tiles[tileIndex] = tile
 
-			pos.X += b.rect.Min.X
-			pos.Y += b.rect.Min.Y
+			// pos.X += b.rect.Min.X
+			// pos.Y += b.rect.Min.Y
 
-			//			res := b.qtTile.Insert(common.Objecter{ID: tileIndex, R: pixel.R(pos.X + b.rect.Min.X, pos.Y, pos.X+float64(ts.TileWidth), pos.Y+float64(ts.TileHeight))})
 			res := b.qtTile.Insert(common.Objecter{ID: tileIndex, R: pixel.R(pos.X, pos.Y, pos.X+float64(ts.TileWidth), pos.Y+float64(ts.TileHeight))})
 
 			if !res {
@@ -167,11 +182,9 @@ func (b *Back) initTiles() {
 
 func (b *Back) initObjs() {
 	for _, o := range b.scenery.Objects {
-		o.X += b.rect.Min.X
-
 		min := pixel.V(
 			float64(o.X),
-			float64(b.Height)-float64(o.Y)+b.rect.Min.Y-float64(o.Height),
+			float64(b.Height)-float64(o.Y)-float64(o.Height)-b.rect.Min.Y,
 		)
 		max := pixel.Vec{
 			X: min.X + float64(o.Width),
@@ -188,10 +201,7 @@ func (b *Back) initObjs() {
 		b.objects[o.GID] = o
 		b.qtObjs.Insert(common.Objecter{ID: o.GID, R: rc})
 
-		// mtrx := pixel.IM.Moved(b.rect.Center())
-		// screenPos := mtrx.Unproject(rc.Center())
-		screenPos := pixel.Vec{float64(o.X) - b.rect.Min.X, float64(b.Height) - float64(o.Y)}
-		fmt.Println(screenPos)
+		screenPos := pixel.Vec{float64(o.X) + o.Width/2, float64(b.Height) - float64(o.Height) - float64(o.Y) - b.rect.Min.Y}
 		uLightX = float32(screenPos.X)
 		uLightY = float32(screenPos.Y)
 	}
@@ -208,8 +218,10 @@ func (b *Back) Update(dt float64) {
 }
 
 func (b *Back) Draw(t pixel.Target) {
-	//	b.canvas.Clear(pixel.RGBA{R: 0, G: 0, B: 0, A: 0})
-	b.canvas.Clear(colornames.Black)
+	b.intercanvas.Clear(pixel.RGB(0, 0, 0))
+	b.canvas.Clear(pixel.RGB(0, 0, 0))
+
+	b.bg.Draw(b.intercanvas, pixel.IM.Moved(b.intercanvas.Bounds().Center()))
 
 	for _, batch := range b.batches {
 		batch.Clear()
@@ -234,7 +246,7 @@ func (b *Back) Draw(t pixel.Target) {
 		sprite.Draw(b.batches[b.batchIndices[ts.Image.Source]], pixel.IM.Moved(pos))
 	}
 	for _, batch := range b.batches {
-		batch.Draw(b.canvas)
+		batch.Draw(b.intercanvas)
 	}
 	for _, obj := range b.visibleObjs {
 		o := b.objects[obj.ID]
@@ -243,8 +255,9 @@ func (b *Back) Draw(t pixel.Target) {
 		pic, rect := scenery.anim.GetSprite(scenery.name, b.animSpriteNum)
 		sprite := pixel.NewSprite(nil, pixel.Rect{})
 		sprite.Set(pic, rect)
-		sprite.Draw(b.canvas, pixel.IM.Moved(obj.R.Center()))
+		sprite.Draw(b.intercanvas, pixel.IM.Moved(obj.R.Center()))
 	}
 
+	b.intercanvas.Draw(b.canvas, pixel.IM.Moved(b.canvas.Bounds().Center()))
 	b.canvas.Draw(t, pixel.IM.Moved(b.rect.Center()))
 }

@@ -24,7 +24,7 @@ void main()
     vec4 pixelColor = texture(uTexture, uv.xy);
 
    	float distanceToLight = distance(light.xy, vTexCoords.xy);
-    float lightIntencive = ( 1.0 - distanceToLight / 200.0 );
+    float lightIntencive = ( 1.0 - distanceToLight / 75.0 * ( 2 + sin(uTime) ) );
     
     fragColor = pixelColor * lightIntencive;
 }

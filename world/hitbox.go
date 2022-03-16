@@ -5,6 +5,8 @@ import (
 	"platformer/ai"
 
 	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/imdraw"
+	"golang.org/x/image/colornames"
 )
 
 type HitBox struct {
@@ -116,4 +118,25 @@ func updateEnStrikes(dt float64, hittable []*actor.Actor) {
 	}
 
 	enboxes = enboxes[:i]
+}
+
+func drawStrikes(t pixel.Target) {
+	imd := imdraw.New(nil)
+	for _, box := range enboxes {
+		vertices := box.rect.Vertices()
+		imd.Color = colornames.Red
+		for _, v := range vertices {
+			imd.Push(v)
+		}
+		imd.Rectangle(1)
+	}
+	for _, box := range plboxes {
+		vertices := box.rect.Vertices()
+		imd.Color = colornames.Red
+		for _, v := range vertices {
+			imd.Push(v)
+		}
+		imd.Rectangle(1)
+	}
+	imd.Draw(t)
 }

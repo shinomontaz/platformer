@@ -373,6 +373,8 @@ func (w *World) Draw(win *pixelgl.Window) {
 	for _, e := range w.enemies {
 		e.Draw(win)
 	}
+	drawStrikes(win)
+
 	drawAlerts(win)
 	if w.hero != nil {
 		w.hero.Draw(win)

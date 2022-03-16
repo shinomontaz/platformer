@@ -29,6 +29,8 @@ var (
 func gameFunc(win *pixelgl.Window, dt float64) {
 	win.Clear(rgba)
 
+	//	sound.PlayMusic("main")
+
 	pos := hero.GetPos()
 	sound.Update(pos)
 	if dt > 0 {
@@ -62,15 +64,9 @@ func initGame(win *pixelgl.Window) {
 	w.InitEnemies()
 
 	magic.SetWorld(w)
-	//	sound.PlayMusic("main")
-	// mons := pixelgl.Monitors()
-	// if len(mons) > 0 {
-	// 	win.SetMonitor(mons[0])
-	// }
 
 	initialCenter = w.GetCenter()
 	currBounds = currBounds.Moved(initialCenter.Sub(pixel.V(currBounds.W()/2, currBounds.H()/2)))
-	//	currBounds = currBounds.Moved(pixel.V(200, 0))
 
 	win.SetBounds(currBounds)
 

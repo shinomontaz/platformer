@@ -240,21 +240,28 @@ func (a *Actor) GetSkills() []*Skill {
 }
 
 func (a *Actor) Strike() {
-	// TODO: get melee skill and strike by it
-
-	power := a.strength
-	//	 create a hitbox
-	center := a.rect.Center()
-	w := 15.0
-	h := 10.0
-	minx := center.X + 5.0
-	miny := center.Y - h
-	if a.dir > 0 {
-		minx = center.X - 5.0 - w
+	if a.activeSkill == nil || a.activeSkill.Type != "melee" {
+		// select one skill of type melee
+		for _, s := range a.skills {
+			if s.Type == "melee" {
+				a.SetSkill(s)
+				break
+			}
+		}
 	}
-	rect := pixel.R(minx, miny, minx+w, miny+h)
+	if a.activeSkill.Type == "melee" {
+		power := a.strength
+		w := a.activeSkill.Hitbox.W()
+		h := a.activeSkill.Hitbox.H()
+		minx := a.rect.Min.X + a.activeSkill.Hitbox.Min.X
+		miny := a.rect.Min.Y + a.activeSkill.Hitbox.Min.Y
+		if a.dir > 0 {
+			minx = a.rect.Min.X - a.activeSkill.Hitbox.Min.X - w
+		}
+		rect := pixel.R(minx, miny, minx+w, miny+h)
 
-	a.w.AddStrike(a, rect, power)
+		a.w.AddStrike(a, rect, power)
+	}
 }
 
 func (a *Actor) Cast() {

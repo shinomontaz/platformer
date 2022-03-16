@@ -43,11 +43,12 @@ type Anims struct {
 }
 
 type Skill struct {
-	Type   string  `json:"type"`
-	Name   string  `json:"name"`
-	Min    float64 `json:"min"`
-	Max    float64 `json:"max"`
-	Weight int     `json:"weight"`
+	Type   string    `json:"type"`
+	Name   string    `json:"name"`
+	Min    float64   `json:"min"`
+	Max    float64   `json:"max"`
+	Weight int       `json:"weight"`
+	Hitbox []float64 `json:"hitbox"`
 }
 type Profile struct {
 	Type     string  `json:"type"`

@@ -3,6 +3,8 @@ package actor
 import (
 	"platformer/config"
 	"platformer/events"
+
+	"github.com/faiface/pixel"
 )
 
 type Skill struct {
@@ -12,6 +14,7 @@ type Skill struct {
 	Type   string
 	Name   string
 	Event  int
+	Hitbox pixel.Rect
 }
 
 func NewSkill(pr config.Skill) *Skill {
@@ -23,7 +26,7 @@ func NewSkill(pr config.Skill) *Skill {
 		e = events.CAST
 	}
 
-	return &Skill{
+	s := &Skill{
 		Min:    pr.Min,
 		Max:    pr.Max,
 		Weight: pr.Weight,
@@ -31,4 +34,10 @@ func NewSkill(pr config.Skill) *Skill {
 		Name:   pr.Name,
 		Event:  e,
 	}
+
+	if len(pr.Hitbox) > 0 {
+		s.Hitbox = pixel.R(pr.Hitbox[0], pr.Hitbox[1], pr.Hitbox[2], pr.Hitbox[3])
+	}
+
+	return s
 }

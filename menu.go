@@ -35,6 +35,7 @@ func initMenu(win *pixelgl.Window) {
 	txt := text.New(pixel.V(0, 0), atlas)
 	it := menu.NewItem("New game", txt, menu.WithAction(func() {
 		ismenu = false
+		startGame()
 		mainmenu.SetActive(false)
 	}))
 

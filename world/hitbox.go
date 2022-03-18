@@ -17,6 +17,7 @@ type HitBox struct {
 	owner  *actor.Actor
 	hitted map[*actor.Actor]struct{}
 	dir    pixel.Line
+	speed  pixel.Vec
 }
 
 var enboxes []*HitBox
@@ -27,7 +28,7 @@ func init() {
 	plboxes = make([]*HitBox, 0)
 }
 
-func AddStrike(owner *actor.Actor, rect pixel.Rect, power int) *HitBox {
+func AddStrike(owner *actor.Actor, rect pixel.Rect, power int, speed pixel.Vec) *HitBox {
 	center := rect.Center()
 	from := pixel.V(rect.Min.X, center.Y)
 	to := pixel.V(rect.Max.X, center.Y)
@@ -43,6 +44,7 @@ func AddStrike(owner *actor.Actor, rect pixel.Rect, power int) *HitBox {
 		owner:  owner,
 		dir:    pixel.L(from, to),
 		hitted: make(map[*actor.Actor]struct{}),
+		speed:  speed,
 	}
 
 	if ai.GetByObj(owner) != nil {

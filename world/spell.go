@@ -42,10 +42,10 @@ func updateSpells(dt float64, enemies []*actor.Actor, player *actor.Actor) {
 func updatePlSpells(dt float64, hittable []*actor.Actor) {
 	i := 0
 	for _, s := range plspells {
-		//		for _, hh := range hittable {
-		// if hh == s.GetOwner() {
-		// 	continue
-		// }
+		// for _, hh := range hittable {
+		// 	if hh == s.GetOwner() {
+		// 		continue
+		// 	}
 		// if s.GetHitted(hh) {
 		// 	continue
 		// }

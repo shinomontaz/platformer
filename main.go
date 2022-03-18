@@ -8,6 +8,7 @@ import (
 	"platformer/animation"
 	"platformer/background"
 	"platformer/config"
+	"platformer/magic"
 	"platformer/ui"
 	"platformer/world"
 
@@ -22,6 +23,9 @@ func init() {
 	// load animations
 	for _, anim := range config.AnimConfig {
 		animation.Load(&anim)
+	}
+	for name, cfg := range config.Spells {
+		magic.Load(name, &cfg)
 	}
 	// load video mode and sound volumes
 	initRuntime()

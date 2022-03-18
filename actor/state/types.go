@@ -38,6 +38,7 @@ type Actor interface {
 	Cast()
 	AddSound(event string)
 	Inform(e int, v pixel.Vec)
+	GetSkillName() string
 }
 
 type Animater interface {

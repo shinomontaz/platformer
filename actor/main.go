@@ -232,11 +232,18 @@ func (a *Actor) Draw(t pixel.Target) {
 		ScaledXY(pixel.ZV, pixel.V(a.animdir*a.dir, 1)).
 		Moved(drawrect.Center()),
 	)
-	//	a.phys.Draw(t)
+	a.phys.Draw(t)
 }
 
 func (a *Actor) GetSkills() []*Skill {
 	return a.skills
+}
+
+func (a *Actor) GetSkillName() string {
+	if a.activeSkill != nil {
+		return a.activeSkill.Name
+	}
+	return ""
 }
 
 func (a *Actor) Strike() {
@@ -253,14 +260,14 @@ func (a *Actor) Strike() {
 		power := a.strength
 		w := a.activeSkill.Hitbox.W()
 		h := a.activeSkill.Hitbox.H()
-		minx := a.rect.Min.X + a.activeSkill.Hitbox.Min.X
-		miny := a.rect.Min.Y + a.activeSkill.Hitbox.Min.Y
-		if a.dir > 0 {
-			minx = a.rect.Min.X - a.activeSkill.Hitbox.Min.X - w
+		minx := a.rect.Center().X + a.activeSkill.Hitbox.Min.X
+		miny := a.rect.Center().Y + a.activeSkill.Hitbox.Min.Y
+		if a.dir < 0 {
+			minx = a.rect.Center().X - a.activeSkill.Hitbox.Min.X - w
 		}
 		rect := pixel.R(minx, miny, minx+w, miny+h)
 
-		a.w.AddStrike(a, rect, power)
+		a.w.AddStrike(a, rect, power, pixel.ZV)
 	}
 }
 

@@ -29,8 +29,6 @@ var (
 func gameFunc(win *pixelgl.Window, dt float64) {
 	win.Clear(rgba)
 
-	//	sound.PlayMusic("main")
-
 	pos := hero.GetPos()
 	sound.Update(pos)
 	if dt > 0 {

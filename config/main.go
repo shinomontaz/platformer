@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+
+	"github.com/faiface/pixel"
 )
 
 var (
@@ -136,4 +138,12 @@ func (a *Anims) GetGroups() (map[string][]string, map[string][]string, map[strin
 	}
 
 	return group_names, group_files, group_frames
+}
+
+func (sp *Spellprofile) GetHitbox() pixel.Rect {
+	return pixel.R(sp.Hitbox[0], sp.Hitbox[1], sp.Hitbox[2], sp.Hitbox[3])
+}
+
+func (sp *Spellprofile) GetSound() string {
+	return sp.Sound
 }

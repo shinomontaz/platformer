@@ -300,8 +300,8 @@ func (w *World) AddAlert(pos pixel.Vec, force float64) {
 	}
 }
 
-func (w *World) AddStrike(owner *actor.Actor, r pixel.Rect, power int) {
-	AddStrike(owner, r, power)
+func (w *World) AddStrike(owner *actor.Actor, r pixel.Rect, power int, speed pixel.Vec) {
+	AddStrike(owner, r, power, speed)
 }
 
 func (w *World) AddSpell(owner *actor.Actor, t pixel.Vec, spell string) {

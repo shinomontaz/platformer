@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"platformer/config"
+	"platformer/sound"
 
 	"github.com/faiface/pixel/pixelgl"
 
@@ -30,6 +31,10 @@ func SaveOptions() {
 	if err := ioutil.WriteFile("config/options.json", json, 0644); err != nil {
 		panic("Failed to save configuration")
 	}
+}
+
+func startGame() {
+	sound.PlayMusic("main")
 }
 
 func initScreen(win *pixelgl.Window) {

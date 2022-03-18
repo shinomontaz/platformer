@@ -15,6 +15,7 @@ import (
 )
 
 type Deathstrike struct {
+	name          string
 	anim          Animater
 	sprite        *pixel.Sprite
 	animSpriteNum int
@@ -26,6 +27,7 @@ type Deathstrike struct {
 	ttl           float64
 	timer         float64
 	prepare_time  float64
+	striked       bool
 	rect          pixel.Rect
 	qt            *common.Quadtree
 	atlas         *text.Atlas
@@ -36,6 +38,7 @@ func NewDeathstrike(s string, owner *actor.Actor, target pixel.Vec) *Deathstrike
 	basicrect := pixel.R(0, 0, 48, 64)
 
 	ds := Deathstrike{
+		name:         s,
 		anim:         animation.Get(s),
 		w:            w,
 		power:        1,
@@ -74,6 +77,7 @@ func (d *Deathstrike) init() {
 	d.rect = pixel.R(d.target.X-d.rect.W()/2, groundY, d.target.X+d.rect.W()/2, groundY+d.rect.H())
 
 }
+
 func (d *Deathstrike) GetOwner() *actor.Actor {
 	return d.owner
 }
@@ -122,6 +126,20 @@ func (d *Deathstrike) Update(dt float64) {
 	if d.timer > d.prepare_time {
 		d.animSpriteNum = int(math.Floor(d.timer / 0.1))
 	}
+
+	if d.timer > 2*d.prepare_time && !d.striked {
+		// add hitbox
+		hb := profiles[d.name]
+		w := hb.r.W()
+		h := hb.r.H()
+		minx := d.rect.Center().X + hb.r.Min.X
+		miny := d.rect.Center().Y + hb.r.Min.Y
+		rect := pixel.R(minx, miny, minx+w, miny+h)
+
+		d.w.AddStrike(d.owner, rect, d.power, pixel.ZV)
+		d.striked = true
+	}
+
 }
 
 // func (d *Deathstrike) Apply(a Actor) {

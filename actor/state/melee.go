@@ -19,9 +19,11 @@ type Melee struct {
 	variants      int
 	vel           float64
 	striked       bool
+	skillname     string
 }
 
 func NewMelee(a Actor, an Animater) *Melee {
+
 	fs := &Melee{
 		Common: Common{
 			id:    MELEE,
@@ -30,7 +32,6 @@ func NewMelee(a Actor, an Animater) *Melee {
 			trs:   a.GetTransition(MELEE),
 		},
 		idleLimit: 0.5, // seconds before idle
-		variants:  an.GetGroupLen("melee"),
 	}
 
 	return fs
@@ -41,6 +42,14 @@ func (s *Melee) Start() {
 	s.time = 0.0
 	s.attackidx = 1
 	s.striked = false
+
+	skillname := s.a.GetSkillName()
+	if skillname == "" {
+		skillname = "melee"
+	}
+	s.skillname = skillname
+	s.variants = s.anims.GetGroupLen(skillname)
+
 	if s.variants > 1 {
 		s.attackidx += rand.Intn(s.variants)
 	}
@@ -76,7 +85,7 @@ func (s *Melee) GetSprite() *pixel.Sprite {
 	if s.sprite == nil {
 		s.sprite = pixel.NewSprite(nil, pixel.Rect{})
 	}
-	pic, rect := s.anims.GetGroupSprite("melee", fmt.Sprintf("attack%d", s.attackidx), s.animSpriteNum)
+	pic, rect := s.anims.GetGroupSprite(s.skillname, fmt.Sprintf("attack%d", s.attackidx), s.animSpriteNum)
 	s.sprite.Set(pic, rect)
 
 	return s.sprite

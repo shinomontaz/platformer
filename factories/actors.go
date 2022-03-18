@@ -12,7 +12,7 @@ import (
 type Worlder interface {
 	GetGravity() float64
 	GetQt() *common.Quadtree // temporary solution, we will check collision in the world ?
-	AddStrike(owner *actor.Actor, r pixel.Rect, power int)
+	AddStrike(owner *actor.Actor, r pixel.Rect, power int, speed pixel.Vec)
 	AddSpell(owner *actor.Actor, t pixel.Vec, spell string)
 	AddAlert(pos pixel.Vec, force float64)
 	IsSee(from, to pixel.Vec) bool

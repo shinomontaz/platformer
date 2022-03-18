@@ -17,11 +17,10 @@
         "skills": [
             {
                 "type": "melee",
-                "name": "strike",
-                "hitbox": [30, 10, 40, 30]
+                "name": "melee",
+                "hitbox": [10, -5, 20, 5]
             }
-        ],
-        "hitbox": [30, 10, 40, 30]
+        ]
     },
     {
         "type": "mummy",
@@ -40,10 +39,10 @@
         "skills": [
             {
                 "type": "melee",
-                "name": "strike",
+                "name": "melee",
                 "max": 19,
                 "min": 5,
-                "hitbox": [30, 10, 40, 30],
+                "hitbox": [10, -5, 20, 5],
                 "weight": 1
             }
         ]
@@ -65,10 +64,10 @@
         "skills": [
             {
                 "type": "melee",
-                "name": "strike",
+                "name": "melee",
                 "max": 19,
                 "min": 5,
-                "hitbox": [30, 10, 40, 30],
+                "hitbox": [-15, -5, -10, 5],
                 "weight": 1
             },
             {
@@ -97,19 +96,19 @@
         "skills": [
             {
                 "type": "melee",
-                "name": "strike",
+                "name": "melee",
                 "max": 35,
                 "min": 5,
                 "weight": 1,
-                "hitbox": [45, 30, 72, 60]
+                "hitbox": [20, -5, 36, 10]
             },
             {
                 "type": "melee",
-                "name": "downstrike",
+                "name": "meleedown",
                 "max": 35,
                 "min": 5,
                 "weight": 1,
-                "hitbox": [60, 0, 80, 10]
+                "hitbox": [10, -36, 36, -26]
             }
         ]
     }

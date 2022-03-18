@@ -77,9 +77,10 @@ type Soundprofile struct {
 }
 
 type Spellprofile struct {
-	Type  string `json:"type"`
-	Anim  string `json:"anim"`
-	Sound string `json:"sound"`
+	Type   string    `json:"type"`
+	Anim   string    `json:"anim"`
+	Sound  string    `json:"sound"`
+	Hitbox []float64 `json:"hitbox"`
 }
 
 type Options struct {

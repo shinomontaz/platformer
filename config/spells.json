@@ -2,11 +2,13 @@
     {
         "type": "deathstrike",
         "anim": "deathstrike",
-        "sound": "deathstrike"
+        "sound": "deathstrike",
+        "hitbox": [-20, -30, 20, 30]
     },
     {
         "type": "deathbolt",
         "anim": "deathbolt",
-        "sound": "deathbolt"
+        "sound": "deathbolt",
+        "hitbox": [-5, -5, 5, 5]
     }
 ]

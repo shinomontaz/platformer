@@ -3,6 +3,8 @@ package magic
 import (
 	"platformer/common"
 
+	"platformer/actor"
+
 	"github.com/faiface/pixel"
 )
 
@@ -15,6 +17,7 @@ type Speller interface {
 type Worlder interface {
 	GetGravity() float64
 	GetQt() *common.Quadtree // temporary solution, we will check collision in the world ?
+	AddStrike(a *actor.Actor, rect pixel.Rect, power int, speed pixel.Vec)
 }
 
 type Animater interface {
@@ -24,4 +27,9 @@ type Animater interface {
 
 type Animation interface {
 	GetSprite(idx int) *pixel.Sprite
+}
+
+type Spellprofile interface {
+	GetHitbox() pixel.Rect
+	GetSound() string
 }

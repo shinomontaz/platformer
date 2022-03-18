@@ -232,7 +232,7 @@ func (a *Actor) Draw(t pixel.Target) {
 		ScaledXY(pixel.ZV, pixel.V(a.animdir*a.dir, 1)).
 		Moved(drawrect.Center()),
 	)
-	a.phys.Draw(t)
+	//	a.phys.Draw(t)
 }
 
 func (a *Actor) GetSkills() []*Skill {

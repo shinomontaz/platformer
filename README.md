@@ -1,7 +1,7 @@
 # platformer
 Writing a strategy game ends with a platformer.
 
-![image](https://raw.github.com/shinomontaz/platformer/master/docs/pic.png?raw=true)
+![image](https://raw.github.com/shinomontaz/platformer/master/docs/screenshot.png?raw=true)
 
 ---
 Demo
@@ -38,9 +38,9 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] characteristics and some UI [4dc63aa7](https://github.com/shinomontaz/platformer/commit/4dc63aa7cc04d1c8ea991494f725b2e97ef909ad)
 - [x] release [v0.7](https://github.com/shinomontaz/platformer/releases/tag/v0.7.0)
 - [x] sounds [815689dc](https://github.com/shinomontaz/platformer/commit/815689dc1c786dbfc4da9b0320a7bdccb821eb81)
-- [x] some fragment shaders[b8831e9a](https://github.com/shinomontaz/platformer/commit/b8831e9ad6b09ffc68a90c8199247f61a279bcf8)
-- [ ] release v0.8
-- [ ] main menu
+- [x] some fragment shaders [b8831e9a](https://github.com/shinomontaz/platformer/commit/b8831e9ad6b09ffc68a90c8199247f61a279bcf8)
+- [x] main menu
+- [x] release v0.8 [v0.8](https://github.com/shinomontaz/platformer/releases/tag/v0.8)
 - [ ] advanced physic behaviour ( step up/down )
 - [ ] endgame, victory screen
 - [ ] interactive objects, inventory

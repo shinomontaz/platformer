@@ -232,6 +232,7 @@ func (w *World) initObjs() {
 
 func (w *World) Update(rect pixel.Rect, dt float64) {
 	w.viewport = rect
+	w.cnv.SetBounds(w.viewport)
 	w.visibleTiles = w.qtTile.Retrieve(rect)
 	w.visibleObjs = w.qtObjs.Retrieve(rect)
 

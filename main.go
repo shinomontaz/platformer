@@ -14,6 +14,9 @@ import (
 
 	"platformer/controller"
 
+	"net/http"
+	_ "net/http/pprof"
+
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 )
@@ -83,6 +86,10 @@ func run() {
 	initMenu(win)
 
 	ismenu = true
+
+	go func() {
+		http.ListenAndServe("localhost:5000", nil)
+	}()
 
 	gameLoop(win)
 }

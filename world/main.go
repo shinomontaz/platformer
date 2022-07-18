@@ -1,6 +1,7 @@
 package world
 
 import (
+	"image/color"
 	"strconv"
 
 	"github.com/faiface/pixel"
@@ -17,6 +18,7 @@ import (
 )
 
 type World struct {
+	cnv    *pixelgl.Canvas
 	Height float64
 	Width  float64
 	qtTile *common.Quadtree
@@ -100,6 +102,18 @@ func (w *World) init() {
 	w.qtTile = common.New(1, r)
 	w.qtPhys = common.New(1, r)
 	w.qtObjs = common.New(1, r)
+
+	w.viewport = pixel.Rect{
+		Min: pixel.V(
+			float64(w.meta.X),
+			w.Height-float64(w.meta.Y)-float64(w.meta.Height),
+		),
+		Max: pixel.V(
+			float64(w.meta.X)+float64(w.meta.Width),
+			w.Height-float64(w.meta.Y),
+		),
+	}
+	w.cnv = pixelgl.NewCanvas(w.viewport)
 
 	w.initProps()
 	w.initSets()
@@ -309,22 +323,12 @@ func (w *World) AddSpell(owner *actor.Actor, t pixel.Vec, spell string) {
 }
 
 func (w *World) GetCenter() pixel.Vec {
-	rect := pixel.Rect{
-		Min: pixel.V(
-			float64(w.meta.X),
-			w.Height-float64(w.meta.Y)-float64(w.meta.Height),
-		),
-		Max: pixel.V(
-			float64(w.meta.X)+float64(w.meta.Width),
-			w.Height-float64(w.meta.Y),
-		),
-	}
-	return rect.Center()
-	//	return pixel.V(float64(w.meta.X), w.Height-float64(w.meta.Y)-float64(w.meta.Height))
-
+	return w.viewport.Center()
 }
 
 func (w *World) Draw(win *pixelgl.Window) {
+	w.cnv.Clear(color.RGBA{0, 0, 0, 1})
+
 	for _, batch := range w.batches {
 		batch.Clear()
 	}
@@ -368,17 +372,27 @@ func (w *World) Draw(win *pixelgl.Window) {
 	}
 
 	for _, batch := range w.batches {
-		batch.Draw(win)
+		//		batch.Draw(win)
+		batch.Draw(w.cnv)
 	}
+
 	for _, e := range w.enemies {
-		e.Draw(win)
+		//		e.Draw(win)
+		e.Draw(w.cnv)
 	}
 	//	drawStrikes(win)
 
-	drawAlerts(win)
+	//	drawAlerts(win)
+	drawAlerts(w.cnv)
+
 	if w.hero != nil {
-		w.hero.Draw(win)
+		//		w.hero.Draw(win)
+		w.hero.Draw(w.cnv)
 	}
 
-	drawSpells(win)
+	//	drawSpells(win)
+	drawSpells(w.cnv)
+
+	w.cnv.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
+
 }

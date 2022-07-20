@@ -20,10 +20,11 @@ import (
 // main game loop and logic implementation
 
 var (
-	camPos = pixel.ZV
-	frames = 0
-	second = time.Tick(time.Second)
-	rgba   = color.RGBA{123, 175, 213, 1}
+	camPos   = pixel.ZV
+	frames   = 0
+	second   = time.Tick(time.Second)
+	rgba     = color.RGBA{123, 175, 213, 1}
+	deltaVec = pixel.ZV
 )
 
 func gameFunc(win *pixelgl.Window, dt float64) {
@@ -32,19 +33,15 @@ func gameFunc(win *pixelgl.Window, dt float64) {
 	pos := hero.GetPos()
 	sound.Update(pos)
 	if dt > 0 {
-		deltaVec := lastPos.To(pos)
-		camPos = pixel.Lerp(camPos, initialCenter.Sub(pos).Sub(pixel.V(0, 150)), 1-math.Pow(1.0/128, dt)) // standart with moving cam slightly down
-		cam := pixel.IM.Moved(camPos)
-
-		win.SetMatrix(cam)
+		deltaVec = pixel.Lerp(deltaVec, lastPos.To(pos), 1-math.Pow(1.0/128, dt))
 		currBounds = currBounds.Moved(deltaVec)
 
-		w.Update(currBounds, dt)
+		w.Update(currBounds.Moved(pixel.ZV.Add(pixel.V(0, 150))), dt)
 	}
 
-	b.Draw(win, pos, camPos)
+	b.Draw(win, pos)
 	w.Draw(win)
-	u.Draw(win, pos, camPos)
+	u.Draw(win, pos)
 
 	lastPos = pos
 

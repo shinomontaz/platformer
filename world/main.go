@@ -113,7 +113,9 @@ func (w *World) init() {
 			w.Height-float64(w.meta.Y),
 		),
 	}
+
 	w.cnv = pixelgl.NewCanvas(w.viewport)
+	w.cnv.SetSmooth(true)
 
 	w.initProps()
 	w.initSets()

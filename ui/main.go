@@ -28,14 +28,14 @@ func New(ch Characterer, viewport pixel.Rect) *Ui {
 	return &ui
 }
 
-func (ui *Ui) Draw(t pixel.Target, pos pixel.Vec, cam pixel.Vec) {
+func (ui *Ui) Draw(t pixel.Target, pos pixel.Vec) {
 	marginy := 16.0
 	marginx := 20.0
 	vec := pixel.V(ui.viewport.Min.X+marginy, ui.viewport.Max.Y-marginy)
-	ui.ch.GetPortrait().Draw(t, pixel.IM.Moved(vec.Sub(cam)))
+	ui.ch.GetPortrait().Draw(t, pixel.IM)
 
 	for i := 0; i < ui.ch.GetHp(); i++ {
 		vec = vec.Add(pixel.Vec{marginx, 0})
-		ui.heart.Draw(t, pixel.IM.Moved(vec.Sub(cam)))
+		ui.heart.Draw(t, pixel.IM)
 	}
 }

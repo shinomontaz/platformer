@@ -52,9 +52,8 @@ func New(start pixel.Vec, viewport pixel.Rect, path string) *Back {
 	return &b
 }
 
-func (b *Back) Draw(t pixel.Target, pos pixel.Vec, cam pixel.Vec) {
+func (b *Back) Draw(t pixel.Target, pos pixel.Vec) {
 	x, _ := pos.XY()
-	cam.Y = 0
 	steps := int(math.Abs(x / b.width))
 
 	if steps != b.steps {
@@ -70,11 +69,11 @@ func (b *Back) Draw(t pixel.Target, pos pixel.Vec, cam pixel.Vec) {
 	mtx1 := pixel.IM.ScaledXY(pixel.ZV, pixel.V(
 		b.width/b.part1.Frame().W(),
 		b.height/b.part1.Frame().H(),
-	)).Moved(b.vector1.Sub(b.pos).Sub(cam))
+	)).Moved(b.vector1.Sub(b.pos))
 	mtx2 := pixel.IM.ScaledXY(pixel.ZV, pixel.V(
 		b.width/b.part2.Frame().W(),
 		b.height/b.part2.Frame().H(),
-	)).Moved(b.vector2.Sub(b.pos).Sub(cam))
+	)).Moved(b.vector2.Sub(b.pos))
 	b.part1.Draw(t, mtx1)
 	b.part2.Draw(t, mtx2)
 }

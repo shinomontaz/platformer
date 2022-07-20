@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image/color"
 	"math"
+	"platformer/background"
 	"platformer/config"
 	"platformer/factories"
 	"platformer/magic"
@@ -19,7 +20,6 @@ import (
 // main game loop and logic implementation
 
 var (
-	camPos   = pixel.ZV
 	frames   = 0
 	second   = time.Tick(time.Second)
 	rgba     = color.RGBA{123, 175, 213, 1}
@@ -40,7 +40,7 @@ func gameFunc(win *pixelgl.Window, dt float64) {
 
 	//	b.Draw(win, pos)
 	w.Draw(win, pos)
-	u.Draw(win, pos)
+	u.Draw(win)
 
 	lastPos = pos
 
@@ -54,7 +54,7 @@ func gameFunc(win *pixelgl.Window, dt float64) {
 }
 
 func initGame(win *pixelgl.Window) {
-	w = world.New("my.tmx" /*, currBounds*/)
+	w = world.New("my.tmx", currBounds)
 	w.InitEnemies()
 
 	magic.SetWorld(w)
@@ -71,5 +71,6 @@ func initGame(win *pixelgl.Window) {
 
 	u = ui.New(hero, currBounds)
 	lastPos = hero.GetPos()
-	//	b = background.New(lastPos, currBounds.Moved(pixel.Vec{0, 100}), "assets/gamebackground.png")
+	b = background.New(lastPos, currBounds.Moved(pixel.Vec{0, 100}), "assets/gamebackground.png")
+	w.SetBackground(b)
 }

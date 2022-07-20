@@ -55,7 +55,7 @@ type World struct {
 	alerts []Alert
 }
 
-func New(source string /*, rect pixel.Rect*/) *World {
+func New(source string, rect pixel.Rect) *World {
 	tm, err := tmx.ReadFile(source)
 	if err != nil {
 		panic(err)
@@ -73,7 +73,7 @@ func New(source string /*, rect pixel.Rect*/) *World {
 		objectTiles: make(map[int]*tmx.DecodedTile),
 		enmeta:      make([]tmx.Object, 0),
 		enemies:     make([]*actor.Actor, 0),
-		//		viewport:    rect,
+		viewport:    rect,
 	}
 
 	w.init()
@@ -108,7 +108,7 @@ func (w *World) init() {
 	w.qtPhys = common.New(1, r)
 	w.qtObjs = common.New(1, r)
 
-	w.viewport = pixel.Rect{
+	rect := pixel.Rect{
 		Min: pixel.V(
 			float64(w.meta.X),
 			w.Height-float64(w.meta.Y)-float64(w.meta.Height),
@@ -119,10 +119,10 @@ func (w *World) init() {
 		),
 	}
 
+	w.viewport = w.viewport.Moved(rect.Center().Sub(pixel.V(w.viewport.W()/2, w.viewport.H()/2)))
+
 	w.cnv = pixelgl.NewCanvas(w.viewport)
 	w.cnv.SetSmooth(true)
-
-	w.b = background.New(w.viewport.Center(), w.viewport.Moved(pixel.Vec{0, 100}), "assets/gamebackground.png")
 
 	w.initProps()
 	w.initSets()
@@ -239,6 +239,10 @@ func (w *World) initObjs() {
 	}
 }
 
+func (w *World) SetRect(rect pixel.Rect) {
+
+}
+
 func (w *World) Update(rect pixel.Rect, dt float64) {
 	w.viewport = rect
 	w.cnv.SetBounds(w.viewport)
@@ -336,10 +340,14 @@ func (w *World) GetCenter() pixel.Vec {
 	return w.viewport.Center()
 }
 
-func (w *World) Draw(win *pixelgl.Window, pos pixel.Vec) {
+func (w *World) SetBackground(b *background.Back) {
+	w.b = b
+}
+
+func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec) {
 	w.cnv.Clear(color.RGBA{0, 0, 0, 1})
 
-	w.b.Draw(w.cnv, pos)
+	w.b.Draw(w.cnv, hpos)
 
 	for _, batch := range w.batches {
 		batch.Clear()

@@ -6,6 +6,7 @@ import (
 
 	"platformer/actor"
 	"platformer/animation"
+	"platformer/background"
 	"platformer/config"
 	"platformer/magic"
 	"platformer/ui"
@@ -35,7 +36,7 @@ func init() {
 
 var (
 	//	b *background.Pback
-	//	b          *background.Back
+	b          *background.Back
 	u          *ui.Ui
 	w          *world.World
 	hero       *actor.Actor

@@ -42,10 +42,17 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] some fragment shaders [b8831e9a](https://github.com/shinomontaz/platformer/commit/b8831e9ad6b09ffc68a90c8199247f61a279bcf8)
 - [x] main menu
 - [x] release v0.8 [v0.8](https://github.com/shinomontaz/platformer/releases/tag/v0.8)
-- [ ] advanced physic behaviour ( step up/down )
-- [ ] endgame, victory screen
-- [ ] interactive objects, inventory
+- [ ] main game shaders ( sunlight, shadows )
+- [ ] level design
+- [ ] blood
+- [ ] projectile attacks
+- [ ] more menu functions: volumes and screen modes, in-game menu
 - [ ] release v0.9
+- [ ] stats system, exp
+- [ ] aligments, buff/debuff
+- [ ] interactive objects, inventory
+- [ ] victory screen, score
+- [ ] release Beta
 
 ---
 ## basic scheme

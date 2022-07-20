@@ -10,7 +10,7 @@ import (
 	"platformer/actor/state"
 	"platformer/actor/statemachine"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 const (

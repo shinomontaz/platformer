@@ -7,9 +7,9 @@ import (
 	"platformer/animation"
 	"platformer/common"
 
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/pixelgl"
 	"github.com/salviati/go-tmx/tmx"
+	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/pixelgl"
 	"golang.org/x/image/colornames"
 )
 

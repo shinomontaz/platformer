@@ -4,8 +4,8 @@ import (
 	"platformer/common"
 	"platformer/events"
 
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/pixelgl"
+	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/pixelgl"
 )
 
 type Controller struct {

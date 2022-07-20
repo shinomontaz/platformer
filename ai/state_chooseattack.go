@@ -6,7 +6,7 @@ import (
 	"platformer/events"
 	"sort"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type StateChooseAttack struct {

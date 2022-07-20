@@ -5,7 +5,7 @@ import (
 
 	"platformer/actor"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type Speller interface {

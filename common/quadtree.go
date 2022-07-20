@@ -3,7 +3,7 @@ package common
 import (
 	"fmt"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 const MAX = 10

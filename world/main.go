@@ -4,20 +4,24 @@ import (
 	"image/color"
 	"strconv"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 
 	"platformer/actor"
 	"platformer/ai"
+	"platformer/background"
 	"platformer/common"
 	"platformer/config"
 	"platformer/events"
 	"platformer/factories"
 
-	"github.com/faiface/pixel/pixelgl"
+	"github.com/shinomontaz/pixel/pixelgl"
+
 	"github.com/salviati/go-tmx/tmx"
 )
 
 type World struct {
+	b *background.Back
+
 	cnv    *pixelgl.Canvas
 	Height float64
 	Width  float64
@@ -51,7 +55,7 @@ type World struct {
 	alerts []Alert
 }
 
-func New(source string) *World {
+func New(source string /*, rect pixel.Rect*/) *World {
 	tm, err := tmx.ReadFile(source)
 	if err != nil {
 		panic(err)
@@ -69,6 +73,7 @@ func New(source string) *World {
 		objectTiles: make(map[int]*tmx.DecodedTile),
 		enmeta:      make([]tmx.Object, 0),
 		enemies:     make([]*actor.Actor, 0),
+		//		viewport:    rect,
 	}
 
 	w.init()
@@ -116,6 +121,8 @@ func (w *World) init() {
 
 	w.cnv = pixelgl.NewCanvas(w.viewport)
 	w.cnv.SetSmooth(true)
+
+	w.b = background.New(w.viewport.Center(), w.viewport.Moved(pixel.Vec{0, 100}), "assets/gamebackground.png")
 
 	w.initProps()
 	w.initSets()
@@ -329,8 +336,10 @@ func (w *World) GetCenter() pixel.Vec {
 	return w.viewport.Center()
 }
 
-func (w *World) Draw(win *pixelgl.Window) {
+func (w *World) Draw(win *pixelgl.Window, pos pixel.Vec) {
 	w.cnv.Clear(color.RGBA{0, 0, 0, 1})
+
+	w.b.Draw(w.cnv, pos)
 
 	for _, batch := range w.batches {
 		batch.Clear()

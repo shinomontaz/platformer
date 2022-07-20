@@ -3,29 +3,16 @@ module platformer
 go 1.14
 
 require (
-	github.com/aquasecurity/libbpfgo v0.2.1-libbpf-0.4.0 // indirect
-	github.com/cpuguy83/go-md2man v1.0.8 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/faiface/beep v1.1.0
-	github.com/faiface/pixel v0.10.0
-	github.com/go-delve/delve v1.7.2 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
-	github.com/google/go-dap v0.6.0 // indirect
+	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0
-	github.com/mattn/go-colorable v0.1.11 // indirect
-	github.com/mattn/go-runewidth v0.0.13 // indirect
-	github.com/onsi/ginkgo v1.8.0 // indirect
-	github.com/onsi/gomega v1.5.0 // indirect
-	github.com/peterh/liner v1.2.1 // indirect
-	github.com/pkg/profile v0.0.0-20170413231811-06b906832ed0 // indirect
-	github.com/russross/blackfriday v0.0.0-20180428102519-11635eb403ff // indirect
 	github.com/salviati/go-tmx v0.0.0-20180901011116-8dae25beffeb
-	github.com/sirupsen/logrus v1.8.1 // indirect
-	github.com/spf13/cobra v1.2.1 // indirect
-	go.starlark.net v0.0.0-20211013185944-b0039bd2cfe3 // indirect
-	golang.org/x/arch v0.0.0-20210923205945-b76863e36670 // indirect
-	golang.org/x/image v0.0.0-20190802002840-cff245a6509b
+	github.com/shinomontaz/pixel v1.1.0
+	golang.org/x/exp v0.0.0-20200224162631-6cc2880d07d6 // indirect
+	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
 	golang.org/x/sys v0.0.0-20211116061358-0a5406a5449c // indirect
-	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect
-	gopkg.in/gemnasium/logrus-airbrake-hook.v2 v2.1.2 // indirect
+	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )

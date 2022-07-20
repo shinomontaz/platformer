@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"image/color"
 	"math"
-	"platformer/background"
 	"platformer/config"
 	"platformer/factories"
 	"platformer/magic"
@@ -13,8 +12,8 @@ import (
 	"platformer/world"
 	"time"
 
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/pixelgl"
+	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/pixelgl"
 )
 
 // main game loop and logic implementation
@@ -39,8 +38,8 @@ func gameFunc(win *pixelgl.Window, dt float64) {
 		w.Update(currBounds.Moved(pixel.ZV.Add(pixel.V(0, 150))), dt)
 	}
 
-	b.Draw(win, pos)
-	w.Draw(win)
+	//	b.Draw(win, pos)
+	w.Draw(win, pos)
 	u.Draw(win, pos)
 
 	lastPos = pos
@@ -55,7 +54,7 @@ func gameFunc(win *pixelgl.Window, dt float64) {
 }
 
 func initGame(win *pixelgl.Window) {
-	w = world.New("my.tmx")
+	w = world.New("my.tmx" /*, currBounds*/)
 	w.InitEnemies()
 
 	magic.SetWorld(w)
@@ -72,5 +71,5 @@ func initGame(win *pixelgl.Window) {
 
 	u = ui.New(hero, currBounds)
 	lastPos = hero.GetPos()
-	b = background.New(lastPos, currBounds.Moved(pixel.Vec{0, 100}), "assets/gamebackground.png")
+	//	b = background.New(lastPos, currBounds.Moved(pixel.Vec{0, 100}), "assets/gamebackground.png")
 }

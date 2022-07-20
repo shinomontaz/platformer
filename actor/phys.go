@@ -4,9 +4,9 @@ import (
 	"image/color"
 	"math"
 
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/imdraw"
 	"github.com/lucasb-eyer/go-colorful"
+	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/imdraw"
 
 	"platformer/common"
 )

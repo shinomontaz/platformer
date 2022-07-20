@@ -6,7 +6,7 @@ import (
 	"platformer/common"
 	"platformer/config"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type Worlder interface {

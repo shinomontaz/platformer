@@ -5,7 +5,7 @@ import (
 	"platformer/ai"
 	"platformer/magic"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type Speller interface {

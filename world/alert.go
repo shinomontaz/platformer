@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"platformer/common"
 
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/text"
+	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/text"
 	"golang.org/x/image/colornames"
 )
 

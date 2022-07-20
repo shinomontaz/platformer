@@ -5,7 +5,7 @@ import (
 	"platformer/common"
 	"platformer/config"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type Option func(*Actor)

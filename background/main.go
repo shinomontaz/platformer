@@ -4,7 +4,7 @@ import (
 	"math"
 	"platformer/common"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type Back struct {

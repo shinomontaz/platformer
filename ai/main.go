@@ -3,7 +3,7 @@ package ai
 import (
 	"platformer/actor"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 var list map[*actor.Actor]*Ai

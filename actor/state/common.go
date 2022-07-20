@@ -3,7 +3,7 @@ package state
 import (
 	"platformer/actor/statemachine"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type Common struct {

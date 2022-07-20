@@ -3,7 +3,7 @@ package ui
 import (
 	"platformer/common"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type Ui struct {

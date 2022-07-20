@@ -1,7 +1,7 @@
 package background
 
 import (
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type Pback struct {

@@ -3,7 +3,7 @@ package state
 import (
 	"platformer/events"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type Fall struct {

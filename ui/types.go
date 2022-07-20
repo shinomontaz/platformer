@@ -1,6 +1,6 @@
 package ui
 
-import "github.com/faiface/pixel"
+import "github.com/shinomontaz/pixel"
 
 type Characterer interface {
 	GetHp() int

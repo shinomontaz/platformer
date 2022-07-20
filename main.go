@@ -6,7 +6,6 @@ import (
 
 	"platformer/actor"
 	"platformer/animation"
-	"platformer/background"
 	"platformer/config"
 	"platformer/magic"
 	"platformer/ui"
@@ -17,8 +16,8 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/pixelgl"
+	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/pixelgl"
 )
 
 func init() {
@@ -36,7 +35,7 @@ func init() {
 
 var (
 	//	b *background.Pback
-	b          *background.Back
+	//	b          *background.Back
 	u          *ui.Ui
 	w          *world.World
 	hero       *actor.Actor

@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"platformer/events"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type StateAttack struct {

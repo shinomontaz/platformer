@@ -3,7 +3,7 @@ package magic
 import (
 	"platformer/actor"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 var w Worlder

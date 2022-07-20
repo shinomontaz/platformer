@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"image/color"
 
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/text"
+	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/text"
 	"golang.org/x/image/colornames"
 )
 

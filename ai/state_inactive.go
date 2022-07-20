@@ -1,6 +1,6 @@
 package ai
 
-import "github.com/faiface/pixel"
+import "github.com/shinomontaz/pixel"
 
 type StateInactive struct {
 	id     int

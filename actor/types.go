@@ -3,7 +3,7 @@ package actor
 import (
 	"platformer/common"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type Animater interface {

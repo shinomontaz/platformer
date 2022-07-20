@@ -6,9 +6,9 @@ import (
 	"platformer/config"
 	"platformer/menu"
 
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/pixelgl"
-	"github.com/faiface/pixel/text"
+	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/pixelgl"
+	"github.com/shinomontaz/pixel/text"
 )
 
 var (

@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 var (

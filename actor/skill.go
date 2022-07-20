@@ -4,7 +4,7 @@ import (
 	"platformer/config"
 	"platformer/events"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type Skill struct {

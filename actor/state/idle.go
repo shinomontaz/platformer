@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"platformer/events"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type Idle struct {

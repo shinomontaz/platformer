@@ -6,9 +6,9 @@ import (
 	"platformer/config"
 	"platformer/sound"
 
-	"github.com/faiface/pixel/pixelgl"
+	"github.com/shinomontaz/pixel/pixelgl"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 var (

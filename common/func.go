@@ -4,7 +4,7 @@ import (
 	"image/png"
 	"os"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 func LoadPicture(path string) (pixel.Picture, error) {

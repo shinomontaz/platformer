@@ -1,6 +1,6 @@
 package common
 
-import "github.com/faiface/pixel"
+import "github.com/shinomontaz/pixel"
 
 type Subscriber interface {
 	//	GetId() int

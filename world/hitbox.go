@@ -4,8 +4,8 @@ import (
 	"platformer/actor"
 	"platformer/ai"
 
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/imdraw"
+	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/imdraw"
 	"golang.org/x/image/colornames"
 )
 

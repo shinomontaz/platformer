@@ -11,7 +11,7 @@ import (
 	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
 	"github.com/faiface/beep/wav"
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type Sound struct {

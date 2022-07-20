@@ -1,7 +1,7 @@
 package menu
 
 import (
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 type Menuer interface {

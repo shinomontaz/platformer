@@ -5,7 +5,7 @@ import (
 	"image/png"
 	"os"
 
-	"github.com/faiface/pixel"
+	"github.com/shinomontaz/pixel"
 )
 
 func tileIDToCoord(tID int, numColumns int, numRows int) (x int, y int) {

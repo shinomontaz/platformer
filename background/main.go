@@ -52,9 +52,15 @@ func New(start pixel.Vec, viewport pixel.Rect, path string) *Back {
 	return &b
 }
 
-func (b *Back) Draw(t pixel.Target, pos pixel.Vec) {
+func (b *Back) Draw(t pixel.Target, pos pixel.Vec, viewport pixel.Rect) {
 	x, _ := pos.XY()
 	steps := int(math.Abs(x / b.width))
+
+	width := viewport.W()
+	height := viewport.H()
+	x, y := viewport.Min.X, viewport.Min.Y
+	b.vector1 = pixel.V(x+width/2+1, y+height/2)
+	b.vector2 = pixel.V(x+3*width/2, y+height/2)
 
 	if steps != b.steps {
 		b.vector1, b.vector2 = b.vector2, b.vector1

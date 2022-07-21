@@ -36,7 +36,7 @@ func NewParallax(start pixel.Vec, viewport pixel.Rect) *Pback {
 	return &p
 }
 
-func (p *Pback) Draw(t pixel.Target, pos pixel.Vec) {
+func (p *Pback) Draw(t pixel.Target, pos pixel.Vec, viewport pixel.Rect) {
 	// p.p1.Draw(t, pos, pixel.Vec{cam.X * 0.01, cam.Y})
 	// p.p2.Draw(t, pos, pixel.Vec{cam.X * 0.05, cam.Y})
 	// p.p3.Draw(t, pos, pixel.Vec{cam.X * 0.1, cam.Y})
@@ -45,12 +45,12 @@ func (p *Pback) Draw(t pixel.Target, pos pixel.Vec) {
 	// p.p6.Draw(t, pos, pixel.Vec{cam.X * 0.8, cam.Y})
 	// p.p7.Draw(t, pos, pixel.Vec{cam.X * 1, cam.Y})
 
-	p.p1.Draw(t, pos)
-	p.p2.Draw(t, pos)
-	p.p3.Draw(t, pos)
+	p.p1.Draw(t, pos, viewport)
+	p.p2.Draw(t, pos, viewport)
+	p.p3.Draw(t, pos, viewport)
 	// p.p4.Draw(t, pos, cam)
 	// p.p5.Draw(t, pos, cam)
 	// p.p6.Draw(t, pos, cam)
-	p.p7.Draw(t, pos)
+	p.p7.Draw(t, pos, viewport)
 
 }

@@ -347,7 +347,7 @@ func (w *World) SetBackground(b *background.Back) {
 func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec) {
 	w.cnv.Clear(color.RGBA{0, 0, 0, 1})
 
-	w.b.Draw(w.cnv, hpos)
+	w.b.Draw(w.cnv, hpos, w.viewport)
 
 	for _, batch := range w.batches {
 		batch.Clear()

@@ -2,7 +2,6 @@ package menu
 
 import (
 	"image/color"
-	"io/ioutil"
 	"math"
 	"platformer/animation"
 	"platformer/common"
@@ -100,7 +99,7 @@ func (b *Back) init() {
 	b.qtTile = common.New(1, r)
 	b.qtObjs = common.New(1, r)
 
-	fs, err := LoadFileToString("assets/shader/spotlight.frag.glsl")
+	fs, err := common.LoadFileToString("assets/shader/spotlight.frag.glsl")
 	if err != nil {
 		panic(err)
 	}
@@ -121,14 +120,6 @@ func (b *Back) init() {
 	}
 
 	b.bg = pixel.NewSprite(bg, pixel.R(0, 0, bg.Bounds().W(), bg.Bounds().H()))
-}
-
-func LoadFileToString(filename string) (string, error) {
-	b, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return "", err
-	}
-	return string(b), nil
 }
 
 func (b *Back) initSets() {

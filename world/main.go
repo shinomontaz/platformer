@@ -14,6 +14,7 @@ import (
 	"platformer/events"
 	"platformer/factories"
 
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/shinomontaz/pixel/pixelgl"
 
 	"github.com/salviati/go-tmx/tmx"
@@ -23,6 +24,7 @@ type World struct {
 	b *background.Back
 
 	cnv    *pixelgl.Canvas
+	cnv2   *pixelgl.Canvas
 	Height float64
 	Width  float64
 	qtTile *common.Quadtree
@@ -53,6 +55,10 @@ type World struct {
 	visibleObjs  []common.Objecter
 
 	alerts []Alert
+
+	uObjects    []mgl32.Vec4 // = 250 rectangles
+	uNumObjects int32
+	uLight      mgl32.Vec2
 }
 
 func New(source string, rect pixel.Rect) *World {
@@ -121,14 +127,34 @@ func (w *World) init() {
 
 	w.viewport = w.viewport.Moved(rect.Center().Sub(pixel.V(w.viewport.W()/2, w.viewport.H()/2)))
 
-	w.cnv = pixelgl.NewCanvas(w.viewport)
-	w.cnv.SetSmooth(true)
-
 	w.initProps()
 	w.initSets()
 	w.initTiles()
 	w.initPhys()
 	w.initObjs()
+	w.initShader("assets/shader/world.glsl")
+}
+
+func (w *World) initShader(shadername string) {
+	w.cnv = pixelgl.NewCanvas(pixel.R(0, 0, w.viewport.W(), w.viewport.H()))
+	w.cnv.SetSmooth(true)
+
+	w.cnv2 = pixelgl.NewCanvas(pixel.R(0, 0, w.viewport.W(), w.viewport.H()))
+	w.cnv2.SetSmooth(true)
+
+	w.uObjects = make([]mgl32.Vec4, 0)
+	w.uLight = [2]float32{float32(-w.viewport.W()/2 + 100.0), float32(w.viewport.H()/2 - 100.0)}
+
+	w.cnv.SetUniform("uLight", &w.uLight)
+	w.cnv.SetUniform("uObjects", &w.uObjects)
+	w.cnv.SetUniform("uNumObjects", &w.uNumObjects)
+
+	fragSource, err := common.LoadFileToString(shadername)
+	if err != nil {
+		panic(err)
+	}
+
+	w.cnv.SetFragmentShader(fragSource)
 }
 
 func (w *World) initProps() {
@@ -244,10 +270,15 @@ func (w *World) SetRect(rect pixel.Rect) {
 }
 
 func (w *World) Update(rect pixel.Rect, dt float64) {
-	w.viewport = rect
-	w.cnv.SetBounds(w.viewport)
-	w.visibleTiles = w.qtTile.Retrieve(rect)
-	w.visibleObjs = w.qtObjs.Retrieve(rect)
+	w.viewport = rect.Moved(pixel.V(0, -150))
+
+	//	w.cnv2.SetBounds(w.viewport)
+	//	w.cnv.SetBounds(w.viewport)
+
+	w.visibleTiles = w.qtTile.Retrieve(w.viewport)
+	w.visibleObjs = w.qtObjs.Retrieve(w.viewport)
+
+	// update uObjects, update uNumObjects
 
 	if w.hero != nil {
 		w.hero.Update(dt)
@@ -344,10 +375,13 @@ func (w *World) SetBackground(b *background.Back) {
 	w.b = b
 }
 
-func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec) {
+func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
 	w.cnv.Clear(color.RGBA{0, 0, 0, 1})
+	w.cnv2.Clear(color.RGBA{0, 0, 0, 1})
 
-	w.b.Draw(w.cnv, hpos, w.viewport)
+	w.cnv2.SetMatrix(pixel.IM.Moved(w.cnv2.Bounds().Center().Sub(cam)))
+
+	w.b.Draw(w.cnv2, hpos, cam)
 
 	for _, batch := range w.batches {
 		batch.Clear()
@@ -392,27 +426,21 @@ func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec) {
 	}
 
 	for _, batch := range w.batches {
-		//		batch.Draw(win)
-		batch.Draw(w.cnv)
+		batch.Draw(w.cnv2)
 	}
 
 	for _, e := range w.enemies {
-		//		e.Draw(win)
-		e.Draw(w.cnv)
+		e.Draw(w.cnv2)
 	}
-	//	drawStrikes(win)
-
-	//	drawAlerts(win)
-	drawAlerts(w.cnv)
+	drawAlerts(w.cnv2)
 
 	if w.hero != nil {
-		//		w.hero.Draw(win)
-		w.hero.Draw(w.cnv)
+		w.hero.Draw(w.cnv2)
 	}
 
-	//	drawSpells(win)
-	drawSpells(w.cnv)
+	drawSpells(w.cnv2)
+	//	w.cnv2.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 
+	w.cnv2.Draw(w.cnv, pixel.IM.Moved(w.cnv.Bounds().Center()))
 	w.cnv.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
-
 }

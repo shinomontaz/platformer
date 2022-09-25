@@ -2,6 +2,7 @@ package common
 
 import (
 	"image/png"
+	"io/ioutil"
 	"os"
 
 	"github.com/shinomontaz/pixel"
@@ -19,4 +20,12 @@ func LoadPicture(path string) (pixel.Picture, error) {
 	}
 
 	return pixel.PictureDataFromImage(img), nil
+}
+
+func LoadFileToString(filename string) (string, error) {
+	b, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
 }

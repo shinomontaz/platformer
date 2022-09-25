@@ -15,7 +15,9 @@ uniform sampler2D uTexture;
 // Our custom uniforms
 uniform float uTime;
 uniform vec2 uLight;
+//uniform float uObjects[1000];
 uniform vec4 uObjects[1000];
+
 uniform int uNumObjects;
 
 // Utilities
@@ -123,31 +125,65 @@ bool isShadowedByBox( vec2 a, vec2 b, vec2 ld, vec2 ru ) {
     return false;
 }
 
+
+float fillMask(float dist)
+{
+	return clamp(-dist, 0.0, 1.0);
+}
+
+float circleDist(vec2 p, float radius)
+{
+	return length(p) - radius;
+}
+
+vec3 drawLight(vec2 p, vec2 pos, vec3 color, float range, float radius)
+{
+	// distance to light
+	float ld = length(p - pos);
+	
+	// out of range
+	if (ld > range) return vec3(0.0);
+	
+	// shadow and falloff
+	float fall = (range - ld)/range;
+	fall *= fall;
+	float source = fillMask(circleDist(p - pos, radius));
+	return (fall + source) * color;
+}
+
+
+// fragCoord -> vTexCoords
+// iResolution.xy -> uTexBounds.zw
+// mainImage(out vec4 fragColor, in vec2 fragCoord) -> main() + definition of 
+// in vec2 vTexCoords;
+// out vec4 fragColor;
+
 void main() {
-    vec2 uv = vTexCoords.xy;
-    vec2 uv2 = vTexCoords / uTexBounds.zw;
-    vec4 pixelColor = texture(uTexture, uv2);
+    vec2 uv = vTexCoords.xy / uTexBounds.zw;
+    vec4 pixelColor = texture(uTexture, uv);
 
-    vec2 toLight = uv2 - uLight.xy / uTexBounds.zw;
-    vec3 color = pixelColor.rgb * (1.0 / (1.0 + dot(toLight, toLight)));
-//    vec3 color = pixelColor.rgb;
-
-    float radius = 50;
+    vec2 toLight = uv - uLight/uTexBounds.zw;
+    vec3 color = pixelColor.rgb; // / (dot(toLight, toLight) + pixelColor.rgb);
 
     vec2 circle_pos = uLight + uTexBounds.zw/2;
 
+    bool shadowed = false;
     // Shapes and shadow volumes
     for (int i=0; i<uNumObjects; i++) {
-
         vec2 bp = vec2(uObjects[i].x, uObjects[i].y) + uTexBounds.zw/2;     // []Vec4
         vec2 bb = vec2(uObjects[i].z, uObjects[i].w) + uTexBounds.zw/2;
 
-        float box = sdBox2(uv, bp, bb); // Box distance
+        float box = sdBox2(uv*uTexBounds.zw, bp, bb); // Box distance
+        drawSDF(box, vec3(1.0, 0.0, 0.0));
 
-        if (isShadowedByBox( uLight, uv, bp, bb ) ) {
+       if (isShadowedByBox( circle_pos, vTexCoords.xy, bp, bb ) ) {
+            shadowed = true;
             color -= 0.1;
-            break;
         }
+    }
+
+    if (!shadowed) {
+        color += drawLight(vTexCoords.xy, circle_pos, vec3(1.0, 0.75, 0.5), 100.0, 10.0);
     }
 
     fragColor = vec4(color, 1.0);

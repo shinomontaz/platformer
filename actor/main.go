@@ -182,7 +182,6 @@ func (a *Actor) Listen(e int, v pixel.Vec) {
 }
 
 func (a *Actor) Move(v pixel.Vec) {
-	//	a.rect = pixel.R(pos.X, pos.Y, pos.X+a.rect.W(), pos.Y+a.rect.Y())
 	a.rect = a.rect.Moved(v)
 	a.phys.Move(v)
 }

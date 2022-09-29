@@ -82,8 +82,8 @@ func run() {
 	ctrl = controller.New(win)
 
 	initScreen(win)
-	initGame(win)
 	initMenu(win)
+	initGame(win)
 
 	ismenu = true
 

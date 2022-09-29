@@ -65,7 +65,7 @@ bool isShadowedByBox( vec2 a, vec2 b, vec2 ld, vec2 ru ) {
         return false;
     }
 
-    if ( b.y <= ru.y && b.y >= ld.y && b.x <= ru.x && b.x >= ld.x ) {
+    if ( b.y <= ru.y && b.y >= ld.y && b.x <= ru.x && b.x >= ld.x ) { // this check that point inside box
         return false;
     }
 
@@ -125,6 +125,18 @@ bool isShadowedByBox( vec2 a, vec2 b, vec2 ld, vec2 ru ) {
     return false;
 }
 
+bool isInsideBox( vec2 b, vec2 ld, vec2 ru ) {
+
+    if ( ( b.x > ru.x ) || ( b.x < ld.x ) ) {
+        return false;
+    }
+
+    if ( ( b.y > ru.y ) || ( b.y < ld.y ) ) {
+        return false;
+    }
+
+    return true;
+}
 
 float fillMask(float dist)
 {
@@ -168,22 +180,29 @@ void main() {
     vec2 circle_pos = uLight + uTexBounds.zw/2;
 
     bool shadowed = false;
+    bool inside = false;
     // Shapes and shadow volumes
     for (int i=0; i<uNumObjects; i++) {
         vec2 bp = vec2(uObjects[i].x, uObjects[i].y) + uTexBounds.zw/2;     // []Vec4
         vec2 bb = vec2(uObjects[i].z, uObjects[i].w) + uTexBounds.zw/2;
 
-        float box = sdBox2(uv*uTexBounds.zw, bp, bb); // Box distance
-        drawSDF(box, vec3(1.0, 0.0, 0.0));
+       if (isInsideBox( vTexCoords.xy, bp, bb )) {
+            inside = true;
+            continue;
+        }
 
-       if (isShadowedByBox( circle_pos, vTexCoords.xy, bp, bb ) ) {
+       if (isShadowedByBox( circle_pos, vTexCoords.xy, bp, bb )) {
             shadowed = true;
-            color -= 0.1;
         }
     }
 
-    if (!shadowed) {
-        color += drawLight(vTexCoords.xy, circle_pos, vec3(1.0, 0.75, 0.5), 100.0, 10.0);
+    if (!inside) {
+        if (!shadowed) {
+            color += drawLight(vTexCoords.xy, circle_pos, vec3(1.0, 0.75, 0.5), 100.0, 10.0);
+        } else {
+            color -= 0.1;
+        }
+
     }
 
     fragColor = vec4(color, 1.0);

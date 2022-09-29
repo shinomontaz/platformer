@@ -56,6 +56,9 @@ func (s *Stand) Listen(e int, v *pixel.Vec) {
 		s.a.SetState(JUMP)
 	case v.Y < 0:
 		s.a.SetState(FALL)
+	case v.X != 0:
+		s.a.SetState(WALK)
+		return
 	}
 
 	s.checkTransitions(e, v)

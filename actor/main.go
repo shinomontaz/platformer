@@ -187,7 +187,8 @@ func (a *Actor) Move(v pixel.Vec) {
 }
 
 func (a *Actor) GetPos() pixel.Vec {
-	return a.rect.Center()
+	//	return a.rect.Center()
+	return a.rect.Min
 }
 
 func (a *Actor) GetRect() pixel.Rect {

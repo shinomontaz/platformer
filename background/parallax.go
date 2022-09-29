@@ -36,6 +36,10 @@ func NewParallax(start pixel.Vec, viewport pixel.Rect) *Pback {
 	return &p
 }
 
+func Update(r pixel.Rect) {
+
+}
+
 func (p *Pback) Draw(t pixel.Target, pos pixel.Vec) {
 	// p.p1.Draw(t, pos, pixel.Vec{cam.X * 0.01, cam.Y})
 	// p.p2.Draw(t, pos, pixel.Vec{cam.X * 0.05, cam.Y})

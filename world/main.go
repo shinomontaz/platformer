@@ -15,6 +15,7 @@ import (
 	"platformer/factories"
 
 	"github.com/go-gl/mathgl/mgl32"
+	"github.com/shinomontaz/pixel/imdraw"
 	"github.com/shinomontaz/pixel/pixelgl"
 
 	"github.com/salviati/go-tmx/tmx"
@@ -53,12 +54,15 @@ type World struct {
 
 	visibleTiles []common.Objecter
 	visibleObjs  []common.Objecter
+	visiblePhys  []common.Objecter
 
 	alerts []Alert
 
 	uObjects    []mgl32.Vec4 // = 250 rectangles
 	uNumObjects int32
 	uLight      mgl32.Vec2
+
+	IsDebug bool
 }
 
 func New(source string, rect pixel.Rect) *World {
@@ -270,15 +274,19 @@ func (w *World) SetRect(rect pixel.Rect) {
 }
 
 func (w *World) Update(rect pixel.Rect, dt float64) {
-	w.viewport = rect.Moved(pixel.V(0, -150))
-
-	//	w.cnv2.SetBounds(w.viewport)
-	//	w.cnv.SetBounds(w.viewport)
+	w.viewport = rect
 
 	w.visibleTiles = w.qtTile.Retrieve(w.viewport)
 	w.visibleObjs = w.qtObjs.Retrieve(w.viewport)
 
-	// update uObjects, update uNumObjects
+	w.visiblePhys = w.qtPhys.Retrieve(w.viewport)
+	w.uObjects = make([]mgl32.Vec4, 0)
+	c := w.viewport.Center()
+	for _, o := range w.visiblePhys {
+		uObject := mgl32.Vec4{float32(-c.X + o.R.Min.X), float32(-c.Y + o.R.Min.Y - 150), float32(-c.X + o.R.Max.X), float32(-c.Y + o.R.Max.Y - 150)}
+		w.uObjects = append(w.uObjects, uObject)
+	}
+	w.uNumObjects = int32(len(w.uObjects))
 
 	if w.hero != nil {
 		w.hero.Update(dt)
@@ -377,7 +385,7 @@ func (w *World) SetBackground(b *background.Back) {
 
 func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
 	w.cnv.Clear(color.RGBA{0, 0, 0, 1})
-	w.cnv2.Clear(color.RGBA{0, 0, 0, 1})
+	w.cnv2.Clear(color.RGBA{240, 248, 255, 1})
 
 	w.cnv2.SetMatrix(pixel.IM.Moved(w.cnv2.Bounds().Center().Sub(cam)))
 
@@ -438,8 +446,20 @@ func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
 		w.hero.Draw(w.cnv2)
 	}
 
+	if w.IsDebug {
+		imd := imdraw.New(nil)
+		imd.Color = color.RGBA{255, 0, 0, 1}
+		for _, p := range w.visiblePhys {
+			vertices := p.R.Vertices()
+			for _, v := range vertices {
+				imd.Push(v)
+			}
+			imd.Rectangle(1)
+		}
+		imd.Draw(w.cnv2)
+	}
+
 	drawSpells(w.cnv2)
-	//	w.cnv2.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 
 	w.cnv2.Draw(w.cnv, pixel.IM.Moved(w.cnv.Bounds().Center()))
 	w.cnv.Draw(win, pixel.IM.Moved(win.Bounds().Center()))

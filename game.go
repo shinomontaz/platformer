@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"image/color"
-	"math"
 	"platformer/background"
 	"platformer/config"
 	"platformer/factories"
@@ -33,13 +32,15 @@ func gameFunc(win *pixelgl.Window, dt float64) {
 	pos := hero.GetPos()
 	sound.Update(pos)
 	if dt > 0 {
-		deltaVec = pixel.Lerp(deltaVec, lastPos.To(pos), 1-math.Pow(1.0/128, dt))
+		//		deltaVec = pixel.Lerp(deltaVec, lastPos.To(pos), 1-math.Pow(1.0/128, dt))
 
-		camPos = pixel.Lerp(camPos, pos.Add(pixel.V(0, 150)), 1-math.Pow(1.0/128, dt))
-		currBounds2 := currBounds.Moved(initialCenter.Sub(pixel.V(currBounds.W()/2, currBounds.H()/2))).Moved(deltaVec).Moved(pixel.ZV.Add(pixel.V(0, 150)))
+		deltaVec = lastPos.To(pos)
+		//		camPos = pixel.Lerp(camPos, pos.Add(pixel.V(0, 150)), 1-math.Pow(1.0/128, dt))
+		camPos = pos.Add(pixel.V(0, 150))
 
-		w.Update(currBounds2, dt)
+		currBounds = currBounds.Moved(deltaVec)
 
+		w.Update(currBounds, dt)
 	}
 
 	w.Draw(win, pos, camPos)
@@ -60,22 +61,24 @@ func initGame(win *pixelgl.Window) {
 	w = world.New("my.tmx", currBounds)
 	//	w = world.New("assets/ep2.tmx", currBounds)
 
+	//	w.IsDebug = true
 	w.InitEnemies()
 
 	magic.SetWorld(w)
 
 	initialCenter = w.GetCenter()
-
 	hero = factories.NewActor(config.Profiles["player"], w)
 	hero.Move(initialCenter)
 	ctrl.Subscribe(hero)
 	w.AddHero(hero)
-
 	u = ui.New(hero, currBounds)
+
+	currBounds = currBounds.Moved(initialCenter.Sub(pixel.V(currBounds.W()/2, currBounds.H()/2)))
+
 	lastPos = hero.GetPos()
 	camPos = lastPos.Add(pixel.V(0, 150))
 
-	b = background.New(lastPos, currBounds.Moved(pixel.V(-currBounds.W()/2, 0)).Moved(pixel.V(0, 150)), "assets/gamebackground.png")
+	b = background.New(lastPos, currBounds.Moved(pixel.V(0, 150)), "assets/gamebackground.png")
 
 	w.SetBackground(b)
 }

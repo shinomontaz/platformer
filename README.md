@@ -42,7 +42,7 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] some fragment shaders [b8831e9a](https://github.com/shinomontaz/platformer/commit/b8831e9ad6b09ffc68a90c8199247f61a279bcf8)
 - [x] main menu
 - [x] release v0.8 [v0.8](https://github.com/shinomontaz/platformer/releases/tag/v0.8)
-- [ ] main game shaders ( sunlight, shadows )
+- [x] main game shaders ( sunlight, shadows )
 - [ ] level design
 - [ ] blood
 - [ ] projectile attacks

@@ -10,7 +10,7 @@ const MAX = 10
 
 type Objecter struct {
 	R  pixel.Rect
-	ID int
+	ID uint32
 }
 
 func (o *Objecter) Rect() pixel.Rect {

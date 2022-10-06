@@ -58,10 +58,9 @@ func gameFunc(win *pixelgl.Window, dt float64) {
 }
 
 func initGame(win *pixelgl.Window) {
-	w = world.New("my.tmx", currBounds)
-	//	w = world.New("assets/ep2.tmx", currBounds)
+	w = world.New("assets", "ep1.tmx", currBounds)
 
-	//	w.IsDebug = true
+	w.IsDebug = true
 	w.InitEnemies()
 
 	magic.SetWorld(w)

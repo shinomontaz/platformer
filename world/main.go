@@ -2,7 +2,7 @@ package world
 
 import (
 	"image/color"
-	"strconv"
+	"os"
 
 	"github.com/shinomontaz/pixel"
 
@@ -18,7 +18,7 @@ import (
 	"github.com/shinomontaz/pixel/imdraw"
 	"github.com/shinomontaz/pixel/pixelgl"
 
-	"github.com/salviati/go-tmx/tmx"
+	tmx "github.com/lafriks/go-tiled"
 )
 
 type World struct {
@@ -35,20 +35,20 @@ type World struct {
 	gravity float64
 
 	tm           *tmx.Map
-	geom         tmx.ObjectGroup
-	scenery      tmx.ObjectGroup
-	meta         tmx.Object
+	geom         *tmx.ObjectGroup
+	scenery      *tmx.ObjectGroup
+	meta         *tmx.Object
 	batches      []*pixel.Batch
 	batchIndices map[string]int
 	sprites      map[string]*pixel.Sprite
 
-	objects     map[int]tmx.Object
-	objectTiles map[int]*tmx.DecodedTile
-	phys        map[int]tmx.Object
-	tiles       map[int]*tmx.DecodedTile
+	objects     map[uint32]*tmx.Object
+	objectTiles map[uint32]*tmx.LayerTile
+	phys        map[uint32]*tmx.Object
+	tiles       map[uint32]*tmx.LayerTile
 
 	viewport pixel.Rect
-	enmeta   []tmx.Object
+	enmeta   []*tmx.Object
 	enemies  []*actor.Actor
 	hero     *actor.Actor
 
@@ -65,8 +65,16 @@ type World struct {
 	IsDebug bool
 }
 
-func New(source string, rect pixel.Rect) *World {
-	tm, err := tmx.ReadFile(source)
+func New(dir, source string, rect pixel.Rect) *World {
+	cwd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	defer os.Chdir(cwd)
+
+	os.Chdir(dir)
+
+	tm, err := tmx.LoadFile(source)
 	if err != nil {
 		panic(err)
 	}
@@ -76,12 +84,12 @@ func New(source string, rect pixel.Rect) *World {
 		batches:      make([]*pixel.Batch, 0),
 		batchIndices: make(map[string]int),
 		sprites:      make(map[string]*pixel.Sprite),
-		tiles:        make(map[int]*tmx.DecodedTile),
-		phys:         make(map[int]tmx.Object),
-		objects:      make(map[int]tmx.Object),
+		tiles:        make(map[uint32]*tmx.LayerTile),
+		phys:         make(map[uint32]*tmx.Object),
+		objects:      make(map[uint32]*tmx.Object),
 
-		objectTiles: make(map[int]*tmx.DecodedTile),
-		enmeta:      make([]tmx.Object, 0),
+		objectTiles: make(map[uint32]*tmx.LayerTile),
+		enmeta:      make([]*tmx.Object, 0),
 		enemies:     make([]*actor.Actor, 0),
 		viewport:    rect,
 	}
@@ -98,10 +106,10 @@ func (w *World) init() {
 		}
 		if og.Name == "meta" {
 			for _, o := range og.Objects {
-				if o.Type == "scene" {
+				if o.Class == "scene" {
 					w.meta = o
 				}
-				if o.Type == "enemy" {
+				if o.Class == "enemy" {
 					w.enmeta = append(w.enmeta, o)
 				}
 			}
@@ -136,7 +144,7 @@ func (w *World) init() {
 	w.initTiles()
 	w.initPhys()
 	w.initObjs()
-	w.initShader("assets/shader/world.glsl")
+	w.initShader("shader/world.glsl") // due to Chdir in NewWorld constructor
 }
 
 func (w *World) initShader(shadername string) {
@@ -162,13 +170,10 @@ func (w *World) initShader(shadername string) {
 }
 
 func (w *World) initProps() {
-	for _, p := range w.tm.Properties {
-		if p.Name == "gravity" {
-			if g, err := strconv.ParseFloat(p.Value, 64); err == nil {
-				w.gravity = g
-			}
-		}
+	if w.tm.Properties == nil {
+		return
 	}
+	w.gravity = w.tm.Properties.GetFloat("gravity")
 }
 
 func (w *World) InitEnemies() {
@@ -180,7 +185,7 @@ func (w *World) InitEnemies() {
 func (w *World) initSets() {
 	batchCounter := 0
 	for _, tileset := range w.tm.Tilesets {
-		if len(tileset.Tiles) > 0 && tileset.Image.Source == "" {
+		if len(tileset.Tiles) > 0 { // tileset of pictures
 			for _, tile := range tileset.Tiles {
 				if _, alreadyLoaded := w.sprites[tile.Image.Source]; !alreadyLoaded {
 					sprite, pictureData := loadSprite(tile.Image.Source)
@@ -204,7 +209,7 @@ func (w *World) initSets() {
 
 func (w *World) initTiles() {
 	for _, layer := range w.tm.Layers {
-		for tileIndex, tile := range layer.DecodedTiles {
+		for tileIndex, tile := range layer.Tiles {
 			if tile.Nil {
 				continue
 			}
@@ -212,8 +217,8 @@ func (w *World) initTiles() {
 			// Calculate the framing for the tile within its tileset's source image
 			gamePos := indexToGamePos(tileIndex, w.tm.Width, w.tm.Height)
 			pos := gamePos.ScaledXY(pixel.V(float64(ts.TileWidth), float64(ts.TileHeight)))
-			w.tiles[tileIndex] = tile
-			res := w.qtTile.Insert(common.Objecter{ID: tileIndex, R: pixel.R(pos.X, pos.Y, pos.X+float64(ts.TileWidth), pos.Y+float64(ts.TileHeight))})
+			w.tiles[tile.ID] = tile
+			res := w.qtTile.Insert(common.Objecter{ID: tile.ID, R: pixel.R(pos.X, pos.Y, pos.X+float64(ts.TileWidth), pos.Y+float64(ts.TileHeight))})
 			if !res {
 				panic("canot insert tile!")
 			}
@@ -258,7 +263,7 @@ func (w *World) initObjs() {
 			Max: max,
 		}
 
-		dTile, err := w.tm.DecodeGID(tmx.GID(o.GID))
+		dTile, err := w.tm.TileGIDToTile(o.GID) // type(dTile) = *tmx.LayerTile
 		if err != nil {
 			panic(err) // TODO!
 		}
@@ -347,7 +352,7 @@ func (w *World) IsSee(from, to pixel.Vec) bool {
 	return true
 }
 
-func (w *World) AddEnemy(meta tmx.Object) {
+func (w *World) AddEnemy(meta *tmx.Object) {
 	enemy := factories.NewActor(config.Profiles[meta.Name], w)
 	enemy.Move(pixel.V(meta.X, w.Height-meta.Y))
 	factories.NewAi(config.Profiles[meta.Name].Type, enemy, w)
@@ -400,7 +405,7 @@ func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
 		ts := tile.Tileset
 		tID := int(tile.ID)
 
-		numRows := ts.Tilecount / ts.Columns
+		numRows := ts.TileCount / ts.Columns
 		x, y := tileIDToCoord(tID, ts.Columns, numRows)
 
 		iX := float64(x) * float64(ts.TileWidth)
@@ -418,10 +423,7 @@ func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
 		o := w.objects[obj.ID]
 		dTile := w.objectTiles[o.GID]
 
-		ts := dTile.Tileset
-		tID := o.GID - int(ts.FirstGID)
-
-		tile := ts.Tiles[tID]
+		tile, _ := dTile.Tileset.GetTilesetTile(dTile.ID)
 
 		iX := 0.0
 		fX := float64(tile.Image.Width)

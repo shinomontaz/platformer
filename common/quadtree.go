@@ -9,8 +9,9 @@ import (
 const MAX = 10
 
 type Objecter struct {
-	R  pixel.Rect
-	ID uint32
+	R    pixel.Rect
+	ID   uint32
+	Type int
 }
 
 func (o *Objecter) Rect() pixel.Rect {

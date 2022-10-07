@@ -21,6 +21,11 @@ import (
 	tmx "github.com/lafriks/go-tiled"
 )
 
+const (
+	GROUND = iota
+	BARRIER
+)
+
 type World struct {
 	b *background.Back
 
@@ -241,9 +246,12 @@ func (w *World) initPhys() {
 			Min: min,
 			Max: max,
 		}
-
+		phType := GROUND
+		if o.Class == "barier" {
+			phType = BARRIER
+		}
 		w.phys[o.GID] = o
-		w.qtPhys.Insert(common.Objecter{ID: o.GID, R: rc})
+		w.qtPhys.Insert(common.Objecter{ID: o.GID, R: rc, Type: phType})
 	}
 }
 
@@ -288,6 +296,9 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 	w.uObjects = make([]mgl32.Vec4, 0)
 	c := w.viewport.Center()
 	for _, o := range w.visiblePhys {
+		if o.Type != GROUND {
+			continue
+		}
 		uObject := mgl32.Vec4{float32(-c.X + o.R.Min.X), float32(-c.Y + o.R.Min.Y - 150), float32(-c.X + o.R.Max.X), float32(-c.Y + o.R.Max.Y - 150)}
 		w.uObjects = append(w.uObjects, uObject)
 	}

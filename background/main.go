@@ -22,7 +22,7 @@ type Back struct {
 	steps int
 }
 
-func New(start pixel.Vec, viewport pixel.Rect, path string) *Back {
+func New(start pixel.Vec, viewport pixel.Rect, loader *common.Loader, path string) *Back {
 	width := viewport.W()
 	height := viewport.H()
 
@@ -39,7 +39,9 @@ func New(start pixel.Vec, viewport pixel.Rect, path string) *Back {
 		steps: 0,
 	}
 
-	bg, err := common.LoadPicture(path)
+	//	bg, err := common.LoadPicture(path)
+	bg, err := loader.LoadPicture(path)
+
 	if err != nil {
 		panic(err)
 	}

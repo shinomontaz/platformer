@@ -2,10 +2,8 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"log"
-	"os"
+	"platformer/common"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -20,29 +18,30 @@ var (
 	Opts       Options
 )
 
-func init() {
+func Init(loader *common.Loader) error {
 	var byteValue []byte
-	fconfig, err := os.Open("config/config.json")
+	fconfig, err := loader.Read("config.json")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer fconfig.Close()
 
 	byteValue, _ = ioutil.ReadAll(fconfig)
 	json.Unmarshal(byteValue, &MainConfig)
 
-	fanims, err := os.Open(fmt.Sprintf("config/%s", MainConfig.AllAnims))
+	//	fanims, err := os.Open(fmt.Sprintf("config/%s", MainConfig.AllAnims))
+	fanims, err := loader.Read(MainConfig.AllAnims)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer fanims.Close()
 
 	byteValue, _ = ioutil.ReadAll(fanims)
 	json.Unmarshal(byteValue, &AnimConfig)
 
-	fprofiles, err := os.Open(fmt.Sprintf("config/%s", MainConfig.Profiles))
+	fprofiles, err := loader.Read(MainConfig.Profiles)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer fprofiles.Close()
 
@@ -55,9 +54,9 @@ func init() {
 		Profiles[pr.Type] = pr
 	}
 
-	sprofiles, err := os.Open(fmt.Sprintf("config/%s", MainConfig.Sounds))
+	sprofiles, err := loader.Read(MainConfig.Sounds)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer sprofiles.Close()
 
@@ -70,23 +69,24 @@ func init() {
 		Sounds[pr.Type] = pr
 	}
 
-	fspells, err := os.Open(fmt.Sprintf("config/%s", MainConfig.Spells))
+	fspells, err := loader.Read(MainConfig.Spells)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer fspells.Close()
 
 	byteValue, _ = ioutil.ReadAll(fspells)
 	json.Unmarshal(byteValue, &Spells)
 
-	foptions, err := os.Open("config/options.json")
+	foptions, err := loader.Read("options.json")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer foptions.Close()
 
 	byteValue, _ = ioutil.ReadAll(foptions)
 	json.Unmarshal(byteValue, &Opts)
+	return nil
 }
 
 func (a *Anims) W() float64 {

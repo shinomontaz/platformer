@@ -69,6 +69,12 @@ type Actor struct {
 	activeSkill *Skill
 }
 
+var loader *common.Loader
+
+func Init(l *common.Loader) {
+	loader = l
+}
+
 func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
 	a := &Actor{
 		anim:    anim,

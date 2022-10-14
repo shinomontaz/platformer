@@ -3,7 +3,6 @@ package menu
 import (
 	"image/color"
 	"math"
-	"platformer/common"
 
 	"github.com/shinomontaz/pixel"
 	"github.com/shinomontaz/pixel/pixelgl"
@@ -39,7 +38,7 @@ func NewBack(rect pixel.Rect) *Back {
 }
 
 func (b *Back) init() {
-	bg, err := common.LoadPicture("assets/gamebackground.png")
+	bg, err := loader.LoadPicture("gamebackground.png")
 	if err != nil {
 		panic(err)
 	}

@@ -3,7 +3,7 @@
         "type": "player",
         "anim": "player",
         "sound": "player",
-        "portrait": "assets/portraits/Icons_02.png",
+        "portrait": "portraits/Icons_02.png",
         "dir": 1,
         "hp": 3,
         "strength": 1,

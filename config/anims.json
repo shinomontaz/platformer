@@ -7,57 +7,57 @@
         "list":  [
         {
             "name": "stand",
-            "file":"assets/characters/graverobber/GraveRobber.png",
+            "file":"characters/graverobber/GraveRobber.png",
             "frames": [1, 0, 1]
         },
         {
             "name": "walk",
-            "file":"assets/characters/graverobber/GraveRobber_walk.png",
+            "file":"characters/graverobber/GraveRobber_walk.png",
             "frames": [6, 0, 6]
         },
         {
             "name": "run",
-            "file":"assets/characters/graverobber/GraveRobber_run.png",
+            "file":"characters/graverobber/GraveRobber_run.png",
             "frames": [6, 0, 6]
         },
         {
             "name": "jump",
-            "file":"assets/characters/graverobber/GraveRobber_jump.png",
+            "file":"characters/graverobber/GraveRobber_jump.png",
             "frames": [6, 1, 3]
         },
         {
             "name": "fly",
-            "file":"assets/characters/graverobber/GraveRobber_jump.png",
+            "file":"characters/graverobber/GraveRobber_jump.png",
             "frames": [6, 3, 4]
         },
         {
             "name": "land",
-            "file":"assets/characters/graverobber/GraveRobber_jump.png",
+            "file":"characters/graverobber/GraveRobber_jump.png",
             "frames": [6, 4, 6]
         },
         {
             "name": "idle",
-            "file":"assets/characters/graverobber/GraveRobber_idle.png",
+            "file":"characters/graverobber/GraveRobber_idle.png",
             "frames": [4, 0, 4]
         },
         {
             "name": "hurt",
-            "file":"assets/characters/graverobber/GraveRobber_hurt.png",
+            "file":"characters/graverobber/GraveRobber_hurt.png",
             "frames": [3, 0, 3]
         },
         {
             "name": "die",
-            "file":"assets/characters/graverobber/GraveRobber_death.png",
+            "file":"characters/graverobber/GraveRobber_death.png",
             "frames": [6, 0, 6]
         },
         {
             "name": "dead",
-            "file":"assets/characters/graverobber/GraveRobber_death.png",
+            "file":"characters/graverobber/GraveRobber_death.png",
             "frames": [6, 5, 6]
         },
         {
             "name": "meleemove",
-            "file":"assets/characters/graverobber/GraveRobber_attack3.png",
+            "file":"characters/graverobber/GraveRobber_attack3.png",
             "frames": [6, 0, 6]
         }
         ],
@@ -67,12 +67,12 @@
             "group": [
                 {
                     "name": "attack1",
-                    "file":"assets/characters/graverobber/GraveRobber_attack1.png",
+                    "file":"characters/graverobber/GraveRobber_attack1.png",
                     "frames": [6, 0, 6]
                 },
                 {
                     "name": "attack2",
-                    "file":"assets/characters/graverobber/GraveRobber_attack2.png",
+                    "file":"characters/graverobber/GraveRobber_attack2.png",
                     "frames": [6, 0, 6]
                 }
                 ]
@@ -87,32 +87,32 @@
         "list":  [
         {
             "name": "stand",
-            "file":"assets/enemies/mummy/Mummy.png",
+            "file":"enemies/mummy/Mummy.png",
             "frames": [1, 0, 1]
         },
         {
             "name": "walk",
-            "file":"assets/enemies/mummy/Mummy_walk.png",
+            "file":"enemies/mummy/Mummy_walk.png",
             "frames": [6, 0, 6]
         },
         {
             "name": "idle",
-            "file":"assets/enemies/mummy/Mummy_idle.png",
+            "file":"enemies/mummy/Mummy_idle.png",
             "frames": [4, 0, 4]
         },
         {
             "name": "hurt",
-            "file":"assets/enemies/mummy/Mummy_hurt.png",
+            "file":"enemies/mummy/Mummy_hurt.png",
             "frames": [2, 0, 2]
         },
         {
             "name": "die",
-            "file":"assets/enemies/mummy/Mummy_death.png",
+            "file":"enemies/mummy/Mummy_death.png",
             "frames": [6, 0, 6]
         },
         {
             "name": "dead",
-            "file":"assets/enemies/mummy/Mummy_death.png",
+            "file":"enemies/mummy/Mummy_death.png",
             "frames": [6, 5, 6]
         }
         ],
@@ -122,7 +122,7 @@
             "group": [
                 {
                     "name": "attack1",
-                    "file":"assets/enemies/mummy/Mummy_attack.png",
+                    "file":"enemies/mummy/Mummy_attack.png",
                     "frames": [6, 0, 6]
                 }        
             ]
@@ -137,42 +137,42 @@
         "list":  [
         {
             "name": "stand",
-            "file":"assets/enemies/deceased/Deceased.png",
+            "file":"enemies/deceased/Deceased.png",
             "frames": [1, 0, 1]
         },
         {
             "name": "walk",
-            "file":"assets/enemies/deceased/Deceased_walk.png",
+            "file":"enemies/deceased/Deceased_walk.png",
             "frames": [6, 0, 6]
         },
         {
             "name": "idle",
-            "file":"assets/enemies/deceased/Deceased_idle.png",
+            "file":"enemies/deceased/Deceased_idle.png",
             "frames": [4, 0, 4]
         },
         {
             "name": "hurt",
-            "file":"assets/enemies/deceased/Deceased_hurt.png",
+            "file":"enemies/deceased/Deceased_hurt.png",
             "frames": [2, 0, 2]
         },
         {
             "name": "die",
-            "file":"assets/enemies/deceased/Deceased_death.png",
+            "file":"enemies/deceased/Deceased_death.png",
             "frames": [6, 0, 6]
         },
         {
             "name": "dead",
-            "file":"assets/enemies/deceased/Deceased_death.png",
+            "file":"enemies/deceased/Deceased_death.png",
             "frames": [6, 5, 6]
         },
         {
             "name": "ranged",
-            "file":"assets/enemies/deceased/Deceased_attack.png",
+            "file":"enemies/deceased/Deceased_attack.png",
             "frames": [4, 0, 4]
         },
         {
             "name": "cast",
-            "file":"assets/enemies/deceased/Deceased_attack.png",
+            "file":"enemies/deceased/Deceased_attack.png",
             "frames": [4, 0, 4]
         }
         ]
@@ -185,37 +185,37 @@
         "list":  [
         {
             "name": "stand",
-            "file":"assets/bosses/bigbloated/Big_bloated.png",
+            "file":"bosses/bigbloated/Big_bloated.png",
             "frames": [1, 0, 1]
         },
         {
             "name": "walk",
-            "file":"assets/bosses/bigbloated/Big_bloated_walk.png",
+            "file":"bosses/bigbloated/Big_bloated_walk.png",
             "frames": [6, 0, 6]
         },
         {
             "name": "idle",
-            "file":"assets/bosses/bigbloated/Big_bloated_idle.png",
+            "file":"bosses/bigbloated/Big_bloated_idle.png",
             "frames": [4, 0, 4]
         },
         {
             "name": "sneer",
-            "file":"assets/bosses/bigbloated/Big_bloated_sneer.png",
+            "file":"bosses/bigbloated/Big_bloated_sneer.png",
             "frames": [4, 0, 4]
         },
         {
             "name": "hurt",
-            "file":"assets/bosses/bigbloated/Big_bloated_hurt.png",
+            "file":"bosses/bigbloated/Big_bloated_hurt.png",
             "frames": [2, 0, 2]
         },
         {
             "name": "die",
-            "file":"assets/bosses/bigbloated/Big_bloated_death.png",
+            "file":"bosses/bigbloated/Big_bloated_death.png",
             "frames": [4, 0, 4]
         },
         {
             "name": "dead",
-            "file":"assets/bosses/bigbloated/Big_bloated_death.png",
+            "file":"bosses/bigbloated/Big_bloated_death.png",
             "frames": [4, 3, 4]
         }
         ],
@@ -225,7 +225,7 @@
             "group": [
                 {
                     "name": "attack1",
-                    "file":"assets/bosses/bigbloated/Big_bloated_attack4.png",
+                    "file":"bosses/bigbloated/Big_bloated_attack4.png",
                     "frames": [6, 0, 6]
                 }
             ]
@@ -235,7 +235,7 @@
                 "group": [
                     {
                         "name": "attack1",
-                        "file":"assets/bosses/bigbloated/Big_bloated_attack3.png",
+                        "file":"bosses/bigbloated/Big_bloated_attack3.png",
                         "frames": [4, 0, 4]
                     }
                 ]
@@ -245,12 +245,12 @@
                 "group": [
                     {
                         "name": "attack1",
-                        "file":"assets/bosses/bigbloated/Big_bloated_attack1.png",
+                        "file":"bosses/bigbloated/Big_bloated_attack1.png",
                         "frames": [6, 0, 6]
                     },
                     {
                         "name": "attack2",
-                        "file":"assets/bosses/bigbloated/Big_bloated_attack2.png",
+                        "file":"bosses/bigbloated/Big_bloated_attack2.png",
                         "frames": [6, 0, 6]
                     }
                 ]
@@ -265,7 +265,7 @@
         "list":  [
             {
                 "name": "spell",
-                "file":"assets/effects/Dark VFX 2 (48x64).png",
+                "file":"effects/Dark VFX 2 (48x64).png",
                 "frames": [15, 0, 15]
             }
         ]
@@ -278,7 +278,7 @@
         "list":  [
             {
                 "name": "spell",
-                "file":"assets/projectiles/deceased_ball.png",
+                "file":"projectiles/deceased_ball.png",
                 "frames": [1, 0, 1]
             }
         ]
@@ -291,7 +291,7 @@
         "list":  [
             {
                 "name": "campfire",
-                "file":"assets/scenery/spr_FirePlace_strip.png",
+                "file":"scenery/spr_FirePlace_strip.png",
                 "frames": [6, 0, 6]
             }
         ]

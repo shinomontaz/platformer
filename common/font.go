@@ -9,27 +9,30 @@ import (
 
 var fonts map[string]font.Face
 
-func init() {
+var loader *Loader
+
+func InitFont(l *Loader) {
+	loader = l
 	fonts = make(map[string]font.Face)
-	bold, err := loadFont("assets/fonts/GravityBold8.ttf", 8)
+	bold, err := loadFont("fonts/GravityBold8.ttf", 8)
 	if err != nil {
 		panic(err)
 	}
 	fonts["bold"] = bold
 
-	reg, err := loadFont("assets/fonts/GravityRegular5.ttf", 8)
+	reg, err := loadFont("fonts/GravityRegular5.ttf", 8)
 	if err != nil {
 		panic(err)
 	}
 	fonts["regular"] = reg
 
-	menu, err := loadFont("assets/fonts/capture.ttf", 20)
+	menu, err := loadFont("fonts/capture.ttf", 20)
 	if err != nil {
 		panic(err)
 	}
 	fonts["menu"] = menu
 
-	menusmall, err := loadFont("assets/fonts/capture.ttf", 12)
+	menusmall, err := loadFont("fonts/capture.ttf", 12)
 	if err != nil {
 		panic(err)
 	}
@@ -42,10 +45,15 @@ func GetFont(s string) font.Face {
 }
 
 func loadFont(path string, size float64) (font.Face, error) {
-	b, err := ioutil.ReadFile(path)
+	file, err := loader.Read(path)
 	if err != nil {
 		return nil, err
 	}
+	b, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+	file.Close()
 
 	f, err := truetype.Parse(b)
 	if err != nil {

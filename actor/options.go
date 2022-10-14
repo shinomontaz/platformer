@@ -2,7 +2,6 @@ package actor
 
 import (
 	"platformer/actor/statemachine"
-	"platformer/common"
 	"platformer/config"
 
 	"github.com/shinomontaz/pixel"
@@ -62,7 +61,7 @@ func WithPortrait(path string) Option {
 		if path == "" {
 			return
 		}
-		prt, err := common.LoadPicture(path)
+		prt, err := loader.LoadPicture(path)
 		if err != nil {
 			panic(err)
 		}

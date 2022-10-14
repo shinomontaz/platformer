@@ -20,6 +20,8 @@ var (
 )
 
 func initMenu(win *pixelgl.Window) {
+	menu.Init(assetloader)
+
 	videoModes := pixelgl.PrimaryMonitor().VideoModes()
 	currentVideoMode := len(videoModes) - 1
 

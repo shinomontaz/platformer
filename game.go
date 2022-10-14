@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"platformer/actor"
+	"platformer/animation"
 	"platformer/background"
 	"platformer/config"
 	"platformer/factories"
@@ -57,10 +59,28 @@ func gameFunc(win *pixelgl.Window, dt float64) {
 	}
 }
 
-func initGame(win *pixelgl.Window) {
-	w = world.New("assets", "ep1.tmx", currBounds)
+func loadAnimations() { // load animations
+	for _, anim := range config.AnimConfig {
+		animation.Load(&anim)
+	}
+	for name, cfg := range config.Spells {
+		magic.Load(name, &cfg)
+	}
+}
 
-	w.IsDebug = true
+func initGame(win *pixelgl.Window) *world.World {
+	animation.Init(assetloader)
+	actor.Init(assetloader)
+	ui.Init(assetloader)
+
+	loadAnimations()
+
+	w, err := world.New("ep1.tmx", currBounds, world.WithLoader(assetloader))
+	if err != nil {
+		panic(err)
+	}
+
+	w.IsDebug = isdebug
 	w.InitEnemies()
 
 	magic.SetWorld(w)
@@ -77,7 +97,9 @@ func initGame(win *pixelgl.Window) {
 	lastPos = hero.GetPos()
 	camPos = lastPos.Add(pixel.V(0, 150))
 
-	b = background.New(lastPos, currBounds.Moved(pixel.V(0, 150)), "assets/gamebackground.png")
+	b = background.New(lastPos, currBounds.Moved(pixel.V(0, 150)), assetloader, "gamebackground.png")
 
 	w.SetBackground(b)
+
+	return w
 }

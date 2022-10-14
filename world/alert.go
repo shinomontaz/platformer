@@ -20,7 +20,7 @@ type Alert struct {
 var alerts []*Alert
 var atlas *text.Atlas
 
-func init() {
+func InitAlerts() {
 	alerts = make([]*Alert, 0)
 	fnt := common.GetFont("regular")
 	atlas = text.NewAtlas(fnt, text.ASCII)

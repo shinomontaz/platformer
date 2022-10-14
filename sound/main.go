@@ -2,7 +2,7 @@ package sound
 
 import (
 	"log"
-	"os"
+	"platformer/common"
 	"platformer/config"
 	"time"
 
@@ -34,7 +34,7 @@ var (
 	volEffects *effects.Volume
 )
 
-func init() {
+func Init(loader *common.Loader) {
 	music = make(map[string]Sound)
 	soundeffects = make(map[string]Sound)
 	currEffects = make([]PosEffect, 0)
@@ -52,10 +52,11 @@ func init() {
 
 	// read effects
 	// read music
-	f, err := os.Open("assets/sounds/music/fluffily-11859.mp3")
+	f, err := loader.Read("sounds/music/fluffily-11859.mp3")
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer f.Close()
 
 	streamer, format, err := mp3.Decode(f)
 	if err != nil {
@@ -78,7 +79,7 @@ func init() {
 					continue
 				}
 				// read soundeffect
-				f, err := os.Open(ef)
+				f, err := loader.Read(ef)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -90,6 +91,7 @@ func init() {
 				buff := beep.NewBuffer(format)
 				buff.Append(streamer)
 				streamer.Close()
+				f.Close()
 
 				soundeffects[ef] = Sound{
 					buff: buff,

@@ -2,7 +2,6 @@ package world
 
 import (
 	"image/color"
-	"os"
 
 	"github.com/shinomontaz/pixel"
 
@@ -27,7 +26,8 @@ const (
 )
 
 type World struct {
-	b *background.Back
+	b      *background.Back
+	loader *common.Loader
 
 	cnv    *pixelgl.Canvas
 	cnv2   *pixelgl.Canvas
@@ -70,22 +70,16 @@ type World struct {
 	IsDebug bool
 }
 
-func New(dir, source string, rect pixel.Rect) *World {
-	cwd, err := os.Getwd()
-	if err != nil {
-		panic(err)
+type Option func(*World)
+
+func WithLoader(l *common.Loader) Option {
+	return func(w *World) {
+		w.loader = l
 	}
-	defer os.Chdir(cwd)
+}
 
-	os.Chdir(dir)
-
-	tm, err := tmx.LoadFile(source)
-	if err != nil {
-		panic(err)
-	}
-
+func New(source string, rect pixel.Rect, opts ...Option) (*World, error) {
 	w := World{
-		tm:           tm,
 		batches:      make([]*pixel.Batch, 0),
 		batchIndices: make(map[string]int),
 		sprites:      make(map[string]*pixel.Sprite),
@@ -99,9 +93,28 @@ func New(dir, source string, rect pixel.Rect) *World {
 		viewport:    rect,
 	}
 
+	for _, opt := range opts {
+		opt(&w)
+	}
+
+	mapsource, err := w.loader.Read(source)
+	if err != nil {
+		return nil, err
+	}
+	defer mapsource.Close()
+
+	tm, err := tmx.LoadReader("", mapsource)
+	if err != nil {
+		return nil, err
+	}
+
+	w.tm = tm
+
 	w.init()
 
-	return &w
+	InitAlerts()
+
+	return &w, nil
 }
 
 func (w *World) init() {
@@ -166,7 +179,7 @@ func (w *World) initShader(shadername string) {
 	w.cnv.SetUniform("uObjects", &w.uObjects)
 	w.cnv.SetUniform("uNumObjects", &w.uNumObjects)
 
-	fragSource, err := common.LoadFileToString(shadername)
+	fragSource, err := w.loader.LoadFileToString(shadername)
 	if err != nil {
 		panic(err)
 	}
@@ -193,7 +206,8 @@ func (w *World) initSets() {
 		if len(tileset.Tiles) > 0 { // tileset of pictures
 			for _, tile := range tileset.Tiles {
 				if _, alreadyLoaded := w.sprites[tile.Image.Source]; !alreadyLoaded {
-					sprite, pictureData := loadSprite(tile.Image.Source)
+					pictureData, _ := w.loader.LoadPicture(tile.Image.Source)
+					sprite := pixel.NewSprite(pictureData, pictureData.Bounds())
 					w.sprites[tile.Image.Source] = sprite
 					w.batches = append(w.batches, pixel.NewBatch(&pixel.TrianglesData{}, pictureData))
 					w.batchIndices[tile.Image.Source] = batchCounter
@@ -202,7 +216,8 @@ func (w *World) initSets() {
 			}
 		} else {
 			if _, alreadyLoaded := w.sprites[tileset.Image.Source]; !alreadyLoaded {
-				sprite, pictureData := loadSprite(tileset.Image.Source)
+				pictureData, _ := w.loader.LoadPicture(tileset.Image.Source)
+				sprite := pixel.NewSprite(pictureData, pictureData.Bounds())
 				w.sprites[tileset.Image.Source] = sprite
 				w.batches = append(w.batches, pixel.NewBatch(&pixel.TrianglesData{}, pictureData))
 				w.batchIndices[tileset.Image.Source] = batchCounter

@@ -1,6 +1,8 @@
 package background
 
 import (
+	"platformer/common"
+
 	"github.com/shinomontaz/pixel"
 )
 
@@ -16,7 +18,7 @@ type Pback struct {
 	p7     *Back
 }
 
-func NewParallax(start pixel.Vec, viewport pixel.Rect) *Pback {
+func NewParallax(start pixel.Vec, viewport pixel.Rect, loader *common.Loader) *Pback {
 	width := viewport.W()
 	height := viewport.H()
 
@@ -24,13 +26,13 @@ func NewParallax(start pixel.Vec, viewport pixel.Rect) *Pback {
 		width:  width,
 		height: height,
 	}
-	p.p1 = New(start, viewport, "assets/back/1.png")
-	p.p2 = New(start, viewport, "assets/back/2.png")
-	p.p3 = New(start, viewport, "assets/back/3.png")
-	p.p4 = New(start, viewport, "assets/back/4.png")
-	p.p5 = New(start, viewport, "assets/back/5.png")
-	p.p6 = New(start, viewport, "assets/back/6.png")
-	p.p7 = New(start, viewport, "assets/back/8.png")
+	p.p1 = New(start, viewport, loader, "assets/back/1.png")
+	p.p2 = New(start, viewport, loader, "assets/back/2.png")
+	p.p3 = New(start, viewport, loader, "assets/back/3.png")
+	p.p4 = New(start, viewport, loader, "assets/back/4.png")
+	p.p5 = New(start, viewport, loader, "assets/back/5.png")
+	p.p6 = New(start, viewport, loader, "assets/back/6.png")
+	p.p7 = New(start, viewport, loader, "assets/back/8.png")
 
 	//background.New(lastPos, currBounds.Moved(pixel.Vec{0, 100}), "assets/gamebackground.png")
 	return &p

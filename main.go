@@ -5,10 +5,7 @@ import (
 	"time"
 
 	"platformer/actor"
-	"platformer/animation"
 	"platformer/background"
-	"platformer/config"
-	"platformer/magic"
 	"platformer/ui"
 	"platformer/world"
 
@@ -23,13 +20,9 @@ import (
 
 func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
-	// load animations
-	for _, anim := range config.AnimConfig {
-		animation.Load(&anim)
-	}
-	for name, cfg := range config.Spells {
-		magic.Load(name, &cfg)
-	}
+
+	// read start config
+
 	// load video mode and sound volumes
 	initRuntime()
 }
@@ -39,6 +32,7 @@ var (
 	b          *background.Back
 	u          *ui.Ui
 	w          *world.World
+	win        *pixelgl.Window
 	hero       *actor.Actor
 	ctrl       *controller.Controller
 	title      string     = "platformer"
@@ -48,6 +42,7 @@ var (
 	lastPos       pixel.Vec
 	ismenu        bool
 	isquit        bool
+	isdebug       bool
 )
 
 func gameLoop(win *pixelgl.Window) {
@@ -83,7 +78,6 @@ func run() {
 
 	initScreen(win)
 	initMenu(win)
-	initGame(win)
 
 	ismenu = true
 

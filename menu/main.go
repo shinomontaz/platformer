@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"platformer/common"
 	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
@@ -11,6 +12,12 @@ type Menu struct {
 	curr     int
 	rect     pixel.Rect
 	isactive bool
+}
+
+var loader *common.Loader
+
+func Init(l *common.Loader) {
+	loader = l
 }
 
 func New(r pixel.Rect) *Menu {

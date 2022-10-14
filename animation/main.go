@@ -26,6 +26,12 @@ type Anims struct {
 	m      float64 // margin
 }
 
+var loader *common.Loader
+
+func Init(l *common.Loader) {
+	loader = l
+}
+
 func Load(cfg AnimatingConfig) {
 	animRect := pixel.R(0, 0, cfg.W(), cfg.H())
 	a := New(animRect, cfg.M())
@@ -101,7 +107,7 @@ func (a *Anims) GetGroupLen(name string) int {
 }
 
 func (a *Anims) PrepareAnim(name, file string, frames []int) (*Anim, error) {
-	spritesheet, err := common.LoadPicture(file)
+	spritesheet, err := loader.LoadPicture(file)
 	if err != nil {
 		return nil, err
 	}

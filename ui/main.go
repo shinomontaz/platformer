@@ -12,8 +12,14 @@ type Ui struct {
 	heart    *pixel.Sprite
 }
 
+var loader *common.Loader
+
+func Init(l *common.Loader) {
+	loader = l
+}
+
 func New(ch Characterer, viewport pixel.Rect) *Ui {
-	icon, err := common.LoadPicture("assets/icons/37.png")
+	icon, err := loader.LoadPicture("icons/37.png")
 	if err != nil {
 		panic(err)
 	}

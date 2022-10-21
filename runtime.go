@@ -7,7 +7,6 @@ import (
 	"os"
 	"platformer/common"
 	"platformer/config"
-	"platformer/sound"
 
 	"github.com/shinomontaz/pixel/pixelgl"
 
@@ -20,6 +19,7 @@ var (
 	winWidth     float64
 	cfgloader    *common.Loader
 	assetloader  *common.Loader
+	startConfig  StartConfig
 )
 
 type StartConfig struct {
@@ -39,8 +39,6 @@ func initRuntime() {
 		log.Fatal(err)
 	}
 	defer fconfig.Close()
-
-	var startConfig StartConfig
 
 	byteValue, _ = ioutil.ReadAll(fconfig)
 	json.Unmarshal(byteValue, &startConfig)
@@ -69,19 +67,6 @@ func initRuntime() {
 
 	common.InitFont(assetloader)
 	//	magic.Init(assetloader)
-}
-
-func SaveOptions() {
-	json, _ := json.Marshal(config.Opts)
-	if err := ioutil.WriteFile("config/options.json", json, 0644); err != nil {
-		panic("Failed to save configuration")
-	}
-}
-
-func startGame() {
-	w = initGame(win)
-	sound.Init(assetloader)
-	sound.PlayMusic("main")
 }
 
 func initScreen(win *pixelgl.Window) {

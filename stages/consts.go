@@ -1,0 +1,17 @@
+package stages
+
+const (
+	EVENT_DONE = iota
+	EVENT_QUIT
+	EVENT_MENU
+	EVENT_NOTREADY
+	EVENT_ENTER
+	EVENT_INITSCREEN
+)
+
+const (
+	LOADING = iota
+	MENU
+	GAME
+	RECORDS
+)

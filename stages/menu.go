@@ -25,6 +25,8 @@ type Menu struct {
 
 	ctrl       *controller.Controller
 	currBounds pixel.Rect
+	isGame     bool
+	atlas      *text.Atlas
 }
 
 func NewMenu(f Inform, l *common.Loader, ctrl *controller.Controller, currBounds pixel.Rect) *Menu {
@@ -54,18 +56,17 @@ func (m *Menu) Init() {
 	m.activemenu = m.mainmenu
 
 	fnt := common.GetFont("menu")
-	atlas := text.NewAtlas(fnt, text.ASCII)
+	m.atlas = text.NewAtlas(fnt, text.ASCII)
 
-	txt := text.New(pixel.V(0, 0), atlas)
+	txt := text.New(pixel.V(0, 0), m.atlas)
 	it := menu.NewItem("New game", txt, menu.WithAction(func() {
 		m.Notify(EVENT_ENTER) //startGame()
-		m.mainmenu.SetActive(false)
+		m.isGame = true
 	}))
 
 	m.mainmenu.AddItem(it)
-	it.Select(true)
 
-	txt = text.New(pixel.V(0, 0), atlas)
+	txt = text.New(pixel.V(0, 0), m.atlas)
 	it = menu.NewItem("Display", txt, menu.WithAction(func() {
 		m.activemenu = m.displaymenu
 		m.mainmenu.SetActive(false)
@@ -73,11 +74,11 @@ func (m *Menu) Init() {
 	}))
 	m.mainmenu.AddItem(it)
 
-	txt = text.New(pixel.V(0, 0), atlas)
+	txt = text.New(pixel.V(0, 0), m.atlas)
 	it = menu.NewItem("Sound", txt)
 	m.mainmenu.AddItem(it)
 
-	txt = text.New(pixel.V(0, 0), atlas)
+	txt = text.New(pixel.V(0, 0), m.atlas)
 	it = menu.NewItem("Quit", txt, menu.WithAction(func() {
 		m.Notify(EVENT_QUIT)
 	}))
@@ -85,7 +86,7 @@ func (m *Menu) Init() {
 
 	// display menu
 	m.displaymenu = menu.New(m.currBounds)
-	txt = text.New(pixel.V(0, 0), atlas)
+	txt = text.New(pixel.V(0, 0), m.atlas)
 
 	mode := videoModes[currentVideoMode]
 	it = menu.NewItem(fmt.Sprintf("%v: %-10v", "Resolution", fmt.Sprintf("%v x %v", mode.Width, mode.Height)), txt,
@@ -95,7 +96,7 @@ func (m *Menu) Init() {
 	m.displaymenu.AddItem(it)
 	it.Select(true)
 
-	txt = text.New(pixel.V(0, 0), atlas)
+	txt = text.New(pixel.V(0, 0), m.atlas)
 	it = menu.NewItem(fmt.Sprintf("%v: %-10v", "Fullscreen", config.Opts.Fullscreen), txt,
 		menu.WithHandle(func(e int, v pixel.Vec) {
 			config.Opts.Fullscreen = !config.Opts.Fullscreen
@@ -107,7 +108,7 @@ func (m *Menu) Init() {
 		}))
 	m.displaymenu.AddItem(it)
 
-	txt = text.New(pixel.V(0, 0), atlas)
+	txt = text.New(pixel.V(0, 0), m.atlas)
 	it = menu.NewItem("Quit", txt, menu.WithAction(func() {
 		m.activemenu = m.mainmenu
 		m.displaymenu.SetActive(false)
@@ -115,12 +116,32 @@ func (m *Menu) Init() {
 	}))
 	m.displaymenu.AddItem(it)
 
-	m.activemenu.SetActive(true)
-
 	m.ctrl.Subscribe(m.mainmenu)
 	m.ctrl.Subscribe(m.displaymenu)
 
 	m.isReady = true
+
+}
+
+func (m *Menu) Start() {
+	if !m.isReady {
+		return
+	}
+
+	if m.isGame {
+		// remove first item and place a resume item
+
+		txt := text.New(pixel.V(0, 0), m.atlas)
+		it := menu.NewItem("Resume game", txt, menu.WithAction(func() {
+			m.Notify(EVENT_ENTER) //startGame()
+			m.isGame = true
+		}))
+		m.mainmenu.ReplaceItem(0, it)
+	}
+
+	m.mainmenu.Select(0)
+
+	m.activemenu.SetActive(true)
 	m.isActive = true
 }
 

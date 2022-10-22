@@ -39,25 +39,30 @@ func (m *Menu) UpdateSelectedItemText(title string) {
 	m.items[m.curr].title = title
 }
 
+func (m *Menu) Select(idx int) {
+	m.items[m.curr].Select(false)
+	m.curr = idx
+	m.items[m.curr].Select(true)
+}
+
 func (m *Menu) Listen(e int, v pixel.Vec) {
 	if !m.isactive {
 		return
 	}
 
 	// if up or down - handle just here, otherwise make item handle it
-	prevcurr := m.curr
+	curr := m.curr
 	ismoved := false
 	if v.Y > 0 {
-		m.curr = (m.curr - 1 + len(m.items)) % len(m.items)
+		curr = (curr - 1 + len(m.items)) % len(m.items)
 		ismoved = true
 	}
 	if v.Y < 0 {
-		m.curr = (m.curr + 1) % len(m.items)
+		curr = (curr + 1) % len(m.items)
 		ismoved = true
 	}
 	if ismoved {
-		m.items[prevcurr].Select(false)
-		m.items[m.curr].Select(true)
+		m.Select(curr)
 		return
 	}
 	if e == events.ENTER {
@@ -79,6 +84,12 @@ func (m *Menu) AddItem(it *Item) {
 	it.Place(pos)
 
 	m.items = append(m.items, it)
+}
+
+func (m *Menu) ReplaceItem(idx int, it *Item) {
+	pos := m.items[idx].GetPlace()
+	it.Place(pos)
+	m.items[idx] = it
 }
 
 func (m *Menu) Update(dt float64) {

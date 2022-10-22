@@ -76,6 +76,10 @@ func (i *Item) Place(pos pixel.Vec) {
 	i.rect = i.txt.Bounds().Moved(pos)
 }
 
+func (i *Item) GetPlace() pixel.Vec {
+	return i.rect.Center()
+}
+
 func (i *Item) Listen(e int, v pixel.Vec) {
 	i.handle(e, v)
 }

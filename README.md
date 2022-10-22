@@ -43,6 +43,7 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] main menu
 - [x] release v0.8 [v0.8](https://github.com/shinomontaz/platformer/releases/tag/v0.8)
 - [x] main game shaders ( sunlight, shadows )
+- [ ] game stages ( menu->loading->game->menu->game->... ) + separate controllers, bugfix
 - [ ] level design
 - [ ] blood
 - [ ] projectile attacks

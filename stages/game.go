@@ -42,7 +42,7 @@ var (
 	title    = "platformer"
 )
 
-func NewGame(f Inform, l *common.Loader, ctrl *controller.Controller, currBounds pixel.Rect) *Game {
+func NewGame(f Inform, l *common.Loader, win *pixelgl.Window, currBounds pixel.Rect) *Game {
 	return &Game{
 		Common: Common{
 			id:       GAME,
@@ -51,7 +51,7 @@ func NewGame(f Inform, l *common.Loader, ctrl *controller.Controller, currBounds
 			eventMap: map[int]int{EVENT_QUIT: MENU},
 		},
 		assetloader: l,
-		ctrl:        ctrl,
+		ctrl:        controller.New(win),
 		currBounds:  currBounds,
 	}
 }
@@ -120,6 +120,7 @@ func (g *Game) Run(win *pixelgl.Window, dt float64) {
 	pos := g.hero.GetPos()
 	sound.Update(pos)
 	if dt > 0 {
+		g.ctrl.Update()
 		deltaVec = g.lastPos.To(pos)
 		camPos = pos.Add(pixel.V(0, 150))
 

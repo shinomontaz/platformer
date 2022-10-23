@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"time"
 
-	"platformer/controller"
 	"platformer/stages"
 
 	"net/http"
@@ -16,18 +15,10 @@ import (
 )
 
 var (
-	//	b *background.Pback
-	//	b          *background.Back
-	//	u          *ui.Ui
-	//	w          *world.World
-	win *pixelgl.Window
-	//	hero       *actor.Actor
-	ctrl       *controller.Controller
+	win        *pixelgl.Window
 	title      string     = "platformer"
 	currBounds pixel.Rect // current viewport
 
-	//	initialCenter pixel.Vec
-	//	lastPos       pixel.Vec
 	isquit  bool
 	isdebug bool
 
@@ -57,15 +48,14 @@ func run() {
 		panic(err)
 	}
 	win.SetSmooth(true)
-	ctrl = controller.New(win)
 
 	initScreen(win)
 
 	stgs = make(map[int]stages.Stager, 0)
 	loadingStage = stages.NewLoading(inform, assetloader)
 	stgs[stages.LOADING] = loadingStage
-	stgs[stages.MENU] = stages.NewMenu(inform, assetloader, ctrl, currBounds)
-	stgs[stages.GAME] = stages.NewGame(inform, assetloader, ctrl, currBounds)
+	stgs[stages.MENU] = stages.NewMenu(inform, assetloader, win, currBounds)
+	stgs[stages.GAME] = stages.NewGame(inform, assetloader, win, currBounds)
 
 	currStage = stgs[stages.LOADING]
 
@@ -83,7 +73,6 @@ func run() {
 	for !win.Closed() && !isquit {
 		dt := time.Since(last).Seconds()
 		last = time.Now()
-		ctrl.Update() // - here we capture control signals, so actor physics receive input from controller
 
 		currStage.Run(win, dt)
 

@@ -29,7 +29,7 @@ type Menu struct {
 	atlas      *text.Atlas
 }
 
-func NewMenu(f Inform, l *common.Loader, ctrl *controller.Controller, currBounds pixel.Rect) *Menu {
+func NewMenu(f Inform, l *common.Loader, win *pixelgl.Window, currBounds pixel.Rect) *Menu {
 	return &Menu{
 		Common: Common{
 			id:       MENU,
@@ -38,7 +38,7 @@ func NewMenu(f Inform, l *common.Loader, ctrl *controller.Controller, currBounds
 			eventMap: map[int]int{EVENT_ENTER: GAME},
 		},
 		assetloader: l,
-		ctrl:        ctrl,
+		ctrl:        controller.New(win),
 		currBounds:  currBounds,
 	}
 }
@@ -150,6 +150,8 @@ func (m *Menu) Run(win *pixelgl.Window, dt float64) {
 		m.Notify(EVENT_NOTREADY)
 		return
 	}
+
+	m.ctrl.Update()
 
 	win.Clear(rgba)
 

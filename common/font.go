@@ -45,7 +45,7 @@ func GetFont(s string) font.Face {
 }
 
 func loadFont(path string, size float64) (font.Face, error) {
-	file, err := loader.Read(path)
+	file, err := loader.Open(path)
 	if err != nil {
 		return nil, err
 	}

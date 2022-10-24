@@ -97,7 +97,7 @@ func New(source string, rect pixel.Rect, opts ...Option) (*World, error) {
 		opt(&w)
 	}
 
-	mapsource, err := w.loader.Read(source)
+	mapsource, err := w.loader.Open(source)
 	if err != nil {
 		return nil, err
 	}

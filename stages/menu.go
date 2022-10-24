@@ -1,9 +1,7 @@
 package stages
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"platformer/common"
 	"platformer/config"
 	"platformer/controller"
@@ -104,7 +102,7 @@ func (m *Menu) Init() {
 		}),
 		menu.WithAction(func() {
 			m.Notify(EVENT_INITSCREEN)
-			SaveOptions()
+			m.saveOptions()
 		}))
 	m.displaymenu.AddItem(it)
 
@@ -162,9 +160,6 @@ func (m *Menu) Run(win *pixelgl.Window, dt float64) {
 	m.activemenu.Draw(win)
 }
 
-func SaveOptions() { // TODO!!!!
-	json, _ := json.Marshal(config.Opts)
-	if err := ioutil.WriteFile("config/options.json", json, 0644); err != nil {
-		panic("Failed to save configuration")
-	}
+func (m *Menu) saveOptions() {
+	go config.SaveRuntime()
 }

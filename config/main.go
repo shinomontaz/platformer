@@ -2,7 +2,9 @@ package config
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
+	"log"
+	"os"
 	"platformer/common"
 
 	"github.com/shinomontaz/pixel"
@@ -16,37 +18,39 @@ var (
 	Profiles   map[string]Profile
 	Spells     map[string]Spellprofile
 	Opts       Options
+	runtimecfg *os.File
 )
 
-func Init(loader *common.Loader) error {
+func Init(loader *common.Loader, rtcfg *os.File) error {
+	runtimecfg = rtcfg
 	var byteValue []byte
-	fconfig, err := loader.Read("config.json")
+	fconfig, err := loader.Open("config.json")
 	if err != nil {
 		return err
 	}
 	defer fconfig.Close()
 
-	byteValue, _ = ioutil.ReadAll(fconfig)
+	byteValue, _ = io.ReadAll(fconfig)
 	json.Unmarshal(byteValue, &MainConfig)
 
 	//	fanims, err := os.Open(fmt.Sprintf("config/%s", MainConfig.AllAnims))
-	fanims, err := loader.Read(MainConfig.AllAnims)
+	fanims, err := loader.Open(MainConfig.AllAnims)
 	if err != nil {
 		return err
 	}
 	defer fanims.Close()
 
-	byteValue, _ = ioutil.ReadAll(fanims)
+	byteValue, _ = io.ReadAll(fanims)
 	json.Unmarshal(byteValue, &AnimConfig)
 
-	fprofiles, err := loader.Read(MainConfig.Profiles)
+	fprofiles, err := loader.Open(MainConfig.Profiles)
 	if err != nil {
 		return err
 	}
 	defer fprofiles.Close()
 
 	sliceProfiles := make([]Profile, 0)
-	byteValue, _ = ioutil.ReadAll(fprofiles)
+	byteValue, _ = io.ReadAll(fprofiles)
 	json.Unmarshal(byteValue, &sliceProfiles)
 
 	Profiles = make(map[string]Profile)
@@ -54,14 +58,14 @@ func Init(loader *common.Loader) error {
 		Profiles[pr.Type] = pr
 	}
 
-	sprofiles, err := loader.Read(MainConfig.Sounds)
+	sprofiles, err := loader.Open(MainConfig.Sounds)
 	if err != nil {
 		return err
 	}
 	defer sprofiles.Close()
 
 	sliceSprofiles := make([]Soundprofile, 0)
-	byteValue, _ = ioutil.ReadAll(sprofiles)
+	byteValue, _ = io.ReadAll(sprofiles)
 	json.Unmarshal(byteValue, &sliceSprofiles)
 
 	Sounds = make(map[string]Soundprofile)
@@ -69,24 +73,30 @@ func Init(loader *common.Loader) error {
 		Sounds[pr.Type] = pr
 	}
 
-	fspells, err := loader.Read(MainConfig.Spells)
+	fspells, err := loader.Open(MainConfig.Spells)
 	if err != nil {
 		return err
 	}
 	defer fspells.Close()
 
-	byteValue, _ = ioutil.ReadAll(fspells)
+	byteValue, _ = io.ReadAll(fspells)
 	json.Unmarshal(byteValue, &Spells)
 
-	foptions, err := loader.Read("options.json")
-	if err != nil {
-		return err
-	}
-	defer foptions.Close()
-
-	byteValue, _ = ioutil.ReadAll(foptions)
+	byteValue, _ = io.ReadAll(runtimecfg)
 	json.Unmarshal(byteValue, &Opts)
 	return nil
+}
+
+func SaveRuntime() {
+	json, err := json.Marshal(Opts)
+	if err != nil {
+		panic("Failed to save configuration 1")
+	}
+	runtimecfg.Truncate(0)
+	if _, err = runtimecfg.WriteAt(json, 0); err != nil {
+		log.Fatal(err)
+		//		panic("Failed to save configuration 2")
+	}
 }
 
 func (a *Anims) W() float64 {

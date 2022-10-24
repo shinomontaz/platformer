@@ -43,7 +43,9 @@ func run() {
 		VSync:  true,
 	}
 
-	win, err := pixelgl.NewWindow(cfg)
+	var err error
+
+	win, err = pixelgl.NewWindow(cfg)
 	if err != nil {
 		panic(err)
 	}

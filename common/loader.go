@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"fmt"
 	"image/png"
-	"io"
 	"io/fs"
 	"io/ioutil"
 	"os"
@@ -48,12 +47,12 @@ func NewLoader(root string, opts ...Option) *Loader {
 	return l
 }
 
-func (l *Loader) Read(name string) (io.ReadCloser, error) {
+func (l *Loader) Open(name string) (fs.File, error) {
 	return l.opener.Open(fmt.Sprintf("%s%s", l.root, name))
 }
 
 func (l *Loader) LoadPicture(name string) (pixel.Picture, error) {
-	file, err := l.Read(name)
+	file, err := l.Open(name)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +66,7 @@ func (l *Loader) LoadPicture(name string) (pixel.Picture, error) {
 }
 
 func (l *Loader) LoadFileToString(name string) (string, error) {
-	file, err := l.Read(name)
+	file, err := l.Open(name)
 	if err != nil {
 		return "", err
 	}

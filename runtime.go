@@ -20,6 +20,7 @@ var (
 	cfgloader    *common.Loader
 	assetloader  *common.Loader
 	startConfig  StartConfig
+	runtimecfg   *os.File
 )
 
 type StartConfig struct {
@@ -53,9 +54,14 @@ func initRuntime() {
 		assetloader = common.NewLoader(startConfig.Assets, common.WithZip(startConfig.Zip))
 	}
 
+	runtimecfg, err = os.OpenFile("runtime.cfg", os.O_RDWR, 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	isdebug = startConfig.TestFlag
 
-	err = config.Init(cfgloader)
+	err = config.Init(cfgloader, runtimecfg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -73,8 +79,10 @@ func initScreen(win *pixelgl.Window) {
 	if config.Opts.Fullscreen {
 		win.SetMonitor(pixelgl.PrimaryMonitor())
 		win.SetBounds(currBounds)
+		win.SetCursorVisible(false)
 	} else {
 		win.SetMonitor(nil)
 		win.SetBounds(currBounds)
+		win.SetCursorVisible(true)
 	}
 }

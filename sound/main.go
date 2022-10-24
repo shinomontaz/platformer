@@ -52,7 +52,7 @@ func Init(loader *common.Loader) {
 
 	// read effects
 	// read music
-	f, err := loader.Read("sounds/music/fluffily-11859.mp3")
+	f, err := loader.Open("sounds/music/fluffily-11859.mp3")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -79,7 +79,7 @@ func Init(loader *common.Loader) {
 					continue
 				}
 				// read soundeffect
-				f, err := loader.Read(ef)
+				f, err := loader.Open(ef)
 				if err != nil {
 					log.Fatal(err)
 				}

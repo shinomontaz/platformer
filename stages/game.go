@@ -77,7 +77,7 @@ func (g *Game) Init() {
 		magic.Load(name, &cfg)
 	}
 
-	w, err := world.New("ep1.tmx", g.currBounds, world.WithLoader(g.assetloader))
+	w, err := world.New("ep2.tmx", g.currBounds, world.WithLoader(g.assetloader))
 	if err != nil {
 		panic(err)
 	}

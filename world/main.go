@@ -1,6 +1,7 @@
 package world
 
 import (
+	"fmt"
 	"image/color"
 
 	"github.com/shinomontaz/pixel"
@@ -103,9 +104,9 @@ func New(source string, rect pixel.Rect, opts ...Option) (*World, error) {
 	}
 	defer mapsource.Close()
 
-	tm, err := tmx.LoadReader("", mapsource)
+	tm, err := tmx.LoadReader("assets", mapsource)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s 111", err)
 	}
 
 	w.tm = tm
@@ -124,9 +125,10 @@ func (w *World) init() {
 		}
 		if og.Name == "meta" {
 			for _, o := range og.Objects {
-				if o.Class == "scene" {
+				if o.Class == "hero" {
 					w.meta = o
 				}
+
 				if o.Class == "enemy" {
 					w.enmeta = append(w.enmeta, o)
 				}
@@ -156,6 +158,7 @@ func (w *World) init() {
 	}
 
 	w.viewport = w.viewport.Moved(rect.Center().Sub(pixel.V(w.viewport.W()/2, w.viewport.H()/2)))
+	//	w.viewport = w.viewport.Moved(center.Sub(pixel.V(w.viewport.W()/2, w.viewport.H()/2)))
 
 	w.initProps()
 	w.initSets()
@@ -234,6 +237,9 @@ func (w *World) initTiles() {
 				continue
 			}
 			ts := tile.Tileset
+
+			tile.ID = ts.FirstGID + tile.ID - 1
+
 			// Calculate the framing for the tile within its tileset's source image
 			gamePos := indexToGamePos(tileIndex, w.tm.Width, w.tm.Height)
 			pos := gamePos.ScaledXY(pixel.V(float64(ts.TileWidth), float64(ts.TileHeight)))
@@ -429,7 +435,7 @@ func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
 	for _, t := range w.visibleTiles {
 		tile := w.tiles[t.ID]
 		ts := tile.Tileset
-		tID := int(tile.ID)
+		tID := int(tile.ID - ts.FirstGID + 1)
 
 		numRows := ts.TileCount / ts.Columns
 		x, y := tileIDToCoord(tID, ts.Columns, numRows)
@@ -458,7 +464,12 @@ func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
 
 		sprite := w.sprites[tile.Image.Source]
 		sprite.Set(sprite.Picture(), pixel.R(iX, iY, fX, fY))
-		sprite.Draw(w.batches[w.batchIndices[tile.Image.Source]], pixel.IM.Moved(obj.R.Center()))
+
+		flip := 1.0
+		if dTile.HorizontalFlip {
+			flip = -1.0
+		}
+		sprite.Draw(w.batches[w.batchIndices[tile.Image.Source]], pixel.IM.ScaledXY(pixel.ZV, pixel.V(flip, 1)).Moved(obj.R.Center()))
 	}
 
 	for _, batch := range w.batches {

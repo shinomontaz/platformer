@@ -66,7 +66,7 @@ func (p *Phys) Update(dt float64, move *pixel.Vec) {
 	}
 }
 
-func (p *Phys) collide(v *pixel.Vec) {
+func (p *Phys) collide(v *pixel.Vec) { // in: v - velocity
 	p.ground = false
 	broadbox := Broadbox(p.rect, *v)
 	objs := p.qt.Retrieve(broadbox)
@@ -136,6 +136,10 @@ func (p *Phys) Draw(t pixel.Target) {
 	imd.Rectangle(1)
 
 	imd.Draw(t)
+}
+
+func (p *Phys) IsCollide(q pixel.Rect, v pixel.Vec) (float64, pixel.Vec) {
+	return DoCollision(p.rect, q, v)
 }
 
 // sweptAABB implemented here

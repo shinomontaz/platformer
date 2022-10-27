@@ -3,6 +3,7 @@ package world
 import (
 	"fmt"
 	"image/color"
+	"sync"
 
 	"github.com/shinomontaz/pixel"
 
@@ -24,6 +25,7 @@ import (
 const (
 	GROUND = iota
 	BARRIER
+	WATER
 )
 
 type World struct {
@@ -37,6 +39,7 @@ type World struct {
 	qtTile *common.Quadtree
 	qtObjs *common.Quadtree
 	qtPhys *common.Quadtree
+	qtSpec *common.Quadtree
 
 	gravity float64
 
@@ -50,8 +53,9 @@ type World struct {
 
 	objects     map[uint32]*tmx.Object
 	objectTiles map[uint32]*tmx.LayerTile
-	phys        map[uint32]*tmx.Object
-	tiles       map[uint32]*tmx.LayerTile
+	//	phys        map[uint32]*tmx.Object
+	tiles      map[uint32]*tmx.LayerTile
+	imdrawrect *imdraw.IMDraw
 
 	viewport pixel.Rect
 	enmeta   []*tmx.Object
@@ -61,6 +65,7 @@ type World struct {
 	visibleTiles []common.Objecter
 	visibleObjs  []common.Objecter
 	visiblePhys  []common.Objecter
+	visibleSpec  []common.Objecter
 
 	alerts []Alert
 
@@ -70,6 +75,8 @@ type World struct {
 
 	IsDebug bool
 }
+
+var colors = make(map[string]color.Color)
 
 type Option func(*World)
 
@@ -85,13 +92,14 @@ func New(source string, rect pixel.Rect, opts ...Option) (*World, error) {
 		batchIndices: make(map[string]int),
 		sprites:      make(map[string]*pixel.Sprite),
 		tiles:        make(map[uint32]*tmx.LayerTile),
-		phys:         make(map[uint32]*tmx.Object),
-		objects:      make(map[uint32]*tmx.Object),
+		//		phys:         make(map[uint32]*tmx.Object),
+		objects: make(map[uint32]*tmx.Object),
 
 		objectTiles: make(map[uint32]*tmx.LayerTile),
 		enmeta:      make([]*tmx.Object, 0),
 		enemies:     make([]*actor.Actor, 0),
 		viewport:    rect,
+		imdrawrect:  imdraw.New(nil),
 	}
 
 	for _, opt := range opts {
@@ -119,6 +127,15 @@ func New(source string, rect pixel.Rect, opts ...Option) (*World, error) {
 }
 
 func (w *World) init() {
+	w.Height = float64(w.tm.TileHeight * w.tm.Height)
+	w.Width = float64(w.tm.TileWidth * w.tm.Width)
+
+	r := pixel.R(0.0, 0.0, w.Width, w.Height)
+	w.qtTile = common.New(1, r)
+	w.qtPhys = common.New(1, r)
+	w.qtObjs = common.New(1, r)
+	w.qtSpec = common.New(1, r)
+
 	for _, og := range w.tm.ObjectGroups {
 		if og.Name == "geom" {
 			w.geom = og
@@ -132,19 +149,32 @@ func (w *World) init() {
 				if o.Class == "enemy" {
 					w.enmeta = append(w.enmeta, o)
 				}
+
+				if o.Class == "water" {
+					min := pixel.V(
+						float64(o.X),
+						float64(w.Height)-float64(o.Y)-float64(o.Height),
+					)
+					max := pixel.Vec{
+						X: min.X + float64(o.Width),
+						Y: min.Y + float64(o.Height),
+					}
+
+					rc := pixel.Rect{
+						Min: min,
+						Max: max,
+					}
+
+					w.qtSpec.Insert(common.Objecter{ID: o.GID, R: rc, Type: WATER})
+
+					w.drawRectIfNeeded(o, rc)
+				}
 			}
 		}
 		if og.Name == "scenery" {
 			w.scenery = og
 		}
 	}
-	w.Height = float64(w.tm.TileHeight * w.tm.Height)
-	w.Width = float64(w.tm.TileWidth * w.tm.Width)
-
-	r := pixel.R(0.0, 0.0, w.Width, w.Height)
-	w.qtTile = common.New(1, r)
-	w.qtPhys = common.New(1, r)
-	w.qtObjs = common.New(1, r)
 
 	rect := pixel.Rect{
 		Min: pixel.V(
@@ -158,14 +188,35 @@ func (w *World) init() {
 	}
 
 	w.viewport = w.viewport.Moved(rect.Center().Sub(pixel.V(w.viewport.W()/2, w.viewport.H()/2)))
-	//	w.viewport = w.viewport.Moved(center.Sub(pixel.V(w.viewport.W()/2, w.viewport.H()/2)))
 
+	var wg sync.WaitGroup
 	w.initProps()
-	w.initSets()
-	w.initTiles()
-	w.initPhys()
-	w.initObjs()
-	w.initShader("shader/world.glsl") // due to Chdir in NewWorld constructor
+	go func() {
+		w.initSets()
+		wg.Add(1)
+		defer wg.Done()
+	}()
+	go func() {
+		w.initTiles()
+		wg.Add(1)
+		defer wg.Done()
+	}()
+	go func() {
+		w.initPhys()
+		wg.Add(1)
+		defer wg.Done()
+	}()
+	go func() {
+		w.initObjs()
+		wg.Add(1)
+		defer wg.Done()
+	}()
+	go func() {
+		w.initShader("shader/world.glsl")
+		wg.Add(1)
+		defer wg.Done()
+	}()
+	wg.Wait()
 }
 
 func (w *World) initShader(shadername string) {
@@ -246,7 +297,7 @@ func (w *World) initTiles() {
 			w.tiles[tile.ID] = tile
 			res := w.qtTile.Insert(common.Objecter{ID: tile.ID, R: pixel.R(pos.X, pos.Y, pos.X+float64(ts.TileWidth), pos.Y+float64(ts.TileHeight))})
 			if !res {
-				panic("canot insert tile!")
+				panic("cannot insert tile!")
 			}
 		}
 	}
@@ -271,8 +322,10 @@ func (w *World) initPhys() {
 		if o.Class == "barier" {
 			phType = BARRIER
 		}
-		w.phys[o.GID] = o
+		//		w.phys[o.GID] = o
 		w.qtPhys.Insert(common.Objecter{ID: o.GID, R: rc, Type: phType})
+
+		w.drawRectIfNeeded(o, rc)
 	}
 }
 
@@ -312,6 +365,7 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 
 	w.visibleTiles = w.qtTile.Retrieve(w.viewport)
 	w.visibleObjs = w.qtObjs.Retrieve(w.viewport)
+	w.visibleSpec = w.qtSpec.Retrieve(w.viewport)
 
 	w.visiblePhys = w.qtPhys.Retrieve(w.viewport)
 	w.uObjects = make([]mgl32.Vec4, 0)
@@ -327,11 +381,13 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 
 	if w.hero != nil {
 		w.hero.Update(dt)
+		//		w.hero.UpdateSpecial(w.visibleSpec, dt)
 	}
 
 	ai.Update(dt)
 	for _, en := range w.enemies {
 		en.Update(dt)
+		//		en.UpdateSpecial(w.visibleSpec, dt)
 	}
 
 	updateStrikes(dt, w.enemies, w.hero)
@@ -428,6 +484,8 @@ func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
 
 	w.b.Draw(w.cnv2, hpos, cam)
 
+	w.imdrawrect.Draw(w.cnv2)
+
 	for _, batch := range w.batches {
 		batch.Clear()
 	}
@@ -502,4 +560,25 @@ func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
 
 	w.cnv2.Draw(w.cnv, pixel.IM.Moved(w.cnv.Bounds().Center()))
 	w.cnv.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
+}
+
+func (w *World) drawRectIfNeeded(o *tmx.Object, r pixel.Rect) {
+	var col color.Color
+	var err error
+	var ok bool
+	cstr := o.Properties.GetString("color")
+	if cstr == "" {
+		return
+	}
+
+	if col, ok = colors[cstr]; !ok {
+		col, err = ParseHexColor(cstr)
+		if err != nil {
+			panic(err)
+		}
+		colors[cstr] = col
+	}
+	w.imdrawrect.Color = col
+	w.imdrawrect.Push(r.Min, r.Max)
+	w.imdrawrect.Rectangle(0)
 }

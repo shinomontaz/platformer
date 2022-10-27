@@ -60,7 +60,6 @@ func (g *Game) Start() {
 	if !g.isReady {
 		return
 	}
-	sound.Init(g.assetloader)
 	sound.PlayMusic("main")
 	g.isActive = true
 }
@@ -69,6 +68,7 @@ func (g *Game) Init() {
 	animation.Init(g.assetloader)
 	actor.Init(g.assetloader)
 	ui.Init(g.assetloader)
+	sound.Init(g.assetloader)
 
 	for _, anim := range config.AnimConfig {
 		animation.Load(&anim)

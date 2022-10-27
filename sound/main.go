@@ -129,7 +129,13 @@ func AddEffect(name string, pos pixel.Vec) {
 	speaker.Play(currVolume)
 }
 
+func PlauseMusic() {
+	//	ctrl.Paused
+}
+
 func PlayMusic(name string) {
+	speaker.Clear()
+
 	bfr := music[name].buff
 	mus := bfr.Streamer(0, bfr.Len())
 	ctrl := &beep.Ctrl{Streamer: beep.Loop(-1, mus), Paused: false}

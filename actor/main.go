@@ -218,6 +218,16 @@ func (a *Actor) Update(dt float64) {
 	a.state.Update(dt)
 }
 
+func (a *Actor) UpdateSpecial(objs []common.Objecter, dt float64) {
+	for _, o := range objs {
+		rate, _ := a.phys.IsCollide(o.R, pixel.ZV)
+		if rate == 1 { // no collision
+			continue
+		}
+		// handle collision
+	}
+}
+
 func (a *Actor) SetState(id int) {
 	a.state = a.states[id]
 	a.state.Start()

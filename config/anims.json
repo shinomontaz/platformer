@@ -295,6 +295,18 @@
                 "frames": [6, 0, 6]
             }
         ]
+    },
+    {
+        "type": "coin",
+        "width": 10,
+        "height": 10,
+        "margin": 0,    
+        "list":  [
+        {
+            "name": "stand",
+            "file":"tiles/swamp-tilesets/4 Animated objects/Coin.png",
+            "frames": [4, 0, 4]
+        }
+        ]
     }
-    
 ]

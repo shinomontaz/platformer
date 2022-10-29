@@ -31,13 +31,15 @@ type Quadtree struct {
 	items []Objecter
 	nodes []*Quadtree
 	level int
+	max   int
 	b     pixel.Rect
 }
 
-func New(level int, b pixel.Rect) *Quadtree {
+func New(level, max int, b pixel.Rect) *Quadtree {
 	return &Quadtree{
 		level: level,
 		b:     b,
+		max:   max,
 		nodes: make([]*Quadtree, 0),
 		items: make([]Objecter, 0),
 	}
@@ -49,7 +51,7 @@ func (qt *Quadtree) Insert(o Objecter) bool {
 	}
 
 	if len(qt.nodes) == 0 {
-		if len(qt.items) < MAX {
+		if len(qt.items) < qt.max {
 			qt.items = append(qt.items, o)
 			return true
 		}
@@ -110,28 +112,28 @@ func (qt *Quadtree) index(r pixel.Rect) int { // get quadrand index if object co
 }
 
 func (qt *Quadtree) subdivide() {
-	qt.nodes = append(qt.nodes, New(qt.level+1, pixel.R( // 0
+	qt.nodes = append(qt.nodes, New(qt.level+1, qt.max, pixel.R( // 0
 		qt.b.Min.X+(qt.b.W()/2.0),
 		qt.b.Min.Y+(qt.b.H()/2.0),
 		qt.b.Max.X,
 		qt.b.Max.Y,
 	)))
 
-	qt.nodes = append(qt.nodes, New(qt.level+1, pixel.R( // 1
+	qt.nodes = append(qt.nodes, New(qt.level+1, qt.max, pixel.R( // 1
 		qt.b.Min.X,
 		qt.b.Min.Y+(qt.b.H()/2.0),
 		qt.b.Min.X+(qt.b.W()/2.0),
 		qt.b.Max.Y,
 	)))
 
-	qt.nodes = append(qt.nodes, New(qt.level+1, pixel.R( // 2
+	qt.nodes = append(qt.nodes, New(qt.level+1, qt.max, pixel.R( // 2
 		qt.b.Min.X,
 		qt.b.Min.Y,
 		qt.b.Min.X+(qt.b.W()/2.0),
 		qt.b.Min.Y+(qt.b.H()/2.0),
 	)))
 
-	qt.nodes = append(qt.nodes, New(qt.level+1, pixel.R( // 3
+	qt.nodes = append(qt.nodes, New(qt.level+1, qt.max, pixel.R( // 3
 		qt.b.Min.X+(qt.b.W()/2.0),
 		qt.b.Min.Y,
 		qt.b.Max.X,

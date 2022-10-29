@@ -19,6 +19,7 @@ type Phys struct {
 	ground   bool
 	color    color.Color
 	qt       *common.Quadtree
+	iswater  bool
 }
 
 func NewPhys(r pixel.Rect, run, gravity float64) Phys {
@@ -39,6 +40,14 @@ func (p *Phys) GetVel() *pixel.Vec {
 	return &p.vel
 }
 
+func (p *Phys) Impulse(v pixel.Vec) {
+	p.vel = p.vel.Add(v)
+}
+
+func (p *Phys) SetWater(iswater bool) {
+	p.iswater = iswater
+}
+
 func (p *Phys) Update(dt float64, move *pixel.Vec) {
 	// do speed update by move vec
 	if p.ground {
@@ -55,6 +64,10 @@ func (p *Phys) Update(dt float64, move *pixel.Vec) {
 	if !p.ground {
 		p.vel.Y -= p.gravity
 	}
+	if p.iswater {
+		p.vel = p.vel.Scaled(0.9)
+		p.vel.Y += p.gravity * 1.1
+	}
 	if p.ground && move.Y > 0 {
 		p.vel.Y = move.Y
 	}
@@ -62,6 +75,9 @@ func (p *Phys) Update(dt float64, move *pixel.Vec) {
 	if p.vel.X != 0 || p.vel.Y != 0 {
 		vec := p.vel.Scaled(dt)
 		p.collide(&vec) // p.vel and vec can be updated here
+		if p.iswater {
+			vec.X = 0
+		}
 		p.rect = p.rect.Moved(vec)
 	}
 }

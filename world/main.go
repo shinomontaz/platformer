@@ -22,12 +22,6 @@ import (
 	tmx "github.com/lafriks/go-tiled"
 )
 
-const (
-	GROUND = iota
-	BARRIER
-	WATER
-)
-
 type World struct {
 	b      *background.Back
 	loader *common.Loader
@@ -131,10 +125,10 @@ func (w *World) init() {
 	w.Width = float64(w.tm.TileWidth * w.tm.Width)
 
 	r := pixel.R(0.0, 0.0, w.Width, w.Height)
-	w.qtTile = common.New(1, r)
-	w.qtPhys = common.New(1, r)
-	w.qtObjs = common.New(1, r)
-	w.qtSpec = common.New(1, r)
+	w.qtTile = common.New(1, 10, r)
+	w.qtPhys = common.New(1, 10, r)
+	w.qtObjs = common.New(1, 10, r)
+	w.qtSpec = common.New(1, 10, r)
 
 	for _, og := range w.tm.ObjectGroups {
 		if og.Name == "geom" {
@@ -165,7 +159,7 @@ func (w *World) init() {
 						Max: max,
 					}
 
-					w.qtSpec.Insert(common.Objecter{ID: o.GID, R: rc, Type: WATER})
+					w.qtSpec.Insert(common.Objecter{ID: o.GID, R: rc, Type: common.WATER})
 
 					w.drawRectIfNeeded(o, rc)
 				}
@@ -318,9 +312,9 @@ func (w *World) initPhys() {
 			Min: min,
 			Max: max,
 		}
-		phType := GROUND
+		phType := common.GROUND
 		if o.Class == "barier" {
-			phType = BARRIER
+			phType = common.BARRIER
 		}
 		//		w.phys[o.GID] = o
 		w.qtPhys.Insert(common.Objecter{ID: o.GID, R: rc, Type: phType})
@@ -371,7 +365,7 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 	w.uObjects = make([]mgl32.Vec4, 0)
 	c := w.viewport.Center()
 	for _, o := range w.visiblePhys {
-		if o.Type != GROUND {
+		if o.Type != common.GROUND {
 			continue
 		}
 		uObject := mgl32.Vec4{float32(-c.X + o.R.Min.X), float32(-c.Y + o.R.Min.Y - 150), float32(-c.X + o.R.Max.X), float32(-c.Y + o.R.Max.Y - 150)}
@@ -381,7 +375,7 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 
 	if w.hero != nil {
 		w.hero.Update(dt)
-		//		w.hero.UpdateSpecial(w.visibleSpec, dt)
+		w.hero.UpdateSpecial(w.visibleSpec, dt)
 	}
 
 	ai.Update(dt)

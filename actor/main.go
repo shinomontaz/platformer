@@ -219,12 +219,20 @@ func (a *Actor) Update(dt float64) {
 }
 
 func (a *Actor) UpdateSpecial(objs []common.Objecter, dt float64) {
+	a.phys.SetWater(false)
 	for _, o := range objs {
-		rate, _ := a.phys.IsCollide(o.R, pixel.ZV)
-		if rate == 1 { // no collision
+		isIntercects := a.rect.Intersects(o.R)
+		if !isIntercects { // no collision
 			continue
 		}
-		// handle collision
+
+		part := a.rect.Intersect(o.R)
+		if o.Type == common.WATER {
+			if part.H() == a.rect.H() && a.hp > 0 {
+				a.Hit(pixel.ZV, a.hp+1)
+			}
+			a.phys.SetWater(true)
+		}
 	}
 }
 

@@ -56,7 +56,7 @@ func run() {
 	stgs = make(map[int]stages.Stager, 0)
 	loadingStage = stages.NewLoading(inform, assetloader)
 	stgs[stages.LOADING] = loadingStage
-	stgs[stages.MENU] = stages.NewMenu(inform, assetloader, win, currBounds)
+	stgs[stages.MENU] = stages.NewMenu(inform, assetloader, win, currBounds) // main menu
 	stgs[stages.GAME] = stages.NewGame(inform, assetloader, win, currBounds)
 
 	currStage = stgs[stages.LOADING]
@@ -94,9 +94,9 @@ func inform(e int) {
 		if ok {
 			setStage(next)
 		}
-	case stages.EVENT_ENTER:
-		fmt.Println("event enter")
-		next, ok := currStage.GetNext(stages.EVENT_ENTER)
+	case stages.EVENT_NEXT:
+		fmt.Println("event next")
+		next, ok := currStage.GetNext(stages.EVENT_NEXT)
 		if ok {
 			setStage(next)
 		}
@@ -108,11 +108,9 @@ func inform(e int) {
 		} else {
 			isquit = true
 		}
-
 	case stages.EVENT_INITSCREEN:
 		initScreen(win)
 	case stages.EVENT_NOTREADY:
-		fmt.Println("event not ready")
 		loadingStage.SetUp(stages.WithJob(currStage.Init), stages.WithNext(stages.EVENT_DONE, currStage.GetID()))
 		setStage(loadingStage.GetID())
 	}

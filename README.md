@@ -44,13 +44,13 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] release v0.8 [v0.8](https://github.com/shinomontaz/platformer/releases/tag/v0.8)
 - [x] main game shaders ( sunlight, shadows )
 - [x] game stages ( menu->loading->game->menu->game->... ) + separate controllers, bugfix
-- [ ] level design
+- [ ] dialogs, npc, game stage states
 - [ ] blood
 - [ ] projectile attacks
 - [ ] more menu functions: volumes and screen modes, in-game menu
 - [ ] release v0.9
+- [ ] level design
 - [ ] stats system, exp
-- [ ] aligments, buff/debuff
 - [ ] interactive objects, inventory
 - [ ] victory screen, score
 - [ ] release Beta

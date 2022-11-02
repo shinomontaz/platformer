@@ -1,6 +1,7 @@
 package stages
 
 import (
+	"github.com/shinomontaz/pixel"
 	"github.com/shinomontaz/pixel/pixelgl"
 )
 
@@ -19,4 +20,12 @@ type Stager interface {
 	GetNext(event int) (int, bool)
 	SetNext(event, id int)
 	SetUp(opts ...StageOpt)
+}
+
+type Gamestater interface {
+	GetId() int
+	Start()
+	Listen(e int, v pixel.Vec)
+	Update(dt float64)
+	Draw(win *pixelgl.Window, dt float64)
 }

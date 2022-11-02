@@ -15,6 +15,8 @@ import (
 	"platformer/sound"
 	"platformer/ui"
 	"platformer/world"
+
+	"platformer/stages/gamestate"
 	"time"
 
 	"github.com/shinomontaz/pixel"
@@ -31,6 +33,10 @@ type Game struct {
 	ctrl          *controller.Controller
 	initialCenter pixel.Vec
 	lastPos       pixel.Vec
+
+	state  Gamestater
+	states map[int]Gamestater
+	win    *pixelgl.Window
 }
 
 var (
@@ -53,6 +59,7 @@ func NewGame(f Inform, l *common.Loader, win *pixelgl.Window, currBounds pixel.R
 		assetloader: l,
 		ctrl:        controller.New(win),
 		currBounds:  currBounds,
+		win:         win,
 	}
 }
 
@@ -91,22 +98,43 @@ func (g *Game) Init() {
 	g.initialCenter = g.w.GetCenter()
 	g.hero = factories.NewActor(config.Profiles["player"], g.w)
 	g.hero.Move(g.initialCenter)
-	g.ctrl.Subscribe(g.hero)
 	g.w.AddHero(g.hero)
 	g.u = ui.New(g.hero, g.currBounds)
 
 	g.currBounds = g.currBounds.Moved(g.initialCenter.Sub(pixel.V(g.currBounds.W()/2, g.currBounds.H()/2)))
 
 	g.lastPos = g.hero.GetPos()
-	camPos = g.lastPos.Add(pixel.V(0, 150))
 
 	b := background.New(g.lastPos, g.currBounds.Moved(pixel.V(0, 150)), g.assetloader, "gamebackground.png")
 
 	g.w.SetBackground(b)
 
-	g.ctrl.Subscribe(g)
+	g.initStates()
 
 	g.isReady = true
+}
+
+func (g *Game) initStates() {
+	sNormal := gamestate.NewNormal(g, g.currBounds, g.u, g.w, g.hero, g.win)
+	sDead := gamestate.NewDead(g, g.w, g.hero, g.win)
+	//	sMenu := gamestate.NewMenu(g, g.w, g.hero, g.win)
+	//	sDialog := gamestate.NewDialog(g, g.w, g.hero, g.win)
+
+	g.states = map[int]Gamestater{
+		gamestate.NORMAL: sNormal,
+		gamestate.DEAD:   sDead,
+		//		gamestate.MENU:   sMenu,
+		//		gamestate.DIALOG: sDialog,
+	}
+
+	g.SetState(gamestate.NORMAL)
+}
+
+func (g *Game) SetState(id int) {
+	if s, ok := g.states[id]; ok {
+		g.state = s
+		g.state.Start()
+	}
 }
 
 func (g *Game) Run(win *pixelgl.Window, dt float64) {
@@ -117,22 +145,8 @@ func (g *Game) Run(win *pixelgl.Window, dt float64) {
 
 	win.Clear(rgba)
 
-	pos := g.hero.GetPos()
-	sound.Update(pos)
-	if dt > 0 {
-		g.ctrl.Update()
-		deltaVec = g.lastPos.To(pos)
-		camPos = pos.Add(pixel.V(0, 150))
-
-		g.currBounds = g.currBounds.Moved(deltaVec)
-
-		g.w.Update(g.currBounds, dt)
-	}
-
-	g.w.Draw(win, pos, camPos)
-	g.u.Draw(win)
-
-	g.lastPos = pos
+	g.state.Update(dt)
+	g.state.Draw(win, dt)
 
 	frames++
 	select {

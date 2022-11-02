@@ -33,7 +33,7 @@ func NewMenu(f Inform, l *common.Loader, win *pixelgl.Window, currBounds pixel.R
 			id:       MENU,
 			done:     make(chan struct{}),
 			inform:   f,
-			eventMap: map[int]int{EVENT_ENTER: GAME},
+			eventMap: map[int]int{EVENT_NEXT: GAME},
 		},
 		assetloader: l,
 		ctrl:        controller.New(win),
@@ -58,7 +58,7 @@ func (m *Menu) Init() {
 
 	txt := text.New(pixel.V(0, 0), m.atlas)
 	it := menu.NewItem("New game", txt, menu.WithAction(func() {
-		m.Notify(EVENT_ENTER) //startGame()
+		m.Notify(EVENT_NEXT) //startGame()
 		m.isGame = true
 	}))
 
@@ -114,8 +114,8 @@ func (m *Menu) Init() {
 	}))
 	m.displaymenu.AddItem(it)
 
-	m.ctrl.Subscribe(m.mainmenu)
-	m.ctrl.Subscribe(m.displaymenu)
+	m.ctrl.AddListener(m.mainmenu)
+	m.ctrl.AddListener(m.displaymenu)
 
 	m.isReady = true
 
@@ -124,17 +124,6 @@ func (m *Menu) Init() {
 func (m *Menu) Start() {
 	if !m.isReady {
 		return
-	}
-
-	if m.isGame {
-		// remove first item and place a resume item
-
-		txt := text.New(pixel.V(0, 0), m.atlas)
-		it := menu.NewItem("Resume game", txt, menu.WithAction(func() {
-			m.Notify(EVENT_ENTER) //startGame()
-			m.isGame = true
-		}))
-		m.mainmenu.ReplaceItem(0, it)
 	}
 
 	m.mainmenu.Select(0)

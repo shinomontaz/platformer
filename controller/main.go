@@ -23,7 +23,7 @@ func New(win *pixelgl.Window) *Controller {
 	return ctrl
 }
 
-func (pc *Controller) Subscribe(s common.Subscriber) {
+func (pc *Controller) AddListener(s common.Subscriber) {
 	pc.sbrs = append(pc.sbrs, s)
 }
 

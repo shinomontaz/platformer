@@ -350,8 +350,8 @@ func (w *World) initObjs() {
 	}
 }
 
-func (w *World) SetRect(rect pixel.Rect) {
-
+func (w *World) GetViewport() pixel.Rect {
+	return w.viewport
 }
 
 func (w *World) Update(rect pixel.Rect, dt float64) {
@@ -516,7 +516,6 @@ func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
 
 		sprite := w.sprites[tile.Image.Source]
 		sprite.Set(sprite.Picture(), pixel.R(iX, iY, fX, fY))
-
 		flip := 1.0
 		if dTile.HorizontalFlip {
 			flip = -1.0

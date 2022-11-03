@@ -258,6 +258,56 @@
         ]
     },
     {
+        "type": "oldman",
+        "width": 40,
+        "height": 40,
+        "margin": 8,    
+        "list":  [
+        {
+            "name": "stand",
+            "file":"npc/old_man/Old_man.png",
+            "frames": [1, 0, 1]
+        },
+        {
+            "name": "walk",
+            "file":"npc/old_man/Old_man_walk.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "idle",
+            "file":"npc/old_man/Old_man_idle.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "hurt",
+            "file":"npc/old_man/Old_man_hurt.png",
+            "frames": [2, 0, 2]
+        },
+        {
+            "name": "die",
+            "file":"npc/old_man/Old_man_death.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "dead",
+            "file":"npc/old_man/Old_man_death.png",
+            "frames": [4, 3, 4]
+        }
+        ],
+        "groups": [
+            {
+            "name": "melee",
+            "group": [
+                {
+                    "name": "attack1",
+                    "file":"npc/old_man/Old_man_attack.png",
+                    "frames": [6, 0, 6]
+                }        
+            ]
+            }
+        ]
+    },
+    {
         "type": "deathstrike",
         "width": 48,
         "height": 64,

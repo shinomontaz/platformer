@@ -7,8 +7,8 @@ import (
 
 func NewAi(t string, obj *actor.Actor, w Worlder) {
 	switch t {
-	// case "deceased":
-	// 	ai.NewMage(obj, w)
+	case "oldman":
+		ai.NewOldman(obj, w)
 	default:
 		ai.NewCommon(obj, w)
 	}

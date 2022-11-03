@@ -27,5 +27,5 @@ type Gamestater interface {
 	Start()
 	Listen(e int, v pixel.Vec)
 	Update(dt float64)
-	Draw(win *pixelgl.Window, dt float64)
+	Draw(win *pixelgl.Window)
 }

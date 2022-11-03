@@ -80,8 +80,7 @@
    </properties>
   </object>
   <object id="23" name="hero" class="hero" x="1159.67" y="1300.33" width="32.3333" height="40.6667"/>
-  <object id="25" name="oldman" class="npc" x="893.167" y="1278.67" width="32.3333" height="40.6667"/>
-  <object id="26" name="keeper" class="npc" x="2191" y="1093" width="52" height="55"/>
+  <object id="25" name="oldman" class="npc" x="789.167" y="1281.67" width="32.3333" height="40.6667"/>
   <object id="27" name="mummy" class="enemy" x="1673.33" y="1150.33" width="51" height="61"/>
   <object id="28" name="coin" class="coin" x="1644.33" y="1191" width="15" height="17"/>
  </objectgroup>

@@ -91,7 +91,6 @@ func (g *Game) Init() {
 	g.w = w
 
 	//	w.IsDebug = isdebug
-	g.w.InitEnemies()
 
 	magic.SetWorld(g.w)
 
@@ -146,7 +145,7 @@ func (g *Game) Run(win *pixelgl.Window, dt float64) {
 	win.Clear(rgba)
 
 	g.state.Update(dt)
-	g.state.Draw(win, dt)
+	g.state.Draw(win)
 
 	frames++
 	select {

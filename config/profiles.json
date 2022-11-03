@@ -111,6 +111,29 @@
                 "hitbox": [10, -36, 36, -26]
             }
         ]
+    },
+    {
+        "type": "oldman",
+        "anim": "oldman",
+        "dir": 1,
+        "hp": 1,
+        "strength": 1,
+        "width": 40,
+        "height": 40,
+        "margin": 8,
+        "mass": 25,
+        "jump": 0,
+        "walk": 60,
+        "run": 60,
+        "skills": [
+            {
+                "type": "melee",
+                "name": "melee",
+                "max": 19,
+                "min": 5,
+                "hitbox": [10, -5, 20, 5],
+                "weight": 1
+            }
+        ]
     }
-
 ]

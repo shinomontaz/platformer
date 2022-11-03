@@ -1,7 +1,6 @@
 package gamestate
 
 import (
-	"fmt"
 	"platformer/actor"
 	"platformer/controller"
 	"platformer/events"
@@ -21,6 +20,7 @@ out vec4 fragColor;
 
 uniform vec4 uTexBounds;
 uniform sampler2D uTexture;
+uniform float uTime;
 
 void main() {
 	// Get our current screen coordinate
@@ -39,9 +39,10 @@ void main() {
 
 type Dead struct {
 	Common
-	shader string
-	win    *pixelgl.Window
-	ctrl   *controller.Controller
+	win   *pixelgl.Window
+	ctrl  *controller.Controller
+	cnv   *pixelgl.Canvas
+	uTime float32
 }
 
 func NewDead(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Window) *Dead {
@@ -53,10 +54,14 @@ func NewDead(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Window)
 			hero:    hero,
 			lastPos: pixel.ZV,
 		},
-		shader: fragSource,
-		win:    win,
-		ctrl:   controller.New(win),
+		win:  win,
+		ctrl: controller.New(win),
 	}
+
+	d.cnv = pixelgl.NewCanvas(win.Bounds())
+	d.cnv.SetSmooth(true)
+	d.cnv.SetUniform("uTime", &d.uTime)
+	d.cnv.SetFragmentShader(fragSource)
 
 	d.ctrl.AddListener(d) // to listen ESCAPE  keyborad event
 
@@ -64,17 +69,18 @@ func NewDead(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Window)
 }
 
 func (d *Dead) Update(dt float64) {
-
 	if dt > 0 {
 		d.ctrl.Update()
 		d.w.Update(d.currBounds, dt)
+		d.uTime += float32(dt)
 	}
 }
 
-func (d *Dead) Draw(win *pixelgl.Window, dt float64) {
+func (d *Dead) Draw(win *pixelgl.Window) {
 	camPos := d.lastPos.Add(pixel.V(0, 150))
 
-	d.w.Draw(win, d.lastPos, camPos)
+	d.w.Draw(d.cnv, d.lastPos, camPos, d.cnv.Bounds().Center())
+	d.cnv.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 }
 
 func (d *Dead) GetId() int {
@@ -84,8 +90,6 @@ func (d *Dead) GetId() int {
 func (d *Dead) Start() {
 	d.currBounds = d.w.GetViewport()
 	d.lastPos = d.hero.GetPos()
-	fmt.Println("applying shader")
-	d.win.Canvas().SetFragmentShader(d.shader)
 }
 
 func (d *Dead) Listen(e int, v pixel.Vec) {

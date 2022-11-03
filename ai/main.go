@@ -51,6 +51,26 @@ func NewCommon(obj *actor.Actor, w Worlder) *Ai {
 	return a
 }
 
+func NewOldman(obj *actor.Actor, w Worlder) *Ai {
+	a := &Ai{
+		obj:    obj,
+		w:      w,
+		states: make(map[int]Stater),
+		id:     counter,
+	}
+
+	sIdle := NewIdle2(a, a.w)
+	a.states[IDLE2] = sIdle
+
+	a.SetState(IDLE2, pixel.ZV)
+
+	list[obj] = a
+	obj.AddListener(a)
+
+	counter++
+	return a
+}
+
 func NewMage(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:    obj,

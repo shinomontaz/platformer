@@ -2,6 +2,7 @@ package ai
 
 const (
 	IDLE = iota
+	IDLE2
 	INACTIVE
 	PATROL
 	ATTACK

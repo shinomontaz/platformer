@@ -53,6 +53,8 @@ type World struct {
 
 	viewport pixel.Rect
 	enmeta   []*tmx.Object
+	npcmeta  []*tmx.Object
+	npcs     []*actor.Actor
 	enemies  []*actor.Actor
 	hero     *actor.Actor
 
@@ -91,7 +93,9 @@ func New(source string, rect pixel.Rect, opts ...Option) (*World, error) {
 
 		objectTiles: make(map[uint32]*tmx.LayerTile),
 		enmeta:      make([]*tmx.Object, 0),
+		npcmeta:     make([]*tmx.Object, 0),
 		enemies:     make([]*actor.Actor, 0),
+		npcs:        make([]*actor.Actor, 0),
 		viewport:    rect,
 		imdrawrect:  imdraw.New(nil),
 	}
@@ -142,6 +146,10 @@ func (w *World) init() {
 
 				if o.Class == "enemy" {
 					w.enmeta = append(w.enmeta, o)
+				}
+
+				if o.Class == "npc" {
+					w.npcmeta = append(w.npcmeta, o)
 				}
 
 				if o.Class == "water" {
@@ -210,6 +218,12 @@ func (w *World) init() {
 		wg.Add(1)
 		defer wg.Done()
 	}()
+	go func() {
+		w.initEnemies()
+		w.initNpcs()
+		wg.Add(1)
+		defer wg.Done()
+	}()
 	wg.Wait()
 }
 
@@ -242,9 +256,15 @@ func (w *World) initProps() {
 	w.gravity = w.tm.Properties.GetFloat("gravity")
 }
 
-func (w *World) InitEnemies() {
+func (w *World) initEnemies() {
 	for _, o := range w.enmeta {
 		w.AddEnemy(o)
+	}
+}
+
+func (w *World) initNpcs() {
+	for _, o := range w.npcmeta {
+		w.AddNpc(o)
 	}
 }
 
@@ -383,6 +403,10 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 		en.Update(dt)
 		//		en.UpdateSpecial(w.visibleSpec, dt)
 	}
+	for _, npc := range w.npcs {
+		npc.Update(dt)
+		//		en.UpdateSpecial(w.visibleSpec, dt)
+	}
 
 	updateStrikes(dt, w.enemies, w.hero)
 	updateSpells(dt, w.enemies, w.hero)
@@ -441,6 +465,13 @@ func (w *World) AddEnemy(meta *tmx.Object) {
 	w.enemies = append(w.enemies, enemy)
 }
 
+func (w *World) AddNpc(meta *tmx.Object) {
+	npc := factories.NewActor(config.Profiles[meta.Name], w)
+	npc.Move(pixel.V(meta.X, w.Height-meta.Y))
+	factories.NewAi(config.Profiles[meta.Name].Type, npc, w)
+	w.npcs = append(w.npcs, npc)
+}
+
 func (w *World) AddAlert(pos pixel.Vec, force float64) {
 	al := addAlert(pos, force)
 	for _, en := range w.enemies {
@@ -470,7 +501,9 @@ func (w *World) SetBackground(b *background.Back) {
 	w.b = b
 }
 
-func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
+//func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
+func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel.Vec) {
+
 	w.cnv.Clear(color.RGBA{0, 0, 0, 1})
 	w.cnv2.Clear(color.RGBA{240, 248, 255, 1})
 
@@ -530,6 +563,9 @@ func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
 	for _, e := range w.enemies {
 		e.Draw(w.cnv2)
 	}
+	for _, n := range w.npcs {
+		n.Draw(w.cnv2)
+	}
 	drawAlerts(w.cnv2)
 
 	if w.hero != nil {
@@ -552,7 +588,8 @@ func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
 	drawSpells(w.cnv2)
 
 	w.cnv2.Draw(w.cnv, pixel.IM.Moved(w.cnv.Bounds().Center()))
-	w.cnv.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
+	//	w.cnv.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
+	w.cnv.Draw(t, pixel.IM.Moved(center))
 }
 
 func (w *World) drawRectIfNeeded(o *tmx.Object, r pixel.Rect) {

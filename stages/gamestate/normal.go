@@ -58,10 +58,10 @@ func (n *Normal) Update(dt float64) {
 	n.lastPos = pos
 }
 
-func (n *Normal) Draw(win *pixelgl.Window, dt float64) {
+func (n *Normal) Draw(win *pixelgl.Window) {
 	camPos := n.lastPos.Add(pixel.V(0, 150))
 
-	n.w.Draw(win, n.lastPos, camPos)
+	n.w.Draw(win, n.lastPos, camPos, win.Bounds().Center())
 	n.u.Draw(win)
 }
 
@@ -71,7 +71,7 @@ func (n *Normal) GetId() int {
 
 func (n *Normal) Start() {
 	n.lastPos = n.hero.GetPos()
-	n.win.Canvas().ResetFragmentShader()
+	//	n.win.Canvas().ResetFragmentShader()
 	fmt.Println("applying base shader")
 }
 

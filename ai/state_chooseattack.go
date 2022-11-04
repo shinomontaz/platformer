@@ -16,7 +16,6 @@ type StateChooseAttack struct {
 	timer       float64
 	nonseelimit float64
 	lastpos     pixel.Vec
-	vec         pixel.Vec
 	isbusy      bool
 }
 

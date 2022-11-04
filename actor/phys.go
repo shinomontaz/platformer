@@ -3,12 +3,11 @@ package actor
 import (
 	"image/color"
 	"math"
+	"platformer/common"
 
 	"github.com/lucasb-eyer/go-colorful"
 	"github.com/shinomontaz/pixel"
 	"github.com/shinomontaz/pixel/imdraw"
-
-	"platformer/common"
 )
 
 type Phys struct {
@@ -18,8 +17,9 @@ type Phys struct {
 	gravity  float64
 	ground   bool
 	color    color.Color
-	qt       *common.Quadtree
 	iswater  bool
+	isdead   bool
+	currObjs []common.Objecter
 }
 
 func NewPhys(r pixel.Rect, run, gravity float64) Phys {
@@ -30,10 +30,6 @@ func NewPhys(r pixel.Rect, run, gravity float64) Phys {
 		maxspeed: run,
 		gravity:  gravity,
 	}
-}
-
-func (p *Phys) SetQt(qt *common.Quadtree) {
-	p.qt = qt
 }
 
 func (p *Phys) GetVel() *pixel.Vec {
@@ -48,8 +44,13 @@ func (p *Phys) SetWater(iswater bool) {
 	p.iswater = iswater
 }
 
-func (p *Phys) Update(dt float64, move *pixel.Vec) {
+func (p *Phys) SetDead(isdead bool) {
+	p.isdead = isdead
+}
+
+func (p *Phys) Update(dt float64, move *pixel.Vec, objs []common.Objecter) {
 	// do speed update by move vec
+	p.currObjs = objs
 	if p.ground {
 		if move.X != 0 {
 			p.vel.X += move.X
@@ -66,53 +67,68 @@ func (p *Phys) Update(dt float64, move *pixel.Vec) {
 	}
 	if p.iswater {
 		p.vel = p.vel.Scaled(0.9)
-		p.vel.Y += p.gravity * 1.1
+		if p.isdead {
+			p.vel.Y += p.gravity * 1.1
+		}
 	}
 	if p.ground && move.Y > 0 {
 		p.vel.Y = move.Y
 	}
 
 	if p.vel.X != 0 || p.vel.Y != 0 {
+		p.ground = false
 		vec := p.vel.Scaled(dt)
-		p.collide(&vec) // p.vel and vec can be updated here
-		if p.iswater {
-			vec.X = 0
+		ground, vel, vec := p.StepPrediction(vec) // p.vel and vec can be updated here
+		p.vel = vel
+		if ground > 0 {
+			p.ground = true
 		}
+		// if p.iswater {
+		// 	vec.X = 0
+		// }
 		p.rect = p.rect.Moved(vec)
 	}
 }
 
-func (p *Phys) collide(v *pixel.Vec) { // in: v - velocity
-	p.ground = false
-	broadbox := Broadbox(p.rect, *v)
-	objs := p.qt.Retrieve(broadbox)
+func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec) { // in: v - velocity
+	ground := 0.0
+	vel := p.vel
+	broadbox := Broadbox(p.rect, v)
 	collisiontimes := []float64{}
-	if len(objs) > 0 { // precise check for each object that can intersects
-		for _, obj := range objs {
-			rect := obj.Rect()
-			if Isinbox(rect, broadbox) {
-				if rect.Max.Y == p.rect.Min.Y {
-					p.ground = true
-					continue
-				}
-				coltime, n := DoCollision(p.rect, rect, *v) // coltime in [0,1], where 1 means no collision
-				if coltime == 1 {                           // no collision
-					continue
-				}
+	if len(p.currObjs) == 0 {
+		return ground, vel, v
+	}
+	// precise check for each object that can intersects
+	for _, obj := range p.currObjs {
+		rect := obj.Rect()
+		if Isinbox(rect, broadbox) { // return !(p.Max.X < q.Min.X || p.Min.X > q.Max.X || p.Max.Y < q.Min.Y || p.Min.Y > q.Max.Y)
+			if rect.Max.Y == p.rect.Min.Y {
+				l := math.Max(rect.Min.X, p.rect.Min.X)
+				r := math.Min(rect.Max.X, p.rect.Max.X)
+				ground = (r - l) / p.rect.W()
+				continue
+			}
+			coltime, n := collide(p.rect, rect, v) // coltime in [0,1], where 1 means no collision
+			if coltime == 1 {                      // no collision
+				continue
+			}
 
-				if n.X == 0 && p.vel.Y == 0 { // here we step on ground, no collision actually
-					p.ground = true
-				} else {
-					collisiontimes = append(collisiontimes, coltime)
-					if n.Y > 0 {
-						p.ground = true
-						p.vel.Y = 0
-					} else if n.Y < 0 {
-						p.vel.Y = -p.vel.Y * 0.5
-					}
-					if n.X != 0 && !p.ground {
-						p.vel.X = -p.vel.X * 0.5
-					}
+			if n.X == 0 && vel.Y == 0 { // here we step on ground, no collision actually
+				l := math.Max(rect.Min.X, p.rect.Min.X)
+				r := math.Min(rect.Max.X, p.rect.Max.X)
+				ground = (r - l) / p.rect.W()
+			} else {
+				collisiontimes = append(collisiontimes, coltime)
+				if n.Y > 0 {
+					l := math.Min(rect.Min.X, p.rect.Min.X)
+					r := math.Min(rect.Max.X, p.rect.Max.X)
+					ground = (r - l) / p.rect.W()
+					vel.Y = 0
+				} else if n.Y < 0 {
+					vel.Y = -vel.Y * 0.5
+				}
+				if n.X != 0 && ground == 0 {
+					vel.X = -vel.X * 0.5
 				}
 			}
 		}
@@ -130,6 +146,8 @@ func (p *Phys) collide(v *pixel.Vec) { // in: v - velocity
 		v.X *= mintime
 		v.Y *= mintime
 	}
+
+	return ground, vel, v
 }
 
 func (p *Phys) Move(v pixel.Vec) {
@@ -154,13 +172,9 @@ func (p *Phys) Draw(t pixel.Target) {
 	imd.Draw(t)
 }
 
-func (p *Phys) IsCollide(q pixel.Rect, v pixel.Vec) (float64, pixel.Vec) {
-	return DoCollision(p.rect, q, v)
-}
-
 // sweptAABB implemented here
 //Box b1, Box b2, float& normalx, float& normaly
-func DoCollision(p, q pixel.Rect, v pixel.Vec) (float64, pixel.Vec) {
+func collide(p, q pixel.Rect, v pixel.Vec) (float64, pixel.Vec) {
 	n := pixel.ZV
 	var xInvEntry, yInvEntry, xInvExit, yInvExit float64
 	if v.X > 0 {

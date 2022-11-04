@@ -3,6 +3,7 @@ package world
 import (
 	"platformer/actor"
 	"platformer/ai"
+	"platformer/common"
 	"platformer/magic"
 
 	"github.com/shinomontaz/pixel"
@@ -22,10 +23,10 @@ func init() {
 	plspells = make([]Speller, 0)
 }
 
-func AddSpell(owner *actor.Actor, t pixel.Vec, spell string) {
+func AddSpell(owner *actor.Actor, t pixel.Vec, spell string, objs []common.Objecter) {
 	// add spell here
 	//	s string, source, target pixel.Vec
-	sp := magic.Create(spell, owner, t)
+	sp := magic.Create(spell, owner, t, objs)
 
 	if ai.GetByObj(owner) != nil {
 		enspells = append(enspells, sp)

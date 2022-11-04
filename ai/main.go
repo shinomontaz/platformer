@@ -22,7 +22,7 @@ type Ai struct {
 	attackskill *actor.Skill
 }
 
-func NewCommon(obj *actor.Actor, w Worlder) *Ai {
+func NewCalmEnemy(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:    obj,
 		w:      w,
@@ -30,7 +30,7 @@ func NewCommon(obj *actor.Actor, w Worlder) *Ai {
 		id:     counter,
 	}
 
-	sIdle := NewIdle(a, a.w)
+	sIdle := NewIdle(a, a.w, true)
 	a.states[IDLE] = sIdle
 
 	sChooseAttack := NewChooseAttack(a, a.w)
@@ -51,7 +51,7 @@ func NewCommon(obj *actor.Actor, w Worlder) *Ai {
 	return a
 }
 
-func NewOldman(obj *actor.Actor, w Worlder) *Ai {
+func NewActiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:    obj,
 		w:      w,
@@ -59,10 +59,19 @@ func NewOldman(obj *actor.Actor, w Worlder) *Ai {
 		id:     counter,
 	}
 
-	sIdle := NewIdle2(a, a.w)
-	a.states[IDLE2] = sIdle
+	sRoaming := NewRoaming(a, a.w, true)
+	a.states[ROAMING] = sRoaming
 
-	a.SetState(IDLE2, pixel.ZV)
+	sChooseAttack := NewChooseAttack(a, a.w)
+	a.states[CHOOSEATTACK] = sChooseAttack
+
+	sAttack := NewAttack(a, a.w)
+	a.states[ATTACK] = sAttack
+
+	sInvestigate := NewInvestigate(a, a.w)
+	a.states[INVESTIGATE] = sInvestigate
+
+	a.SetState(ROAMING, pixel.ZV)
 
 	list[obj] = a
 	obj.AddListener(a)
@@ -71,7 +80,7 @@ func NewOldman(obj *actor.Actor, w Worlder) *Ai {
 	return a
 }
 
-func NewMage(obj *actor.Actor, w Worlder) *Ai {
+func NewCalmNpc(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:    obj,
 		w:      w,
@@ -79,20 +88,38 @@ func NewMage(obj *actor.Actor, w Worlder) *Ai {
 		id:     counter,
 	}
 
-	sIdle := NewIdle(a, a.w)
+	sIdle := NewIdle(a, a.w, false)
 	a.states[IDLE] = sIdle
-
-	sInvestigate := NewInvestigate(a, a.w)
-	a.states[INVESTIGATE] = sInvestigate
 
 	a.SetState(IDLE, pixel.ZV)
 
-	//	a.initStates()
 	list[obj] = a
 	obj.AddListener(a)
 
 	counter++
-	//	list = append(list, a)
+	return a
+}
+
+func NewActiveNpc(obj *actor.Actor, w Worlder) *Ai {
+	a := &Ai{
+		obj:    obj,
+		w:      w,
+		states: make(map[int]Stater),
+		id:     counter,
+	}
+
+	sRoaming := NewRoaming(a, a.w, false)
+	a.states[ROAMING] = sRoaming
+
+	sInvestigate := NewInvestigate(a, a.w)
+	a.states[INVESTIGATE] = sInvestigate
+
+	a.SetState(ROAMING, pixel.ZV)
+
+	list[obj] = a
+	obj.AddListener(a)
+
+	counter++
 	return a
 }
 

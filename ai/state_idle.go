@@ -11,13 +11,15 @@ type StateIdle struct {
 	w      Worlder
 	ai     *Ai
 	isbusy bool
+	isagro bool
 }
 
-func NewIdle(ai *Ai, w Worlder) *StateIdle {
+func NewIdle(ai *Ai, w Worlder, isagro bool) *StateIdle {
 	return &StateIdle{
-		id: IDLE,
-		ai: ai,
-		w:  w,
+		id:     IDLE,
+		ai:     ai,
+		w:      w,
+		isagro: isagro,
 	}
 }
 
@@ -26,16 +28,18 @@ func (s *StateIdle) Update(dt float64) {
 		return
 	}
 
-	hero := s.w.GetHero()
-	herohp := hero.GetHp()
-	heropos := hero.GetPos()
-	pos := s.ai.obj.GetPos()
-	dir := s.ai.obj.GetDir()
-	if (heropos.X < pos.X && dir < 0) || (heropos.X > pos.X && dir > 0) {
-		// check if we see target
-		if s.w.IsSee(pos, heropos) && herohp > 0 {
-			s.w.AddAlert(pos, 200)
-			s.ai.SetState(ATTACK, heropos)
+	if s.isagro {
+		hero := s.w.GetHero()
+		herohp := hero.GetHp()
+		heropos := hero.GetPos()
+		pos := s.ai.obj.GetPos()
+		dir := s.ai.obj.GetDir()
+		if (heropos.X < pos.X && dir < 0) || (heropos.X > pos.X && dir > 0) {
+			// check if we see target
+			if s.w.IsSee(pos, heropos) && herohp > 0 {
+				s.w.AddAlert(pos, 200)
+				s.ai.SetState(ATTACK, heropos)
+			}
 		}
 	}
 }

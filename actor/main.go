@@ -67,6 +67,7 @@ type Actor struct {
 
 	skills      []*Skill
 	activeSkill *Skill
+	currObjs    []common.Objecter
 }
 
 var loader *common.Loader
@@ -94,7 +95,6 @@ func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
 	}
 
 	p := NewPhys(rect, a.runspeed, a.grav) // TODO does we really need phys to know run and walk speeds?
-	p.SetQt(w.GetQt())
 	a.phys = p
 
 	a.initStates()
@@ -146,6 +146,17 @@ func (a *Actor) GetTransition(state int) statemachine.Transition {
 		return a.sm.GetTransition(state)
 	}
 	return statemachine.Transition{}
+}
+
+func (a *Actor) StepPrediction(e int, v pixel.Vec) float64 {
+	if e == events.WALK {
+		v.X *= a.walkspeed / 20
+	} else {
+		v.X *= a.runspeed / 20
+	}
+
+	groundrate, _, _ := a.phys.StepPrediction(v)
+	return groundrate
 }
 
 func (a *Actor) Listen(e int, v pixel.Vec) {
@@ -201,8 +212,9 @@ func (a *Actor) GetRect() pixel.Rect {
 	return a.rect
 }
 
-func (a *Actor) Update(dt float64) {
-	a.phys.Update(dt, &a.vec)
+func (a *Actor) Update(dt float64, objs []common.Objecter) {
+	a.currObjs = objs
+	a.phys.Update(dt, &a.vec, objs)
 	a.vec = pixel.ZV
 	newspeed := a.phys.GetVel()
 	var event int
@@ -230,6 +242,7 @@ func (a *Actor) UpdateSpecial(objs []common.Objecter, dt float64) {
 		if o.Type == common.WATER {
 			if part.H() == a.rect.H() && a.hp > 0 {
 				a.Hit(pixel.ZV, a.hp+1)
+				a.phys.SetDead(true)
 			}
 			a.phys.SetWater(true)
 		}
@@ -299,7 +312,7 @@ func (a *Actor) Cast() {
 	// TODO: get melee skill and cast spell by it
 	//	activeSkill
 	if a.activeSkill.Type == "spell" {
-		a.w.AddSpell(a, a.target, a.activeSkill.Name)
+		a.w.AddSpell(a, a.target, a.activeSkill.Name, a.currObjs)
 	}
 }
 

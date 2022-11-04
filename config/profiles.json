@@ -123,8 +123,8 @@
         "margin": 8,
         "mass": 25,
         "jump": 0,
-        "walk": 60,
-        "run": 60,
+        "walk": 30,
+        "run": 30,
         "skills": [
             {
                 "type": "melee",

@@ -29,12 +29,12 @@ type Deathstrike struct {
 	prepare_time  float64
 	striked       bool
 	rect          pixel.Rect
-	qt            *common.Quadtree
 	atlas         *text.Atlas
 	fnt           font.Face
+	currObjs      []common.Objecter
 }
 
-func NewDeathstrike(s string, owner *actor.Actor, target pixel.Vec) *Deathstrike {
+func NewDeathstrike(s string, owner *actor.Actor, target pixel.Vec, objs []common.Objecter) *Deathstrike {
 	basicrect := pixel.R(0, 0, 48, 64)
 
 	ds := Deathstrike{
@@ -47,7 +47,7 @@ func NewDeathstrike(s string, owner *actor.Actor, target pixel.Vec) *Deathstrike
 		ttl:          3.0,
 		prepare_time: 1.0,
 		rect:         basicrect,
-		qt:           w.GetQt(),
+		currObjs:     objs,
 	}
 
 	ds.fnt = common.GetFont("regular")
@@ -61,12 +61,11 @@ func NewDeathstrike(s string, owner *actor.Actor, target pixel.Vec) *Deathstrike
 func (d *Deathstrike) init() {
 	// get target floor
 	// move rect to target
-
-	broadbox := pixel.R(d.target.X-d.rect.W()/2, d.target.Y-2*d.rect.H(), d.target.X+d.rect.W()/2, d.target.Y+d.rect.H())
-	objs := d.qt.Retrieve(broadbox)
-
-	groundY := objs[0].Rect().Max.Y
-	for _, o := range objs {
+	if d.currObjs == nil || len(d.currObjs) == 0 {
+		return
+	}
+	groundY := d.currObjs[0].Rect().Max.Y
+	for _, o := range d.currObjs {
 		y := o.Rect().Max.Y
 		x1, x2 := o.Rect().Min.X, o.Rect().Max.X
 		if y > groundY && d.target.X <= x2 && d.target.X >= x1 {

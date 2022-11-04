@@ -3,10 +3,9 @@ package ai
 import "github.com/shinomontaz/pixel"
 
 type StateInactive struct {
-	id     int
-	w      Worlder
-	ai     *Ai
-	isbusy bool
+	id int
+	w  Worlder
+	ai *Ai
 }
 
 func NewInactive(ai *Ai, w Worlder) *StateInactive {

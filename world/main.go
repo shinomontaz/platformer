@@ -394,27 +394,23 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 	w.uNumObjects = int32(len(w.uObjects))
 
 	if w.hero != nil {
-		w.hero.Update(dt)
+		w.hero.Update(dt, w.visiblePhys)
 		w.hero.UpdateSpecial(w.visibleSpec, dt)
 	}
 
 	ai.Update(dt)
 	for _, en := range w.enemies {
-		en.Update(dt)
+		en.Update(dt, w.visiblePhys)
 		//		en.UpdateSpecial(w.visibleSpec, dt)
 	}
 	for _, npc := range w.npcs {
-		npc.Update(dt)
-		//		en.UpdateSpecial(w.visibleSpec, dt)
+		npc.Update(dt, w.visiblePhys)
+		npc.UpdateSpecial(w.visibleSpec, dt)
 	}
 
 	updateStrikes(dt, w.enemies, w.hero)
 	updateSpells(dt, w.enemies, w.hero)
 	updateAlerts(dt)
-}
-
-func (w *World) GetQt() *common.Quadtree {
-	return w.qtPhys
 }
 
 func (w *World) GetGravity() float64 {
@@ -489,8 +485,8 @@ func (w *World) AddStrike(owner *actor.Actor, r pixel.Rect, power int, speed pix
 	AddStrike(owner, r, power, speed)
 }
 
-func (w *World) AddSpell(owner *actor.Actor, t pixel.Vec, spell string) {
-	AddSpell(owner, t, spell)
+func (w *World) AddSpell(owner *actor.Actor, t pixel.Vec, spell string, objs []common.Objecter) {
+	AddSpell(owner, t, spell, objs)
 }
 
 func (w *World) GetCenter() pixel.Vec {

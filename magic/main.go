@@ -2,6 +2,7 @@ package magic
 
 import (
 	"platformer/actor"
+	"platformer/common"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -26,10 +27,10 @@ func Load(name string, cfg Spellprofile) {
 	}
 }
 
-func Create(s string, owner *actor.Actor, target pixel.Vec) Speller {
+func Create(s string, owner *actor.Actor, target pixel.Vec, objs []common.Objecter) Speller {
 	switch s {
 	case "deathstrike":
-		return NewDeathstrike(s, owner, target)
+		return NewDeathstrike(s, owner, target, objs)
 	default:
 		return nil
 	}

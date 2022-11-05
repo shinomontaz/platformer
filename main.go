@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"platformer/events"
 	"time"
 
 	"platformer/stages"
@@ -61,7 +62,7 @@ func run() {
 
 	currStage = stgs[stages.LOADING]
 
-	currStage.SetUp(stages.WithJob(stgs[stages.MENU].Init), stages.WithNext(stages.EVENT_DONE, stages.MENU))
+	currStage.SetUp(stages.WithJob(stgs[stages.MENU].Init), stages.WithNext(events.STAGEVENT_DONE, stages.MENU))
 	currStage.Init()
 	currStage.Start()
 
@@ -88,30 +89,30 @@ func main() {
 
 func inform(e int) {
 	switch e {
-	case stages.EVENT_DONE:
+	case events.STAGEVENT_DONE:
 		fmt.Println("event done")
-		next, ok := currStage.GetNext(stages.EVENT_DONE)
+		next, ok := currStage.GetNext(events.STAGEVENT_DONE)
 		if ok {
 			setStage(next)
 		}
-	case stages.EVENT_NEXT:
+	case events.STAGEVENT_NEXT:
 		fmt.Println("event next")
-		next, ok := currStage.GetNext(stages.EVENT_NEXT)
+		next, ok := currStage.GetNext(events.STAGEVENT_NEXT)
 		if ok {
 			setStage(next)
 		}
-	case stages.EVENT_QUIT:
+	case events.STAGEVENT_QUIT:
 		fmt.Println("event quit")
-		next, ok := currStage.GetNext(stages.EVENT_QUIT)
+		next, ok := currStage.GetNext(events.STAGEVENT_QUIT)
 		if ok {
 			setStage(next)
 		} else {
 			isquit = true
 		}
-	case stages.EVENT_INITSCREEN:
+	case events.GAMEVENT_INITSCREEN:
 		initScreen(win)
-	case stages.EVENT_NOTREADY:
-		loadingStage.SetUp(stages.WithJob(currStage.Init), stages.WithNext(stages.EVENT_DONE, currStage.GetID()))
+	case events.STAGEVENT_NOTREADY:
+		loadingStage.SetUp(stages.WithJob(currStage.Init), stages.WithNext(events.STAGEVENT_DONE, currStage.GetID()))
 		setStage(loadingStage.GetID())
 	}
 }

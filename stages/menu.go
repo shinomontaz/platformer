@@ -5,6 +5,7 @@ import (
 	"platformer/common"
 	"platformer/config"
 	"platformer/controller"
+	"platformer/events"
 	"platformer/menu"
 
 	"github.com/shinomontaz/pixel"
@@ -33,7 +34,7 @@ func NewMenu(f Inform, l *common.Loader, win *pixelgl.Window, currBounds pixel.R
 			id:       MENU,
 			done:     make(chan struct{}),
 			inform:   f,
-			eventMap: map[int]int{EVENT_NEXT: GAME},
+			eventMap: map[int]int{events.STAGEVENT_NEXT: GAME},
 		},
 		assetloader: l,
 		ctrl:        controller.New(win),
@@ -42,12 +43,10 @@ func NewMenu(f Inform, l *common.Loader, win *pixelgl.Window, currBounds pixel.R
 }
 
 func (m *Menu) Init() {
-	menu.Init(m.assetloader)
-
 	videoModes := pixelgl.PrimaryMonitor().VideoModes()
 	currentVideoMode := len(videoModes) - 1
 
-	m.mainmenuback = menu.NewBack(m.currBounds)
+	m.mainmenuback = menu.NewBack(m.currBounds, m.assetloader)
 
 	// main menu
 	m.mainmenu = menu.New(m.currBounds)
@@ -58,7 +57,7 @@ func (m *Menu) Init() {
 
 	txt := text.New(pixel.V(0, 0), m.atlas)
 	it := menu.NewItem("New game", txt, menu.WithAction(func() {
-		m.Notify(EVENT_NEXT) //startGame()
+		m.Notify(events.STAGEVENT_NEXT)
 		m.isGame = true
 	}))
 
@@ -78,7 +77,7 @@ func (m *Menu) Init() {
 
 	txt = text.New(pixel.V(0, 0), m.atlas)
 	it = menu.NewItem("Quit", txt, menu.WithAction(func() {
-		m.Notify(EVENT_QUIT)
+		m.Notify(events.STAGEVENT_QUIT)
 	}))
 	m.mainmenu.AddItem(it)
 
@@ -101,7 +100,7 @@ func (m *Menu) Init() {
 			m.displaymenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", "Fullscreen", config.Opts.Fullscreen))
 		}),
 		menu.WithAction(func() {
-			m.Notify(EVENT_INITSCREEN)
+			m.Notify(events.GAMEVENT_INITSCREEN)
 			m.saveOptions()
 		}))
 	m.displaymenu.AddItem(it)
@@ -134,7 +133,7 @@ func (m *Menu) Start() {
 
 func (m *Menu) Run(win *pixelgl.Window, dt float64) {
 	if !m.isReady {
-		m.Notify(EVENT_NOTREADY)
+		m.Notify(events.STAGEVENT_NOTREADY)
 		return
 	}
 

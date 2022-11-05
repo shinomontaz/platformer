@@ -3,6 +3,7 @@ package menu
 import (
 	"image/color"
 	"math"
+	"platformer/common"
 
 	"github.com/shinomontaz/pixel"
 	"github.com/shinomontaz/pixel/pixelgl"
@@ -21,15 +22,17 @@ type Back struct {
 	intercanvas   *pixelgl.Canvas
 	canvas        *pixelgl.Canvas
 	bg            *pixel.Sprite
+	loader        *common.Loader
 }
 
-func NewBack(rect pixel.Rect) *Back {
+func NewBack(rect pixel.Rect, l *common.Loader) *Back {
 	b := &Back{
 		intercanvas: pixelgl.NewCanvas(pixel.R(0, 0, rect.W(), rect.H())),
 		canvas:      pixelgl.NewCanvas(pixel.R(0, 0, rect.W(), rect.H())),
 
-		rect: rect,
-		rgba: colornames.Black,
+		rect:   rect,
+		rgba:   colornames.Black,
+		loader: l,
 	}
 
 	b.init()
@@ -38,7 +41,7 @@ func NewBack(rect pixel.Rect) *Back {
 }
 
 func (b *Back) init() {
-	bg, err := loader.LoadPicture("gamebackground.png")
+	bg, err := b.loader.LoadPicture("gamebackground.png")
 	if err != nil {
 		panic(err)
 	}

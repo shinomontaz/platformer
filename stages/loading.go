@@ -3,6 +3,7 @@ package stages
 import (
 	"fmt"
 	"platformer/common"
+	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
 
@@ -43,7 +44,7 @@ func (l *Loading) Init() {
 func (l *Loading) Run(win *pixelgl.Window, dt float64) {
 	select {
 	case <-l.done:
-		l.Notify(EVENT_DONE)
+		l.Notify(events.STAGEVENT_DONE)
 	default:
 		win.Clear(colornames.Black)
 		l.txt.Draw(win, pixel.IM.Moved(win.Bounds().Center()))

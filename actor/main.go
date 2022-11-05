@@ -364,7 +364,7 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 	a.hp -= power
 	if a.hp <= 0 {
 		a.SetState(state.DEAD)
-		a.Inform(events.DIE, pixel.ZV)
+		a.Inform(events.GAMEVENT_DIE, pixel.ZV)
 		return
 	}
 	a.SetState(state.HIT)

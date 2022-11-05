@@ -1,6 +1,8 @@
 package stages
 
 import (
+	"platformer/events"
+
 	"github.com/shinomontaz/pixel/pixelgl"
 	"golang.org/x/image/colornames"
 )
@@ -61,7 +63,7 @@ func (s *Common) Notify(event int) {
 func (s *Common) Run(win *pixelgl.Window, dt float64) {
 	select {
 	case <-s.done:
-		s.Notify(EVENT_DONE)
+		s.Notify(events.STAGEVENT_DONE)
 	default:
 		win.Clear(colornames.Black)
 	}

@@ -26,7 +26,7 @@ import (
 type Game struct {
 	Common
 	assetloader   *common.Loader
-	currBounds    pixel.Rect
+	initialBounds pixel.Rect
 	u             *ui.Ui
 	w             *world.World
 	hero          *actor.Actor
@@ -40,12 +40,10 @@ type Game struct {
 }
 
 var (
-	camPos   = pixel.ZV
-	frames   = 0
-	second   = time.Tick(time.Second)
-	rgba     = color.RGBA{123, 175, 213, 1}
-	deltaVec = pixel.ZV
-	title    = "platformer"
+	frames = 0
+	second = time.Tick(time.Second)
+	rgba   = color.RGBA{123, 175, 213, 1}
+	title  = "platformer"
 )
 
 func NewGame(f Inform, l *common.Loader, win *pixelgl.Window, currBounds pixel.Rect) *Game {
@@ -54,12 +52,12 @@ func NewGame(f Inform, l *common.Loader, win *pixelgl.Window, currBounds pixel.R
 			id:       GAME,
 			done:     make(chan struct{}),
 			inform:   f,
-			eventMap: map[int]int{EVENT_QUIT: MENU},
+			eventMap: map[int]int{events.STAGEVENT_QUIT: MENU},
 		},
-		assetloader: l,
-		ctrl:        controller.New(win),
-		currBounds:  currBounds,
-		win:         win,
+		assetloader:   l,
+		ctrl:          controller.New(win),
+		initialBounds: currBounds,
+		win:           win,
 	}
 }
 
@@ -72,6 +70,7 @@ func (g *Game) Start() {
 }
 
 func (g *Game) Init() {
+	currBounds := g.initialBounds
 	animation.Init(g.assetloader)
 	actor.Init(g.assetloader)
 	ui.Init(g.assetloader)
@@ -84,7 +83,7 @@ func (g *Game) Init() {
 		magic.Load(name, &cfg)
 	}
 
-	w, err := world.New("ep2.tmx", g.currBounds, world.WithLoader(g.assetloader))
+	w, err := world.New("ep2.tmx", currBounds, world.WithLoader(g.assetloader))
 	if err != nil {
 		panic(err)
 	}
@@ -98,31 +97,31 @@ func (g *Game) Init() {
 	g.hero = factories.NewActor(config.Profiles["player"], g.w)
 	g.hero.Move(g.initialCenter)
 	g.w.AddHero(g.hero)
-	g.u = ui.New(g.hero, g.currBounds)
+	g.u = ui.New(g.hero, currBounds)
 
-	g.currBounds = g.currBounds.Moved(g.initialCenter.Sub(pixel.V(g.currBounds.W()/2, g.currBounds.H()/2)))
+	currBounds = currBounds.Moved(g.initialCenter.Sub(pixel.V(currBounds.W()/2, currBounds.H()/2)))
 
 	g.lastPos = g.hero.GetPos()
 
-	b := background.New(g.lastPos, g.currBounds.Moved(pixel.V(0, 150)), g.assetloader, "gamebackground.png")
+	b := background.New(g.lastPos, currBounds.Moved(pixel.V(0, 150)), g.assetloader, "gamebackground.png")
 
 	g.w.SetBackground(b)
 
-	g.initStates()
+	g.initStates(currBounds)
 
 	g.isReady = true
 }
 
-func (g *Game) initStates() {
-	sNormal := gamestate.NewNormal(g, g.currBounds, g.u, g.w, g.hero, g.win)
+func (g *Game) initStates(currBounds pixel.Rect) {
+	sNormal := gamestate.NewNormal(g, currBounds, g.u, g.w, g.hero, g.win)
 	sDead := gamestate.NewDead(g, g.w, g.hero, g.win)
-	//	sMenu := gamestate.NewMenu(g, g.w, g.hero, g.win)
+	sMenu := gamestate.NewMenu(g, g.w, g.hero, g.win)
 	//	sDialog := gamestate.NewDialog(g, g.w, g.hero, g.win)
 
 	g.states = map[int]Gamestater{
 		gamestate.NORMAL: sNormal,
 		gamestate.DEAD:   sDead,
-		//		gamestate.MENU:   sMenu,
+		gamestate.MENU:   sMenu,
 		//		gamestate.DIALOG: sDialog,
 	}
 
@@ -138,7 +137,7 @@ func (g *Game) SetState(id int) {
 
 func (g *Game) Run(win *pixelgl.Window, dt float64) {
 	if !g.isReady {
-		g.Notify(EVENT_NOTREADY)
+		g.Notify(events.STAGEVENT_NOTREADY)
 		return
 	}
 
@@ -156,11 +155,18 @@ func (g *Game) Run(win *pixelgl.Window, dt float64) {
 	}
 }
 
+func (g *Game) Notify(e int) {
+	if e == events.STAGEVENT_QUIT {
+		g.isReady = false
+	}
+	g.inform(e)
+}
+
 func (g *Game) Listen(e int, v pixel.Vec) {
 	if !g.isActive {
 		return
 	}
 	if e == events.ESCAPE {
-		g.Notify(EVENT_QUIT)
+		g.Notify(events.STAGEVENT_QUIT)
 	}
 }

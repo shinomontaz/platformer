@@ -79,7 +79,7 @@ func (n *Normal) Listen(e int, v pixel.Vec) {
 	switch e {
 	case events.ESCAPE: // from controller
 		n.game.SetState(MENU)
-	case events.DIE: // from hero
+	case events.GAMEVENT_DIE: // from hero
 		fmt.Println("handle event DIE")
 		n.game.SetState(DEAD)
 	}

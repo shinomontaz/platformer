@@ -1,6 +1,7 @@
 package gamestate
 
 import (
+	"image/color"
 	"platformer/actor"
 	"platformer/controller"
 	"platformer/events"
@@ -78,6 +79,8 @@ func (d *Dead) Update(dt float64) {
 
 func (d *Dead) Draw(win *pixelgl.Window) {
 	camPos := d.lastPos.Add(pixel.V(0, 150))
+
+	d.cnv.Clear(color.RGBA{0, 0, 0, 1})
 
 	d.w.Draw(d.cnv, d.lastPos, camPos, d.cnv.Bounds().Center())
 	d.cnv.Draw(win, pixel.IM.Moved(win.Bounds().Center()))

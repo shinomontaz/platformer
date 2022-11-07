@@ -3,7 +3,6 @@ package gamestate
 import (
 	"platformer/actor"
 	"platformer/controller"
-	"platformer/events"
 	"platformer/world"
 
 	"github.com/shinomontaz/pixel/pixelgl"
@@ -92,11 +91,14 @@ func (d *Dialog) GetId() int {
 func (d *Dialog) Start() {
 	d.currBounds = d.w.GetViewport()
 	d.lastPos = d.hero.GetPos()
+
+	// hero => get active dialog
+	// prepare options and dialog
 }
 
 func (d *Dialog) Listen(e int, v pixel.Vec) {
-	switch e {
-	case events.ESCAPE: // from controller
-		d.game.SetState(NORMAL)
-	}
+	// switch e {
+	// case events.ESCAPE: // from controller
+	// 	d.game.SetState(NORMAL)
+	// }
 }

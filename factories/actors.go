@@ -12,8 +12,9 @@ import (
 type Worlder interface {
 	GetGravity() float64
 	AddStrike(owner *actor.Actor, r pixel.Rect, power int, speed pixel.Vec)
+	AddInteraction(interactor *actor.Actor)
 	AddSpell(owner *actor.Actor, t pixel.Vec, spell string, objs []common.Objecter)
-	AddAlert(pos pixel.Vec, force float64)
+	//	AddAlert(pos pixel.Vec, force float64)
 	IsSee(from, to pixel.Vec) bool
 	GetHero() *actor.Actor
 }

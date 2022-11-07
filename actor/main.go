@@ -113,16 +113,18 @@ func (a *Actor) initStates() {
 	sFall := state.New(state.FALL, a, a.anim)
 	sDead := state.New(state.DEAD, a, a.anim)
 	sHit := state.New(state.HIT, a, a.anim)
+	sInteract := state.New(state.INTERACT, a, a.anim)
 
 	a.states = map[int]Stater{
-		state.STAND: sStand,
-		state.IDLE:  sIdle,
-		state.WALK:  sWalk,
-		state.RUN:   sRun,
-		state.FALL:  sFall,
-		state.JUMP:  sJump,
-		state.HIT:   sHit,
-		state.DEAD:  sDead,
+		state.STAND:    sStand,
+		state.IDLE:     sIdle,
+		state.WALK:     sWalk,
+		state.RUN:      sRun,
+		state.FALL:     sFall,
+		state.JUMP:     sJump,
+		state.HIT:      sHit,
+		state.DEAD:     sDead,
+		state.INTERACT: sInteract,
 	}
 
 	// apply state machine
@@ -306,6 +308,11 @@ func (a *Actor) Strike() {
 
 		a.w.AddStrike(a, rect, power, pixel.ZV)
 	}
+}
+
+func (a *Actor) Interact() {
+	a.Inform(events.INTERACT, pixel.ZV)
+	//	a.w.AddInteraction(a)
 }
 
 func (a *Actor) Cast() {

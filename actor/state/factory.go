@@ -9,6 +9,8 @@ func New(code int, a Actor, an Animater) Stater {
 		st = NewIdle(a, an)
 	case WALK:
 		st = NewWalk(a, an)
+	case INTERACT:
+		st = NewInteract(a, an)
 	case RUN:
 		st = NewRun(a, an)
 	case JUMP:

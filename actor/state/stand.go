@@ -43,6 +43,9 @@ func (s *Stand) Update(dt float64) {
 
 func (s *Stand) Listen(e int, v *pixel.Vec) {
 	switch e {
+	case events.INTERACT:
+		s.a.SetState(INTERACT)
+		return
 	case events.WALK:
 		s.a.SetState(WALK)
 		return

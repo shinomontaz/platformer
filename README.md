@@ -30,31 +30,31 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] tmx [915fa7e](https://github.com/shinomontaz/platformer/commit/915fa7e05eb937ae8ff9a45663be39b7fd078b9e)
 - [x] infinite scrolling background [b7f02e4](https://github.com/shinomontaz/platformer/commit/b7f02e4e39a7ee3b52e6bfac670fafec2db88d08)
 - [x] complex physics [177923f](https://github.com/shinomontaz/platformer/commit/177923f1fd371e6e4e0cb3e8160be445a302b295)
-- [x] release [v0.5](https://github.com/shinomontaz/platformer/releases/tag/v0.5.0)
+- [x] RELEASE [v0.5](https://github.com/shinomontaz/platformer/releases/tag/v0.5.0)
 - [x] speed and impulse + phys fix [8d23525b](https://github.com/shinomontaz/platformer/commit/8d23525bc50f5c9711592c528ab755570c03714d)
 - [x] fix attack state ( no anim supported ) [9f476d90](https://github.com/shinomontaz/platformer/commit/9f476d9012ce9a3f1dcd1c4046164608adc781e6)
 - [x] enemies v2 ( still stupid AI, x-proximity based ) [232086d0](https://github.com/shinomontaz/platformer/commit/232086d07d1cc6ded87198fddb02b2b8f6ba696c)
-- [x] release [v0.6](https://github.com/shinomontaz/platformer/releases/tag/v0.6.0)
+- [x] RELEASE [v0.6](https://github.com/shinomontaz/platformer/releases/tag/v0.6.0)
 - [x] hit and strike [70086f02](https://github.com/shinomontaz/platformer/commit/70086f022dd1fc2fb2c757e50270f5ed76f2ba53)
 - [x] characteristics and some UI [4dc63aa7](https://github.com/shinomontaz/platformer/commit/4dc63aa7cc04d1c8ea991494f725b2e97ef909ad)
-- [x] release [v0.7](https://github.com/shinomontaz/platformer/releases/tag/v0.7.0)
+- [x] RELEASE [v0.7](https://github.com/shinomontaz/platformer/releases/tag/v0.7.0)
 - [x] sounds [815689dc](https://github.com/shinomontaz/platformer/commit/815689dc1c786dbfc4da9b0320a7bdccb821eb81)
 - [x] some fragment shaders [b8831e9a](https://github.com/shinomontaz/platformer/commit/b8831e9ad6b09ffc68a90c8199247f61a279bcf8)
 - [x] main menu
-- [x] release v0.8 [v0.8](https://github.com/shinomontaz/platformer/releases/tag/v0.8)
+- [x] RELEASE v0.8 [v0.8](https://github.com/shinomontaz/platformer/releases/tag/v0.8)
 - [x] main game shaders ( sunlight, shadows )
 - [x] game stages ( menu->loading->game->menu->game->... ) + separate controllers, bugfix
 - [x] in-game menu, restart game
-- [ ] dialogs, npc, game stage states
+- [ ] npc dialogs and quotes, signs
 - [ ] blood
 - [ ] projectile attacks
+- [ ] RELEASE v0.9
 - [ ] more menu functions: volumes and screen modes
-- [ ] release v0.9
 - [ ] level design
 - [ ] stats system, exp
 - [ ] interactive objects, inventory
 - [ ] victory screen, score
-- [ ] release Beta
+- [ ] RELEASE v.99
 
 ---
 ## basic scheme

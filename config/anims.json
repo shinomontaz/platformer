@@ -11,6 +11,11 @@
             "frames": [1, 0, 1]
         },
         {
+            "name": "interact",
+            "file":"characters/graverobber/GraveRobber_craft.png",
+            "frames": [6, 0, 6]
+        },
+        {
             "name": "walk",
             "file":"characters/graverobber/GraveRobber_walk.png",
             "frames": [6, 0, 6]

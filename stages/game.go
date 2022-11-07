@@ -13,6 +13,7 @@ import (
 	"platformer/factories"
 	"platformer/magic"
 	"platformer/sound"
+	"platformer/talks"
 	"platformer/ui"
 	"platformer/world"
 
@@ -88,6 +89,8 @@ func (g *Game) Init() {
 		panic(err)
 	}
 	g.w = w
+
+	talks.Init(w)
 
 	//	w.IsDebug = isdebug
 

@@ -3,6 +3,7 @@ package ai
 import (
 	"math/rand"
 	"platformer/events"
+	"platformer/talks"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -45,7 +46,18 @@ func (s *StateRoaming) Update(dt float64) {
 		if (heropos.X < pos.X && dir < 0) || (heropos.X > pos.X && dir > 0) {
 			// check if we see hero
 			if s.w.IsSee(pos, heropos) && herohp > 0 {
-				s.w.AddAlert(pos, 200)
+				talks.AddAlert(pos, 200)
+				// 	al := addAlert(pos, force)
+				// 	for _, en := range w.enemies {
+				// 		alrect := al.GetRect()
+				// 		if alrect.Contains(en.GetPos()) {
+				// 			a := ai.GetByObj(en)
+				// 			if a != nil {
+				// 				a.Listen(events.ALERT, alrect.Center())
+				// 			}
+				// 		}
+				// 	}
+
 				s.ai.SetState(CHOOSEATTACK, heropos)
 			}
 			return

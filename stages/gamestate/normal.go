@@ -6,6 +6,7 @@ import (
 	"platformer/controller"
 	"platformer/events"
 	"platformer/sound"
+	"platformer/talks"
 	"platformer/ui"
 	"platformer/world"
 
@@ -53,6 +54,7 @@ func (n *Normal) Update(dt float64) {
 		n.currBounds = n.currBounds.Moved(deltaVec)
 
 		n.w.Update(n.currBounds, dt)
+		talks.Update(dt)
 	}
 
 	n.lastPos = pos
@@ -60,9 +62,12 @@ func (n *Normal) Update(dt float64) {
 
 func (n *Normal) Draw(win *pixelgl.Window) {
 	camPos := n.lastPos.Add(pixel.V(0, 150))
+	cntr := win.Bounds().Center()
 
-	n.w.Draw(win, n.lastPos, camPos, win.Bounds().Center())
+	n.w.Draw(win, n.lastPos, camPos, cntr)
+	talks.Draw(win, camPos, cntr)
 	n.u.Draw(win)
+
 }
 
 func (n *Normal) GetId() int {
@@ -82,5 +87,13 @@ func (n *Normal) Listen(e int, v pixel.Vec) {
 	case events.GAMEVENT_DIE: // from hero
 		fmt.Println("handle event DIE")
 		n.game.SetState(DEAD)
+	case events.INTERACT: // from hero
+		fmt.Println("handle event INTERACT")
+		// world -> check interactions, get interaction action
+		// if dialog =>
+		// hero => set active dialog
+		// n.game.SetState(DIALOG)
+		// if reply => world add reply
+		// if action => do action on world
 	}
 }

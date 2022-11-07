@@ -25,17 +25,20 @@ func newPlayer() *statemachine.Machine {
 	m.Set(state.MELEEMOVE, statemachine.Transition{})
 	m.Set(state.STAND, statemachine.Transition{
 		List: map[int]int{
-			events.CTRL: state.MELEE,
+			events.CTRL:     state.MELEE,
+			events.INTERACT: state.INTERACT,
 		},
 	})
 	m.Set(state.IDLE, statemachine.Transition{
 		List: map[int]int{
-			events.CTRL: state.MELEE,
+			events.CTRL:     state.MELEE,
+			events.INTERACT: state.INTERACT,
 		},
 	})
 	m.Set(state.WALK, statemachine.Transition{
 		List: map[int]int{
-			events.CTRL: state.MELEEMOVE,
+			events.CTRL:     state.MELEEMOVE,
+			events.INTERACT: state.INTERACT,
 		},
 	})
 	// m.Set(state.RUN, statemachine.Transition{

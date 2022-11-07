@@ -40,6 +40,9 @@ func (s *Walk) Update(dt float64) {
 
 func (s *Walk) Listen(e int, v *pixel.Vec) {
 	switch e {
+	case events.INTERACT:
+		s.a.SetState(INTERACT)
+		return
 	case events.RUN:
 		s.a.SetState(RUN)
 		return

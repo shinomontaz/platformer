@@ -20,6 +20,7 @@ const (
 	MELEEMOVE
 	RANGED
 	CAST
+	INTERACT
 )
 
 type Stater interface {
@@ -36,6 +37,7 @@ type Actor interface {
 	GetTransition(int) statemachine.Transition
 	Strike()
 	Cast()
+	Interact()
 	AddSound(event string)
 	Inform(e int, v pixel.Vec)
 	GetSkillName() string

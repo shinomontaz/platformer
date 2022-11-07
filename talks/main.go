@@ -1,48 +1,43 @@
-package world
+package talks
 
 import (
-	"fmt"
 	"math/rand"
 	"platformer/common"
 
 	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/pixelgl"
 	"github.com/shinomontaz/pixel/text"
 	"golang.org/x/image/colornames"
 )
 
-type Alert struct {
-	rect  pixel.Rect
-	timer float64
-	ttl   float64
-	txt   string
-}
-
 var alerts []*Alert
 var atlas *text.Atlas
+var world Worlder
 
-func InitAlerts() {
+func Init(w Worlder) {
 	alerts = make([]*Alert, 0)
 	fnt := common.GetFont("regular")
 	atlas = text.NewAtlas(fnt, text.ASCII)
+	world = w
 }
 
-func addAlert(pos pixel.Vec, force float64) *Alert {
+func AddAlert(pos pixel.Vec, force float64) {
 	rect := pixel.R(pos.X-force, pos.Y-force, pos.X+force, pos.Y+force)
 	al := &Alert{
 		rect: rect,
 		ttl:  1.0,
+		col:  colornames.Red,
 		txt:  randSeq([]rune("#$%&@*?arlTVXx"), 2+rand.Intn(3)) + "!",
 	}
 	alerts = append(alerts, al)
-	return al
+
+	world.Alert(al.GetRect())
 }
 
-func updateAlerts(dt float64) {
+func Update(dt float64) {
 	i := 0
 	for _, al := range alerts {
-		al.timer += dt
-		al.rect = al.rect.Moved(pixel.Vec{-10 * dt, 10 * dt})
-		if al.timer < al.ttl {
+		if al.Update(dt) {
 			alerts[i] = al
 			i++
 		}
@@ -50,23 +45,13 @@ func updateAlerts(dt float64) {
 	alerts = alerts[:i]
 }
 
-func drawAlerts(t pixel.Target) {
+func Draw(win *pixelgl.Window, camPos, center pixel.Vec) {
 	for _, al := range alerts {
-		pos := al.rect.Center().Add(pixel.Vec{0.0, 40.0})
-		// draw exclamation sign
-		txt := text.New(pos, atlas)
-		txt.Color = colornames.Red
-		fmt.Fprintln(txt, al.txt)
-		txt.Draw(t, pixel.IM)
+		al.Draw(win, camPos, center)
 	}
 }
 
-func (a *Alert) GetRect() pixel.Rect {
-	return a.rect
-}
-
 //var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
 func randSeq(letters []rune, n int) string {
 	b := make([]rune, n)
 	for i := range b {

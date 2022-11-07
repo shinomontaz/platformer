@@ -63,8 +63,6 @@ type World struct {
 	visiblePhys  []common.Objecter
 	visibleSpec  []common.Objecter
 
-	alerts []Alert
-
 	uObjects    []mgl32.Vec4 // = 250 rectangles
 	uNumObjects int32
 	uLight      mgl32.Vec2
@@ -118,8 +116,6 @@ func New(source string, rect pixel.Rect, opts ...Option) (*World, error) {
 	w.tm = tm
 
 	w.init()
-
-	InitAlerts()
 
 	return &w, nil
 }
@@ -410,7 +406,6 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 
 	updateStrikes(dt, w.enemies, w.hero)
 	updateSpells(dt, w.enemies, w.hero)
-	updateAlerts(dt)
 }
 
 func (w *World) GetGravity() float64 {
@@ -468,21 +463,23 @@ func (w *World) AddNpc(meta *tmx.Object) {
 	w.npcs = append(w.npcs, npc)
 }
 
-func (w *World) AddAlert(pos pixel.Vec, force float64) {
-	al := addAlert(pos, force)
+func (w *World) AddStrike(owner *actor.Actor, r pixel.Rect, power int, speed pixel.Vec) {
+	AddStrike(owner, r, power, speed)
+}
+
+func (w *World) AddInteraction(interactor *actor.Actor) {
+	//	AddStrike(owner, r, power, speed)
+}
+
+func (w *World) Alert(rect pixel.Rect) {
 	for _, en := range w.enemies {
-		alrect := al.GetRect()
-		if alrect.Contains(en.GetPos()) {
+		if rect.Contains(en.GetPos()) {
 			a := ai.GetByObj(en)
 			if a != nil {
-				a.Listen(events.ALERT, alrect.Center())
+				a.Listen(events.ALERT, rect.Center())
 			}
 		}
 	}
-}
-
-func (w *World) AddStrike(owner *actor.Actor, r pixel.Rect, power int, speed pixel.Vec) {
-	AddStrike(owner, r, power, speed)
 }
 
 func (w *World) AddSpell(owner *actor.Actor, t pixel.Vec, spell string, objs []common.Objecter) {
@@ -562,7 +559,6 @@ func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel
 	for _, n := range w.npcs {
 		n.Draw(w.cnv2)
 	}
-	drawAlerts(w.cnv2)
 
 	if w.hero != nil {
 		w.hero.Draw(w.cnv2)

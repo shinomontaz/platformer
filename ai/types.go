@@ -16,7 +16,7 @@ type Stater interface {
 type Worlder interface {
 	GetHero() *actor.Actor
 	IsSee(from, to pixel.Vec) bool
-	AddAlert(place pixel.Vec, raduis float64)
+	//	AddAlert(place pixel.Vec, raduis float64)
 }
 
 type Alerter interface {

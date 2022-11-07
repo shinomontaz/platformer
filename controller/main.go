@@ -45,6 +45,10 @@ func (pc *Controller) Update() {
 		pc.Notify(events.CTRL)
 	}
 
+	if pc.win.JustPressed(pixelgl.KeyEnter) {
+		pc.Notify(events.INTERACT)
+	}
+
 	if pc.win.JustPressed(pixelgl.KeyLeftShift) || pc.win.JustReleased(pixelgl.KeyLeftShift) {
 		pc.Notify(events.SHIFT)
 	}

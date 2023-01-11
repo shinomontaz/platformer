@@ -2,6 +2,7 @@ package ai
 
 import (
 	"math/rand"
+	"platformer/creatures"
 	"platformer/events"
 	"platformer/talks"
 
@@ -38,7 +39,7 @@ func (s *StateRoaming) Update(dt float64) {
 	if s.isagro {
 		pos := s.ai.obj.GetPos()
 
-		hero := s.w.GetHero()
+		hero := creatures.GetHero()
 		// look for hero
 		herohp := hero.GetHp()
 		heropos := hero.GetPos()

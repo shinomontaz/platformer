@@ -3,6 +3,7 @@ package gamestate
 import (
 	"fmt"
 	"platformer/actor"
+	"platformer/ai"
 	"platformer/controller"
 	"platformer/events"
 	"platformer/sound"
@@ -54,7 +55,11 @@ func (n *Normal) Update(dt float64) {
 		n.currBounds = n.currBounds.Moved(deltaVec)
 
 		n.w.Update(n.currBounds, dt)
+		//		creatures.Update(dt, w.GetVisiblePhys())
 		talks.Update(dt)
+		ai.Update(dt)
+
+		//		n.w.SetCreatures(creatures.List()) // we need shaders on creatures ( npc and enemies ), creatures will be drawn on world draw
 	}
 
 	n.lastPos = pos
@@ -65,7 +70,7 @@ func (n *Normal) Draw(win *pixelgl.Window) {
 	cntr := win.Bounds().Center()
 
 	n.w.Draw(win, n.lastPos, camPos, cntr)
-	talks.Draw(win, camPos, cntr)
+	talks.Draw(win, camPos, cntr) // we do not need world shaders upon alerts and replys
 	n.u.Draw(win)
 
 }

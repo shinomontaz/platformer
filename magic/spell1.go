@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"platformer/activities"
 	"platformer/actor"
 	"platformer/animation"
 	"platformer/common"
@@ -135,7 +136,9 @@ func (d *Deathstrike) Update(dt float64) {
 		miny := d.rect.Center().Y + hb.r.Min.Y
 		rect := pixel.R(minx, miny, minx+w, miny+h)
 
-		d.w.AddStrike(d.owner, rect, d.power, pixel.ZV)
+		activities.AddStrike(d.owner, rect, d.power, pixel.ZV)
+
+		//		d.w.AddStrike(d.owner, rect, d.power, pixel.ZV)
 		d.striked = true
 	}
 

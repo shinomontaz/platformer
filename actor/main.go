@@ -7,6 +7,8 @@ import (
 	"platformer/events"
 	"platformer/sound"
 
+	"platformer/activities"
+
 	"platformer/actor/state"
 	"platformer/actor/statemachine"
 
@@ -30,9 +32,13 @@ const (
 	NOACTION = iota
 	HITTED
 	STRIKE
+	ALERTED
 )
 
+var counter int
+
 type Actor struct {
+	id   int
 	phys Phys
 
 	state  Stater
@@ -77,7 +83,9 @@ func Init(l *common.Loader) {
 }
 
 func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
+	counter++
 	a := &Actor{
+		id:      counter,
 		anim:    anim,
 		rect:    rect,
 		dir:     1,
@@ -232,7 +240,7 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	a.state.Update(dt)
 }
 
-func (a *Actor) UpdateSpecial(objs []common.Objecter, dt float64) {
+func (a *Actor) UpdateSpecial(dt float64, objs []common.Objecter) {
 	a.phys.SetWater(false)
 	for _, o := range objs {
 		isIntercects := a.rect.Intersects(o.R)
@@ -306,19 +314,17 @@ func (a *Actor) Strike() {
 		}
 		rect := pixel.R(minx, miny, minx+w, miny+h)
 
-		a.w.AddStrike(a, rect, power, pixel.ZV)
+		activities.AddStrike(a, rect, power, pixel.ZV)
 	}
 }
 
 func (a *Actor) Interact() {
 	a.Inform(events.INTERACT, pixel.ZV)
-	//	a.w.AddInteraction(a)
 }
 
 func (a *Actor) Cast() {
-	// TODO: get melee skill and cast spell by it
-	//	activeSkill
 	if a.activeSkill.Type == "spell" {
+		//		activities.AddSpell(a, a.target, a.activeSkill.Name, a.currObjs)
 		a.w.AddSpell(a, a.target, a.activeSkill.Name, a.currObjs)
 	}
 }
@@ -376,4 +382,8 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 	}
 	a.SetState(state.HIT)
 	a.Inform(events.ALERT, pixel.Vec{-vec.X, vec.Y})
+}
+
+func (a *Actor) GetId() int {
+	return a.id
 }

@@ -1,8 +1,6 @@
 package magic
 
 import (
-	"platformer/actor"
-
 	"github.com/shinomontaz/pixel"
 )
 
@@ -14,7 +12,7 @@ type Speller interface {
 
 type Worlder interface {
 	GetGravity() float64
-	AddStrike(a *actor.Actor, rect pixel.Rect, power int, speed pixel.Vec)
+	//	AddStrike(a *actor.Actor, rect pixel.Rect, power int, speed pixel.Vec)
 }
 
 type Animater interface {

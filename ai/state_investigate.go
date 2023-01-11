@@ -1,6 +1,7 @@
 package ai
 
 import (
+	"platformer/creatures"
 	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
@@ -31,7 +32,7 @@ func (s *StateInvestigate) Update(dt float64) {
 	}
 	pos := s.ai.obj.GetPos()
 
-	hero := s.w.GetHero()
+	hero := creatures.GetHero()
 	// look for hero
 	herohp := hero.GetHp()
 	heropos := hero.GetPos()

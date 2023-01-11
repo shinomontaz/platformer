@@ -2,6 +2,7 @@ package talks
 
 import (
 	"math/rand"
+	"platformer/activities"
 	"platformer/common"
 
 	"github.com/shinomontaz/pixel"
@@ -31,7 +32,8 @@ func AddAlert(pos pixel.Vec, force float64) {
 	}
 	alerts = append(alerts, al)
 
-	world.Alert(al.GetRect())
+	activities.Alert(al.GetRect())
+	//	world.Alert
 }
 
 func Update(dt float64) {

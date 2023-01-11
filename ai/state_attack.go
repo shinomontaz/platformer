@@ -2,6 +2,7 @@ package ai
 
 import (
 	"math/rand"
+	"platformer/creatures"
 	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
@@ -37,7 +38,7 @@ func (s *StateAttack) Update(dt float64) {
 		return
 	}
 
-	hero := s.w.GetHero()
+	hero := creatures.GetHero()
 	herohp := hero.GetHp()
 	if herohp <= 0 {
 		s.ai.SetState(IDLE, s.lastpos)

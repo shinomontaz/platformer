@@ -1,6 +1,7 @@
 package ai
 
 import (
+	"platformer/creatures"
 	"platformer/events"
 	"platformer/talks"
 
@@ -30,7 +31,7 @@ func (s *StateIdle) Update(dt float64) {
 	}
 
 	if s.isagro {
-		hero := s.w.GetHero()
+		hero := creatures.GetHero()
 		herohp := hero.GetHp()
 		heropos := hero.GetPos()
 		pos := s.ai.obj.GetPos()

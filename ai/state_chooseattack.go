@@ -3,6 +3,7 @@ package ai
 import (
 	"math/rand"
 	"platformer/actor"
+	"platformer/creatures"
 	"platformer/events"
 	"sort"
 
@@ -33,7 +34,7 @@ func (s *StateChooseAttack) Update(dt float64) {
 		return
 	}
 
-	hero := s.w.GetHero()
+	hero := creatures.GetHero()
 
 	if !hero.IsGround() {
 		return

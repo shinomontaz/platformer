@@ -9,6 +9,7 @@ import (
 	"platformer/common"
 	"platformer/config"
 	"platformer/controller"
+	"platformer/creatures"
 	"platformer/events"
 	"platformer/factories"
 	"platformer/magic"
@@ -89,17 +90,37 @@ func (g *Game) Init() {
 		panic(err)
 	}
 	g.w = w
+	g.hero = factories.NewActor(config.Profiles["player"], g.w)
 
 	talks.Init(w)
+
+	list := g.w.GetMetas()
+	for _, o := range list {
+		if o.Class == "enemy" {
+			enemy := factories.NewActor(config.Profiles[o.Name], g.w)
+			enemy.Move(pixel.V(o.X, o.Y))
+			factories.NewAi(config.Profiles[o.Name].Type, enemy, w)
+			creatures.AddEnemy(enemy)
+		}
+		if o.Class == "npc" {
+			npc := factories.NewActor(config.Profiles[o.Name], g.w)
+			npc.Move(pixel.V(o.X, o.Y))
+			factories.NewAi(config.Profiles[o.Name].Type, npc, w)
+			creatures.AddNpc(npc)
+			//			creatures.AddNpc(o, w)
+		}
+	}
+	creatures.SetHero(g.hero)
+
+	//	activities.Init(creatures.List()) // new
 
 	//	w.IsDebug = isdebug
 
 	magic.SetWorld(g.w)
 
 	g.initialCenter = g.w.GetCenter()
-	g.hero = factories.NewActor(config.Profiles["player"], g.w)
 	g.hero.Move(g.initialCenter)
-	g.w.AddHero(g.hero)
+
 	g.u = ui.New(g.hero, currBounds)
 
 	currBounds = currBounds.Moved(g.initialCenter.Sub(pixel.V(currBounds.W()/2, currBounds.H()/2)))

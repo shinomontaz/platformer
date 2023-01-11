@@ -1,9 +1,6 @@
-package world
+package activities
 
 import (
-	"platformer/actor"
-	"platformer/ai"
-
 	"github.com/shinomontaz/pixel"
 	"github.com/shinomontaz/pixel/imdraw"
 	"golang.org/x/image/colornames"
@@ -14,8 +11,8 @@ type HitBox struct {
 	ttl    float64
 	timer  float64
 	power  int
-	owner  *actor.Actor
-	hitted map[*actor.Actor]struct{}
+	owner  Actor
+	hitted map[Actor]struct{}
 	dir    pixel.Line
 	speed  pixel.Vec
 }
@@ -28,7 +25,7 @@ func init() {
 	plboxes = make([]*HitBox, 0)
 }
 
-func AddStrike(owner *actor.Actor, rect pixel.Rect, power int, speed pixel.Vec) *HitBox {
+func AddStrike(owner Actor, rect pixel.Rect, power int, speed pixel.Vec) *HitBox {
 	center := rect.Center()
 	from := pixel.V(rect.Min.X, center.Y)
 	to := pixel.V(rect.Max.X, center.Y)
@@ -43,24 +40,24 @@ func AddStrike(owner *actor.Actor, rect pixel.Rect, power int, speed pixel.Vec) 
 		power:  power,
 		owner:  owner,
 		dir:    pixel.L(from, to),
-		hitted: make(map[*actor.Actor]struct{}),
+		hitted: make(map[Actor]struct{}),
 		speed:  speed,
 	}
 
-	if ai.GetByObj(owner) != nil {
-		enboxes = append(enboxes, b)
-	} else {
+	if owner.GetId() == 1 {
 		plboxes = append(plboxes, b)
+	} else {
+		enboxes = append(enboxes, b)
 	}
 	return b
 }
 
-func updateStrikes(dt float64, enemies []*actor.Actor, player *actor.Actor) {
-	updatePlStrikes(dt, enemies)
-	updateEnStrikes(dt, []*actor.Actor{player})
+func UpdateStrikes(dt float64 /*, enemies []Actor*/, player Actor) {
+	//	updatePlStrikes(dt, enemies)
+	updateEnStrikes(dt, []Actor{player})
 }
 
-func updatePlStrikes(dt float64, hittable []*actor.Actor) {
+func updatePlStrikes(dt float64, hittable []Actor) {
 	i := 0
 	for _, b := range plboxes {
 		for _, hh := range hittable {
@@ -91,7 +88,7 @@ func updatePlStrikes(dt float64, hittable []*actor.Actor) {
 	plboxes = plboxes[:i]
 }
 
-func updateEnStrikes(dt float64, hittable []*actor.Actor) {
+func updateEnStrikes(dt float64, hittable []Actor) {
 	i := 0
 	for _, b := range enboxes {
 		for _, hh := range hittable {
@@ -122,7 +119,7 @@ func updateEnStrikes(dt float64, hittable []*actor.Actor) {
 	enboxes = enboxes[:i]
 }
 
-func drawStrikes(t pixel.Target) {
+func DrawStrikes(t pixel.Target) {
 	imd := imdraw.New(nil)
 	for _, box := range enboxes {
 		vertices := box.rect.Vertices()

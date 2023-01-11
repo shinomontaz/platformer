@@ -8,12 +8,9 @@ import (
 	"github.com/shinomontaz/pixel"
 
 	"platformer/actor"
-	"platformer/ai"
 	"platformer/background"
 	"platformer/common"
-	"platformer/config"
-	"platformer/events"
-	"platformer/factories"
+	"platformer/creatures"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/shinomontaz/pixel/imdraw"
@@ -51,12 +48,8 @@ type World struct {
 	tiles      map[uint32]*tmx.LayerTile
 	imdrawrect *imdraw.IMDraw
 
-	viewport pixel.Rect
-	enmeta   []*tmx.Object
-	npcmeta  []*tmx.Object
-	npcs     []*actor.Actor
-	enemies  []*actor.Actor
-	hero     *actor.Actor
+	viewport      pixel.Rect
+	creaturesmeta []*tmx.Object
 
 	visibleTiles []common.Objecter
 	visibleObjs  []common.Objecter
@@ -89,13 +82,10 @@ func New(source string, rect pixel.Rect, opts ...Option) (*World, error) {
 		//		phys:         make(map[uint32]*tmx.Object),
 		objects: make(map[uint32]*tmx.Object),
 
-		objectTiles: make(map[uint32]*tmx.LayerTile),
-		enmeta:      make([]*tmx.Object, 0),
-		npcmeta:     make([]*tmx.Object, 0),
-		enemies:     make([]*actor.Actor, 0),
-		npcs:        make([]*actor.Actor, 0),
-		viewport:    rect,
-		imdrawrect:  imdraw.New(nil),
+		objectTiles:   make(map[uint32]*tmx.LayerTile),
+		creaturesmeta: make([]*tmx.Object, 0),
+		viewport:      rect,
+		imdrawrect:    imdraw.New(nil),
 	}
 
 	for _, opt := range opts {
@@ -140,12 +130,9 @@ func (w *World) init() {
 					w.meta = o
 				}
 
-				if o.Class == "enemy" {
-					w.enmeta = append(w.enmeta, o)
-				}
-
-				if o.Class == "npc" {
-					w.npcmeta = append(w.npcmeta, o)
+				if o.Class == "enemy" || o.Class == "npc" {
+					o.Y = w.Height - o.Y
+					w.creaturesmeta = append(w.creaturesmeta, o)
 				}
 
 				if o.Class == "water" {
@@ -214,12 +201,12 @@ func (w *World) init() {
 		wg.Add(1)
 		defer wg.Done()
 	}()
-	go func() {
-		w.initEnemies()
-		w.initNpcs()
-		wg.Add(1)
-		defer wg.Done()
-	}()
+	// go func() {
+	// 	w.initEnemies()
+	// 	w.initNpcs()
+	// 	wg.Add(1)
+	// 	defer wg.Done()
+	// }()
 	wg.Wait()
 }
 
@@ -252,16 +239,8 @@ func (w *World) initProps() {
 	w.gravity = w.tm.Properties.GetFloat("gravity")
 }
 
-func (w *World) initEnemies() {
-	for _, o := range w.enmeta {
-		w.AddEnemy(o)
-	}
-}
-
-func (w *World) initNpcs() {
-	for _, o := range w.npcmeta {
-		w.AddNpc(o)
-	}
+func (w *World) GetMetas() []*tmx.Object {
+	return w.creaturesmeta
 }
 
 func (w *World) initSets() {
@@ -370,6 +349,10 @@ func (w *World) GetViewport() pixel.Rect {
 	return w.viewport
 }
 
+func (w *World) GetVisiblePhys() []common.Objecter {
+	return w.visiblePhys
+}
+
 func (w *World) Update(rect pixel.Rect, dt float64) {
 	w.viewport = rect
 
@@ -389,43 +372,11 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 	}
 	w.uNumObjects = int32(len(w.uObjects))
 
-	if w.hero != nil {
-		w.hero.Update(dt, w.visiblePhys)
-		w.hero.UpdateSpecial(w.visibleSpec, dt)
-	}
-
-	ai.Update(dt)
-	for _, en := range w.enemies {
-		en.Update(dt, w.visiblePhys)
-		//		en.UpdateSpecial(w.visibleSpec, dt)
-	}
-	for _, npc := range w.npcs {
-		npc.Update(dt, w.visiblePhys)
-		npc.UpdateSpecial(w.visibleSpec, dt)
-	}
-
-	updateStrikes(dt, w.enemies, w.hero)
-	updateSpells(dt, w.enemies, w.hero)
+	creatures.Update(dt, w.visiblePhys, w.visibleSpec)
 }
 
 func (w *World) GetGravity() float64 {
 	return w.gravity
-}
-
-func (w *World) AddHero(h *actor.Actor) {
-	w.hero = h
-}
-
-func (w *World) GetHeroPos() pixel.Vec {
-	return w.hero.GetPos()
-}
-
-func (w *World) GetHero() *actor.Actor {
-	return w.hero
-}
-
-func (w *World) GetHeroHp() int {
-	return w.hero.GetHp()
 }
 
 func (w *World) IsSee(from, to pixel.Vec) bool {
@@ -447,39 +398,6 @@ func (w *World) IsSee(from, to pixel.Vec) bool {
 	}
 
 	return true
-}
-
-func (w *World) AddEnemy(meta *tmx.Object) {
-	enemy := factories.NewActor(config.Profiles[meta.Name], w)
-	enemy.Move(pixel.V(meta.X, w.Height-meta.Y))
-	factories.NewAi(config.Profiles[meta.Name].Type, enemy, w)
-	w.enemies = append(w.enemies, enemy)
-}
-
-func (w *World) AddNpc(meta *tmx.Object) {
-	npc := factories.NewActor(config.Profiles[meta.Name], w)
-	npc.Move(pixel.V(meta.X, w.Height-meta.Y))
-	factories.NewAi(config.Profiles[meta.Name].Type, npc, w)
-	w.npcs = append(w.npcs, npc)
-}
-
-func (w *World) AddStrike(owner *actor.Actor, r pixel.Rect, power int, speed pixel.Vec) {
-	AddStrike(owner, r, power, speed)
-}
-
-func (w *World) AddInteraction(interactor *actor.Actor) {
-	//	AddStrike(owner, r, power, speed)
-}
-
-func (w *World) Alert(rect pixel.Rect) {
-	for _, en := range w.enemies {
-		if rect.Contains(en.GetPos()) {
-			a := ai.GetByObj(en)
-			if a != nil {
-				a.Listen(events.ALERT, rect.Center())
-			}
-		}
-	}
 }
 
 func (w *World) AddSpell(owner *actor.Actor, t pixel.Vec, spell string, objs []common.Objecter) {
@@ -553,17 +471,6 @@ func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel
 		batch.Draw(w.cnv2)
 	}
 
-	for _, e := range w.enemies {
-		e.Draw(w.cnv2)
-	}
-	for _, n := range w.npcs {
-		n.Draw(w.cnv2)
-	}
-
-	if w.hero != nil {
-		w.hero.Draw(w.cnv2)
-	}
-
 	if w.IsDebug {
 		imd := imdraw.New(nil)
 		imd.Color = color.RGBA{255, 0, 0, 1}
@@ -579,8 +486,9 @@ func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel
 
 	drawSpells(w.cnv2)
 
+	creatures.Draw(w.cnv2)
+
 	w.cnv2.Draw(w.cnv, pixel.IM.Moved(w.cnv.Bounds().Center()))
-	//	w.cnv.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 	w.cnv.Draw(t, pixel.IM.Moved(center))
 }
 

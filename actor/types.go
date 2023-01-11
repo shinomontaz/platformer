@@ -21,8 +21,7 @@ type Animation interface {
 
 type Worlder interface {
 	GetGravity() float64
-	AddStrike(owner *Actor, r pixel.Rect, power int, speed pixel.Vec)
-	AddInteraction(interactor *Actor)
+	// AddStrike(owner *Actor, r pixel.Rect, power int, speed pixel.Vec)
 	AddSpell(owner *Actor, t pixel.Vec, spell string, objs []common.Objecter)
 }
 

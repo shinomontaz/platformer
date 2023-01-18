@@ -1,6 +1,9 @@
 package activities
 
 import (
+	"fmt"
+	"platformer/common"
+
 	"github.com/shinomontaz/pixel"
 	"github.com/shinomontaz/pixel/imdraw"
 	"golang.org/x/image/colornames"
@@ -11,21 +14,21 @@ type HitBox struct {
 	ttl    float64
 	timer  float64
 	power  int
-	owner  Actor
-	hitted map[Actor]struct{}
+	owner  common.Actorer
+	hitted map[common.Actorer]struct{}
 	dir    pixel.Line
 	speed  pixel.Vec
 }
 
-var enboxes []*HitBox
-var plboxes []*HitBox
+var enboxes []HitBox
+var plboxes []HitBox
 
 func init() {
-	enboxes = make([]*HitBox, 0)
-	plboxes = make([]*HitBox, 0)
+	enboxes = make([]HitBox, 0)
+	plboxes = make([]HitBox, 0)
 }
 
-func AddStrike(owner Actor, rect pixel.Rect, power int, speed pixel.Vec) *HitBox {
+func AddStrike(owner common.Actorer, rect pixel.Rect, power int, speed pixel.Vec) HitBox {
 	center := rect.Center()
 	from := pixel.V(rect.Min.X, center.Y)
 	to := pixel.V(rect.Max.X, center.Y)
@@ -34,15 +37,17 @@ func AddStrike(owner Actor, rect pixel.Rect, power int, speed pixel.Vec) *HitBox
 		to = pixel.V(rect.Min.X, center.Y)
 		from = pixel.V(rect.Max.X, center.Y)
 	}
-	b := &HitBox{
+	b := HitBox{
 		rect:   rect,
 		ttl:    0.2,
 		power:  power,
 		owner:  owner,
 		dir:    pixel.L(from, to),
-		hitted: make(map[Actor]struct{}),
+		hitted: make(map[common.Actorer]struct{}),
 		speed:  speed,
 	}
+
+	fmt.Println("owner.GetId(): ", owner.GetId())
 
 	if owner.GetId() == 1 {
 		plboxes = append(plboxes, b)
@@ -52,12 +57,12 @@ func AddStrike(owner Actor, rect pixel.Rect, power int, speed pixel.Vec) *HitBox
 	return b
 }
 
-func UpdateStrikes(dt float64 /*, enemies []Actor*/, player Actor) {
-	//	updatePlStrikes(dt, enemies)
-	updateEnStrikes(dt, []Actor{player})
+func UpdateStrikes(dt float64, enemies []common.Actorer, player common.Actorer) {
+	updatePlStrikes(dt, enemies)
+	updateEnStrikes(dt, []common.Actorer{player})
 }
 
-func updatePlStrikes(dt float64, hittable []Actor) {
+func updatePlStrikes(dt float64, hittable []common.Actorer) {
 	i := 0
 	for _, b := range plboxes {
 		for _, hh := range hittable {
@@ -88,7 +93,7 @@ func updatePlStrikes(dt float64, hittable []Actor) {
 	plboxes = plboxes[:i]
 }
 
-func updateEnStrikes(dt float64, hittable []Actor) {
+func updateEnStrikes(dt float64, hittable []common.Actorer) {
 	i := 0
 	for _, b := range enboxes {
 		for _, hh := range hittable {

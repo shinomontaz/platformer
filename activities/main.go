@@ -1,12 +1,14 @@
 package activities
 
 import (
+	"platformer/common"
+
 	"github.com/shinomontaz/pixel"
 )
 
-var listeners []Actor = make([]Actor, 0)
+var listeners []common.Actorer = make([]common.Actorer, 0)
 
-func Init(en []Actor) {
+func Init(en []common.Actorer) {
 	listeners = en
 }
 

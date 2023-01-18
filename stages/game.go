@@ -92,8 +92,8 @@ func (g *Game) Init() {
 	g.w = w
 	g.hero = factories.NewActor(config.Profiles["player"], g.w)
 
-	talks.Init(w)
-
+	talks.Init()
+	creatures.Init()
 	list := g.w.GetMetas()
 	for _, o := range list {
 		if o.Class == "enemy" {

@@ -13,13 +13,11 @@ import (
 
 var alerts []*Alert
 var atlas *text.Atlas
-var world Worlder
 
-func Init(w Worlder) {
+func Init() {
 	alerts = make([]*Alert, 0)
 	fnt := common.GetFont("regular")
 	atlas = text.NewAtlas(fnt, text.ASCII)
-	world = w
 }
 
 func AddAlert(pos pixel.Vec, force float64) {
@@ -33,7 +31,6 @@ func AddAlert(pos pixel.Vec, force float64) {
 	alerts = append(alerts, al)
 
 	activities.Alert(al.GetRect())
-	//	world.Alert
 }
 
 func Update(dt float64) {

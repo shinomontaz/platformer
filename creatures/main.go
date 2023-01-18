@@ -8,58 +8,34 @@ import (
 	"platformer/common"
 )
 
-var npcs []*actor.Actor
-var enemies []*actor.Actor
-var hero *actor.Actor
-
-func init() {
-	reset_lists()
-}
+var npcs []common.Actorer
+var enemies []common.Actorer
+var hero common.Actorer
 
 func reset_lists() {
-	enemies = make([]*actor.Actor, 0)
-	npcs = make([]*actor.Actor, 0)
+	enemies = make([]common.Actorer, 0)
+	npcs = make([]common.Actorer, 0)
 }
 
-func Init(w Worlder, h *actor.Actor) {
+func Init() {
 	if len(enemies) > 0 {
 		reset_lists()
 	}
-
-	// list := w.GetMetas()
-	// for _, o := range list {
-	// 	if o.Class == "enemy" {
-	// 		addEnemy(o, w)
-	// 	}
-	// 	if o.Class == "npc" {
-	// 		addNpc(o, w)
-	// 	}
-	// }
-
-	hero = h
 }
 
-func AddEnemy(enemy *actor.Actor) {
-	// enemy := factories.NewActor(config.Profiles[meta.Name], w)
-	// enemy.Move(pixel.V(meta.X, meta.Y))
-	// factories.NewAi(config.Profiles[meta.Name].Type, enemy, w)
+func AddEnemy(enemy common.Actorer) {
 	enemies = append(enemies, enemy)
 }
 
-//func AddNpc(meta *tmx.Object, w Worlder) {
-
 func AddNpc(npc *actor.Actor) {
-	// npc := factories.NewActor(config.Profiles[meta.Name], w)
-	// npc.Move(pixel.V(meta.X, meta.Y))
-	// factories.NewAi(config.Profiles[meta.Name].Type, npc, w)
 	npcs = append(npcs, npc)
 }
 
-func GetHero() *actor.Actor {
+func GetHero() common.Actorer {
 	return hero
 }
 
-func SetHero(h *actor.Actor) {
+func SetHero(h common.Actorer) {
 	hero = h
 }
 
@@ -77,15 +53,10 @@ func Update(dt float64, visiblePhys, visibleSpec []common.Objecter) {
 		npc.Update(dt, visiblePhys)
 		npc.UpdateSpecial(dt, visibleSpec)
 	}
-	activities.UpdateStrikes(dt, hero)
-	//	updateSpells(dt, enemies, hero)
+	activities.UpdateStrikes(dt, enemies, hero)
 }
 
-//func (w *World) AddInteraction(interactor Actor) {
-//	AddStrike(owner, r, power, speed)
-//}
-
-func List() []*actor.Actor {
+func List() []common.Actorer {
 	return append(npcs, enemies...)
 }
 

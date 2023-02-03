@@ -6,6 +6,7 @@ import (
 	"platformer/common"
 	"platformer/events"
 	"platformer/sound"
+	"platformer/talks"
 
 	"platformer/activities"
 
@@ -71,9 +72,10 @@ type Actor struct {
 
 	sbrs []common.Subscriber
 
-	skills      []*Skill
-	activeSkill *Skill
-	currObjs    []common.Objecter
+	skills       []*Skill
+	activeSkill  *Skill
+	currObjs     []common.Objecter
+	phrasesClass string
 }
 
 var loader *common.Loader
@@ -318,10 +320,6 @@ func (a *Actor) Strike() {
 	}
 }
 
-func (a *Actor) Interact() {
-	a.Inform(events.INTERACT, pixel.ZV)
-}
-
 func (a *Actor) Cast() {
 	if a.activeSkill.Type == "spell" {
 		//		activities.AddSpell(a, a.target, a.activeSkill.Name, a.currObjs)
@@ -382,6 +380,15 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 	}
 	a.SetState(state.HIT)
 	a.Inform(events.ALERT, pixel.Vec{-vec.X, vec.Y})
+}
+
+func (a *Actor) Interact() {
+	activities.AddInteraction(a, a.rect, 1, pixel.ZV) // owner common.Actorer, rect pixel.Rect, power int, speed pixel.Vec)
+}
+
+func (a *Actor) OnInteract() {
+	// now only one interaction posible: phrase
+	talks.AddPhrase(a.rect.Min, a.phrasesClass)
 }
 
 func (a *Actor) GetId() int {

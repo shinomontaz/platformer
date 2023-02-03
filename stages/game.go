@@ -92,7 +92,7 @@ func (g *Game) Init() {
 	g.w = w
 	g.hero = factories.NewActor(config.Profiles["player"], g.w)
 
-	talks.Init()
+	talks.Init(g.assetloader)
 	creatures.Init()
 	list := g.w.GetMetas()
 	for _, o := range list {

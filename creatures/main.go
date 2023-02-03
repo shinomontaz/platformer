@@ -54,6 +54,8 @@ func Update(dt float64, visiblePhys, visibleSpec []common.Objecter) {
 		npc.UpdateSpecial(dt, visibleSpec)
 	}
 	activities.UpdateStrikes(dt, enemies, hero)
+	// TODO:
+	activities.UpdateInteractions(dt, npcs)
 }
 
 func List() []common.Actorer {

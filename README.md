@@ -45,14 +45,15 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] main game shaders ( sunlight, shadows )
 - [x] game stages ( menu->loading->game->menu->game->... ) + separate controllers, bugfix
 - [x] in-game menu, restart game
-- [ ] npc dialogs and quotes, signs
+- [x] npc quotes
+- [ ] interactive objects
 - [ ] blood
 - [ ] projectile attacks
 - [ ] RELEASE v0.9
 - [ ] more menu functions: volumes and screen modes
+- [ ] npc dialogs and interactions
 - [ ] level design
 - [ ] stats system, exp
-- [ ] interactive objects, inventory
 - [ ] victory screen, score
 - [ ] RELEASE v.99
 

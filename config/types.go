@@ -65,6 +65,8 @@ type Profile struct {
 	Walk     float64 `json:"walk"`
 	Run      float64 `json:"run"`
 	Skills   []Skill `json:"skills"`
+	Phrases  string  `json:"phrases"`
+	Dialog   int     `json:"dialog"`
 }
 
 type Soundeffect struct {

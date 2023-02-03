@@ -134,6 +134,8 @@
                 "hitbox": [10, -5, 20, 5],
                 "weight": 1
             }
-        ]
+        ],
+        "phrases": "grandma",
+        "dialog": 1
     }
 ]

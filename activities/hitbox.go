@@ -1,7 +1,6 @@
 package activities
 
 import (
-	"fmt"
 	"platformer/common"
 
 	"github.com/shinomontaz/pixel"
@@ -28,7 +27,7 @@ func init() {
 	plboxes = make([]HitBox, 0)
 }
 
-func AddStrike(owner common.Actorer, rect pixel.Rect, power int, speed pixel.Vec) HitBox {
+func AddStrike(owner common.Actorer, rect pixel.Rect, power int, speed pixel.Vec) {
 	center := rect.Center()
 	from := pixel.V(rect.Min.X, center.Y)
 	to := pixel.V(rect.Max.X, center.Y)
@@ -47,14 +46,11 @@ func AddStrike(owner common.Actorer, rect pixel.Rect, power int, speed pixel.Vec
 		speed:  speed,
 	}
 
-	fmt.Println("owner.GetId(): ", owner.GetId())
-
 	if owner.GetId() == 1 {
 		plboxes = append(plboxes, b)
 	} else {
 		enboxes = append(enboxes, b)
 	}
-	return b
 }
 
 func UpdateStrikes(dt float64, enemies []common.Actorer, player common.Actorer) {

@@ -1,6 +1,7 @@
 package talks
 
 import (
+	"image/color"
 	"math/rand"
 	"platformer/activities"
 	"platformer/common"
@@ -14,23 +15,26 @@ import (
 var alerts []*Alert
 var atlas *text.Atlas
 
-func Init() {
+func Init(loader *common.Loader) {
 	alerts = make([]*Alert, 0)
 	fnt := common.GetFont("regular")
 	atlas = text.NewAtlas(fnt, text.ASCII)
+	initPhrases(loader)
 }
 
 func AddAlert(pos pixel.Vec, force float64) {
-	rect := pixel.R(pos.X-force, pos.Y-force, pos.X+force, pos.Y+force)
-	al := &Alert{
-		rect: rect,
-		ttl:  1.0,
-		col:  colornames.Red,
-		txt:  randSeq([]rune("#$%&@*?arlTVXx"), 2+rand.Intn(3)) + "!",
-	}
+	al := addAlert(pos, colornames.Red, randSeq([]rune("#$%&@*?arlTVXx"), 2+rand.Intn(3))+"!", 1, force)
 	alerts = append(alerts, al)
-
 	activities.Alert(al.GetRect())
+}
+
+func addAlert(pos pixel.Vec, col color.Color, txt string, ttl, force float64) *Alert {
+	return &Alert{
+		rect: pixel.R(pos.X-force, pos.Y-force, pos.X+force, pos.Y+force),
+		ttl:  ttl,
+		col:  col,
+		txt:  txt,
+	}
 }
 
 func Update(dt float64) {

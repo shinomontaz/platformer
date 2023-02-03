@@ -87,3 +87,9 @@ func WithSkills(skills []config.Skill) Option {
 		}
 	}
 }
+
+func WithPhrases(key string) Option {
+	return func(a *Actor) {
+		a.phrasesClass = key
+	}
+}

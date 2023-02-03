@@ -18,6 +18,8 @@ type Actorer interface {
 	GetPos() pixel.Vec
 	GetId() int
 	Hit(vec pixel.Vec, power int)
+	Interact()
+	OnInteract()
 	Update(dt float64, visiblePhys []Objecter)
 	UpdateSpecial(dt float64, visibleSpec []Objecter)
 	Draw(t pixel.Target)

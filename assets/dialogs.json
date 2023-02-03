@@ -1,0 +1,33 @@
+[
+    {
+        "id": 1,
+        "dialog": true,
+        "data": [
+            {
+                "id": 1,
+                "title": "Where is my hooks?",
+                "variants": [
+                {
+                    "goto": 2,
+                    "title": "What?"
+                },
+                {
+                    "title": "Right away for them!",
+                    "quit": true
+                }
+                ]
+            },
+            {
+                "id": 2,
+                "title": "Do not where here! Go and take my hooks right now!",
+                "variants": [
+                {
+                    "title": "Ay Ay, grandpa!",
+                    "quit": true
+                }
+                ]
+            }
+
+        ]
+    }
+]

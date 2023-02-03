@@ -31,5 +31,6 @@ func NewActor(prof config.Profile, w Worlder) *actor.Actor {
 		actor.WithPortrait(prof.Portrait),
 		actor.WithSound(config.Sounds[prof.Type].List),
 		actor.WithSkills(prof.Skills),
+		actor.WithPhrases(prof.Phrases),
 	)
 }

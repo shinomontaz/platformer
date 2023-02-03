@@ -1,0 +1,16 @@
+[
+    {
+        "class": "grandma",
+        "variants": [
+            "I'am busy!",
+            "Oldie finnaly found his fishing rod",
+            "Dinner is not ready, honey"
+        ]
+    },
+    {
+        "class": "common",
+        "variants": [
+            "Get lost, I'am busy!"
+        ]
+    }
+]

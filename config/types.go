@@ -67,6 +67,7 @@ type Profile struct {
 	Skills   []Skill `json:"skills"`
 	Phrases  string  `json:"phrases"`
 	Dialog   int     `json:"dialog"`
+	Only     int     `json:"only"`
 }
 
 type Soundeffect struct {

@@ -27,7 +27,7 @@ func NewInteract(a Actor, an Animater) *Interact {
 			anims: an,
 			trs:   a.GetTransition(INTERACT),
 		},
-		idleLimit: 0.5, // seconds before idle
+		idleLimit: 1, // seconds before idle
 		sprite:    pixel.NewSprite(nil, pixel.Rect{}),
 	}
 
@@ -51,11 +51,7 @@ func (s *Interact) Listen(e int, v *pixel.Vec) {
 
 func (s *Interact) Update(dt float64) {
 	if s.time > s.idleLimit {
-		if s.vel > 0 {
-			s.a.SetState(WALK)
-		} else {
-			s.a.SetState(STAND)
-		}
+		s.a.SetState(STAND)
 		return
 	}
 

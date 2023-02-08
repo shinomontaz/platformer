@@ -40,7 +40,7 @@ var counter int
 
 type Actor struct {
 	id   int
-	phys Phys
+	phys common.Phys
 
 	state  Stater
 	states map[int]Stater
@@ -48,7 +48,7 @@ type Actor struct {
 	rect pixel.Rect
 
 	animdir   float64
-	anim      Animater
+	anim      common.Animater
 	sprite    *pixel.Sprite
 	dir       float64
 	vec       pixel.Vec // delta speed
@@ -84,7 +84,7 @@ func Init(l *common.Loader) {
 	loader = l
 }
 
-func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
+func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Actor {
 	counter++
 	a := &Actor{
 		id:      counter,
@@ -104,7 +104,7 @@ func New(w Worlder, anim Animater, rect pixel.Rect, opts ...Option) *Actor {
 		opt(a)
 	}
 
-	p := NewPhys(rect, a.runspeed, a.grav) // TODO does we really need phys to know run and walk speeds?
+	p := common.NewPhys(rect, 0, a.grav) // TODO does we really need phys to know run and walk speeds?
 	a.phys = p
 
 	a.initStates()
@@ -352,7 +352,7 @@ func (a *Actor) GetPortrait() *pixel.Sprite {
 }
 
 func (a *Actor) IsGround() bool {
-	return a.phys.ground
+	return a.phys.IsGround()
 }
 
 func (a *Actor) Inform(e int, v pixel.Vec) {

@@ -8,7 +8,10 @@ import (
 	"github.com/shinomontaz/pixel"
 	"github.com/shinomontaz/pixel/pixelgl"
 	"github.com/shinomontaz/pixel/text"
+	"golang.org/x/image/colornames"
 )
+
+var borderColor = colornames.Whitesmoke
 
 type Alert struct {
 	rect  pixel.Rect
@@ -29,15 +32,52 @@ func (a *Alert) Update(dt float64) bool {
 }
 
 func (a *Alert) Draw(win *pixelgl.Window, camPos, center pixel.Vec) {
-	pos := a.rect.Center().Add(pixel.Vec{0.0, 40.0})
+	pos := a.rect.Center().Add(pixel.Vec{-1.0, 40.0})
 	txt := text.New(pos, atlas)
 	txt.LineHeight = atlas.LineHeight() * 1.3
-	txt.Color = a.col
+	txt.Color = borderColor
 	strChunks := splitToChunks(a.txt, 10) // use not a long strings and make it wordwrapped
 	for _, st := range strChunks {
 		fmt.Fprintln(txt, st)
 	}
+
+	pos = a.rect.Center().Add(pixel.Vec{1.0, 40.0})
+	txt2 := text.New(pos, atlas)
+	txt2.LineHeight = atlas.LineHeight() * 1.3
+	txt2.Color = borderColor
+	for _, st := range strChunks {
+		fmt.Fprintln(txt2, st)
+	}
+
+	pos = a.rect.Center().Add(pixel.Vec{0.0, 41.0})
+	txt3 := text.New(pos, atlas)
+	txt3.LineHeight = atlas.LineHeight() * 1.3
+	txt3.Color = borderColor
+	for _, st := range strChunks {
+		fmt.Fprintln(txt3, st)
+	}
+
+	pos = a.rect.Center().Add(pixel.Vec{0.0, 39.0})
+	txt4 := text.New(pos, atlas)
+	txt4.LineHeight = atlas.LineHeight() * 1.3
+	txt4.Color = borderColor
+	for _, st := range strChunks {
+		fmt.Fprintln(txt4, st)
+	}
+
+	pos = a.rect.Center().Add(pixel.Vec{0.0, 40.0})
+	txt5 := text.New(pos, atlas)
+	txt5.LineHeight = atlas.LineHeight() * 1.3
+	txt5.Color = a.col
+	for _, st := range strChunks {
+		fmt.Fprintln(txt5, st)
+	}
+
 	txt.Draw(win, pixel.IM.Moved(center.Sub(camPos)))
+	txt2.Draw(win, pixel.IM.Moved(center.Sub(camPos)))
+	txt3.Draw(win, pixel.IM.Moved(center.Sub(camPos)))
+	txt4.Draw(win, pixel.IM.Moved(center.Sub(camPos)))
+	txt5.Draw(win, pixel.IM.Moved(center.Sub(camPos)))
 }
 
 func splitToChunks(s string, l int) []string {

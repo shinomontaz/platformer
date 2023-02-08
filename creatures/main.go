@@ -63,14 +63,13 @@ func List() []common.Actorer {
 }
 
 func Draw(t pixel.Target) {
-	if hero != nil {
-		hero.Draw(t)
-	}
-
 	for _, e := range enemies {
 		e.Draw(t)
 	}
 	for _, n := range npcs {
 		n.Draw(t)
+	}
+	if hero != nil {
+		hero.Draw(t)
 	}
 }

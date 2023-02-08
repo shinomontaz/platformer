@@ -21,10 +21,19 @@ func InitFont(l *Loader) {
 	fonts["bold"] = bold
 
 	reg, err := loadFont("fonts/GravityRegular5.ttf", 8)
+	//	reg, err := loadFont("fonts/ka1.ttf", 8)
+
 	if err != nil {
 		panic(err)
 	}
 	fonts["regular"] = reg
+
+	regbig, err := loadFont("fonts/ka1.ttf", 16)
+
+	if err != nil {
+		panic(err)
+	}
+	fonts["regular_big"] = regbig
 
 	menu, err := loadFont("fonts/capture.ttf", 20)
 	if err != nil {

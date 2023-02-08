@@ -12,6 +12,7 @@ import (
 	"platformer/creatures"
 	"platformer/events"
 	"platformer/factories"
+	"platformer/loot"
 	"platformer/magic"
 	"platformer/sound"
 	"platformer/talks"
@@ -74,7 +75,7 @@ func (g *Game) Start() {
 func (g *Game) Init() {
 	currBounds := g.initialBounds
 	animation.Init(g.assetloader)
-	actor.Init(g.assetloader)
+	actor.Init(g.assetloader) // to load portrait only
 	ui.Init(g.assetloader)
 	sound.Init(g.assetloader)
 
@@ -107,7 +108,11 @@ func (g *Game) Init() {
 			npc.Move(pixel.V(o.X, o.Y))
 			factories.NewAi(config.Profiles[o.Name].Type, npc, w)
 			creatures.AddNpc(npc)
-			//			creatures.AddNpc(o, w)
+		}
+		if o.Class == "coin" {
+			l := factories.NewLoot(config.Profiles[o.Name], g.w)
+			l.Move(pixel.V(o.X, o.Y))
+			loot.Add(l)
 		}
 	}
 	creatures.SetHero(g.hero)

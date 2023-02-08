@@ -1,33 +1,34 @@
-package actor
+package common
 
 import (
 	"image/color"
 	"math"
-	"platformer/common"
 
 	"github.com/lucasb-eyer/go-colorful"
 	"github.com/shinomontaz/pixel"
 	"github.com/shinomontaz/pixel/imdraw"
 )
 
+const MINSPEED = 4
+
 type Phys struct {
 	rect     pixel.Rect
 	vel      pixel.Vec
-	maxspeed float64
 	gravity  float64
 	ground   bool
 	color    color.Color
 	iswater  bool
 	isdead   bool
-	currObjs []common.Objecter
+	rigidity float64
+	currObjs []Objecter
 }
 
-func NewPhys(r pixel.Rect, run, gravity float64) Phys {
+func NewPhys(r pixel.Rect, rigidity, gravity float64) Phys {
 	return Phys{
 		rect:     r,
 		color:    colorful.HappyColor(),
 		ground:   false,
-		maxspeed: run,
+		rigidity: rigidity,
 		gravity:  gravity,
 	}
 }
@@ -40,6 +41,10 @@ func (p *Phys) Impulse(v pixel.Vec) {
 	p.vel = p.vel.Add(v)
 }
 
+func (p *Phys) IsGround() bool {
+	return p.ground
+}
+
 func (p *Phys) SetWater(iswater bool) {
 	p.iswater = iswater
 }
@@ -48,7 +53,7 @@ func (p *Phys) SetDead(isdead bool) {
 	p.isdead = isdead
 }
 
-func (p *Phys) Update(dt float64, move *pixel.Vec, objs []common.Objecter) {
+func (p *Phys) Update(dt float64, move *pixel.Vec, objs []Objecter) {
 	// do speed update by move vec
 	p.currObjs = objs
 	if p.ground {
@@ -56,7 +61,7 @@ func (p *Phys) Update(dt float64, move *pixel.Vec, objs []common.Objecter) {
 			p.vel.X += move.X
 		} else {
 			p.vel.X /= 1.1
-			if math.Abs(p.vel.X) <= p.maxspeed/20 {
+			if math.Abs(p.vel.X) <= MINSPEED {
 				p.vel.X = 0
 			}
 		}
@@ -79,13 +84,15 @@ func (p *Phys) Update(dt float64, move *pixel.Vec, objs []common.Objecter) {
 		p.ground = false
 		vec := p.vel.Scaled(dt)
 		ground, vel, vec := p.StepPrediction(vec) // p.vel and vec can be updated here
+		oldvel := p.vel
 		p.vel = vel
 		if ground > 0 {
 			p.ground = true
+			// do a vertical bouncing
+			if oldvel.Y < 0 && oldvel.Y < -MINSPEED {
+				p.vel.Y = -oldvel.Y * p.rigidity
+			}
 		}
-		// if p.iswater {
-		// 	vec.X = 0
-		// }
 		p.rect = p.rect.Moved(vec)
 	}
 }

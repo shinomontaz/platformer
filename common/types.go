@@ -13,16 +13,35 @@ const (
 	WATER
 )
 
-type Actorer interface {
+type Animater interface {
+	GetSprite(name string, idx int) (pixel.Picture, pixel.Rect)
+	GetGroupSprite(group, name string, idx int) (pixel.Picture, pixel.Rect)
+	GetGroupLen(name string) int
+	GetLen(name string) int
+}
+
+type SimpleObjecter interface {
 	GetRect() pixel.Rect
 	GetPos() pixel.Vec
 	GetId() int
-	Hit(vec pixel.Vec, power int)
+	Update(dt float64, visiblePhys []Objecter)
+	Draw(t pixel.Target)
+	IsGround() bool
+}
+
+type SpecialObjecter interface {
+	SimpleObjecter
+	UpdateSpecial(dt float64, visibleSpec []Objecter)
+}
+
+type Interactor interface {
 	Interact()
 	OnInteract()
-	Update(dt float64, visiblePhys []Objecter)
-	UpdateSpecial(dt float64, visibleSpec []Objecter)
-	Draw(t pixel.Target)
+}
+
+type Actorer interface {
+	SpecialObjecter
+	Interactor
+	Hit(vec pixel.Vec, power int)
 	GetHp() int
-	IsGround() bool
 }

@@ -11,6 +11,7 @@ import (
 	"platformer/background"
 	"platformer/common"
 	"platformer/creatures"
+	"platformer/loot"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/shinomontaz/pixel/imdraw"
@@ -130,7 +131,7 @@ func (w *World) init() {
 					w.meta = o
 				}
 
-				if o.Class == "enemy" || o.Class == "npc" {
+				if o.Class == "enemy" || o.Class == "npc" || o.Class == "coin" {
 					o.Y = w.Height - o.Y
 					w.creaturesmeta = append(w.creaturesmeta, o)
 				}
@@ -373,6 +374,7 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 	w.uNumObjects = int32(len(w.uObjects))
 
 	creatures.Update(dt, w.visiblePhys, w.visibleSpec)
+	loot.Update(dt, w.visiblePhys)
 }
 
 func (w *World) GetGravity() float64 {
@@ -487,6 +489,7 @@ func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel
 	drawSpells(w.cnv2)
 
 	creatures.Draw(w.cnv2)
+	loot.Draw(w.cnv2)
 
 	w.cnv2.Draw(w.cnv, pixel.IM.Moved(w.cnv.Bounds().Center()))
 	w.cnv.Draw(t, pixel.IM.Moved(center))

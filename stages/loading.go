@@ -31,7 +31,7 @@ func NewLoading(f Inform, l *common.Loader) *Loading {
 }
 
 func (l *Loading) Init() {
-	fnt := common.GetFont("regular")
+	fnt := common.GetFont("regular_big")
 	atlas := text.NewAtlas(fnt, text.ASCII)
 
 	l.txt = text.New(pixel.ZV, atlas)

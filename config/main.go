@@ -16,6 +16,7 @@ var (
 	AnimConfig []Anims
 	Sounds     map[string]Soundprofile
 	Profiles   map[string]Profile
+	Loots      map[string]Profile
 	Spells     map[string]Spellprofile
 	Opts       Options
 	runtimecfg *os.File
@@ -56,6 +57,19 @@ func Init(loader *common.Loader, rtcfg *os.File) error {
 	Profiles = make(map[string]Profile)
 	for _, pr := range sliceProfiles {
 		Profiles[pr.Type] = pr
+	}
+
+	floots, err := loader.Open(MainConfig.Loots)
+	if err != nil {
+		return err
+	}
+	defer floots.Close()
+	sliceLoots := make([]Profile, 0)
+	byteValue, _ = io.ReadAll(floots)
+	json.Unmarshal(byteValue, &sliceLoots)
+	Loots = make(map[string]Profile)
+	for _, pr := range sliceLoots {
+		Loots[pr.Type] = pr
 	}
 
 	sprofiles, err := loader.Open(MainConfig.Sounds)

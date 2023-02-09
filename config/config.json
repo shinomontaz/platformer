@@ -7,5 +7,6 @@
     "AllAnims": "anims.json",
     "Sounds": "soundprofiles.json",
     "Profiles": "profiles.json",
+    "Loots": "loots.json",
     "Spells": "spells.json"
 }

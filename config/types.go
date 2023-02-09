@@ -8,6 +8,7 @@ type Main struct {
 	WorldCfg string  `json:"WorldCfg"`
 	AllAnims string  `json:"AllAnims"`
 	Profiles string  `json:"Profiles"`
+	Loots    string  `json:"Loots"`
 	Sounds   string  `json:"sounds"`
 	Spells   string  `json:"spells"`
 }

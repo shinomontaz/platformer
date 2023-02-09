@@ -41,6 +41,7 @@ type Actor interface {
 	AddSound(event string)
 	Inform(e int, v pixel.Vec)
 	GetSkillName() string
+	OnKill()
 }
 
 type Animater interface {

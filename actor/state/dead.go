@@ -31,6 +31,7 @@ func NewDead(a Actor, an Animater) *Dead {
 
 func (s *Dead) Start() {
 	s.a.Inform(events.BUSY, pixel.ZV)
+	s.a.OnKill()
 	s.counter = 0
 }
 

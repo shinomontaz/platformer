@@ -1,14 +1,44 @@
 package loot
 
 import (
+	"fmt"
+	"platformer/animation"
 	"platformer/common"
+	"platformer/config"
 
 	"github.com/shinomontaz/pixel"
 )
 
 var list []common.SimpleObjecter
+var profiles map[string]config.Profile
+var grav float64
 
-func Add(l common.SimpleObjecter) {
+func Init(w Worlder, loots map[string]config.Profile) {
+	profiles = loots
+	grav = w.GetGravity()
+	list = make([]common.SimpleObjecter, 0)
+}
+
+func AddCoin(pos, vel pixel.Vec) {
+	var prof config.Profile
+	var ok bool
+	if prof, ok = profiles["coin"]; !ok {
+		fmt.Println("coin profile in loot not found!")
+		panic("!")
+	}
+	lootRect := pixel.R(0, 0, prof.Width, prof.Height)
+	l := New(animation.Get(prof.Type), lootRect,
+		WithAnimDir(prof.Dir),
+		WithSound(config.Sounds[prof.Type].List),
+		WithGravity(grav),
+		WithVelocity(vel),
+	)
+
+	l.Move(pos)
+	add(l)
+}
+
+func add(l common.SimpleObjecter) {
 	list = append(list, l)
 }
 

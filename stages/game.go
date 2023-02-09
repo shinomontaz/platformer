@@ -93,6 +93,7 @@ func (g *Game) Init() {
 	g.w = w
 	g.hero = factories.NewActor(config.Profiles["player"], g.w)
 
+	loot.Init(g.w, config.Loots)
 	talks.Init(g.assetloader)
 	creatures.Init()
 	list := g.w.GetMetas()
@@ -100,6 +101,10 @@ func (g *Game) Init() {
 		if o.Class == "enemy" {
 			enemy := factories.NewActor(config.Profiles[o.Name], g.w)
 			enemy.Move(pixel.V(o.X, o.Y))
+			if o.Properties.GetString("reward") != "" {
+				// make OnKill handler
+				enemy.SetOnKill(loot.AddCoin)
+			}
 			factories.NewAi(config.Profiles[o.Name].Type, enemy, w)
 			creatures.AddEnemy(enemy)
 		}
@@ -110,9 +115,7 @@ func (g *Game) Init() {
 			creatures.AddNpc(npc)
 		}
 		if o.Class == "coin" {
-			l := factories.NewLoot(config.Profiles[o.Name], g.w)
-			l.Move(pixel.V(o.X, o.Y))
-			loot.Add(l)
+			loot.AddCoin(pixel.V(o.X, o.Y), pixel.ZV)
 		}
 	}
 	creatures.SetHero(g.hero)

@@ -1,0 +1,10 @@
+[
+    {
+        "type": "coin",
+        "anim": "coin",
+        "sound": "coin",
+        "width": 10,
+        "height": 10,
+        "mass": 1
+    }
+]

@@ -23,13 +23,14 @@ type Phys struct {
 	currObjs []Objecter
 }
 
-func NewPhys(r pixel.Rect, rigidity, gravity float64) Phys {
+func NewPhys(r pixel.Rect, vel pixel.Vec, rigidity, gravity float64) Phys {
 	return Phys{
 		rect:     r,
 		color:    colorful.HappyColor(),
 		ground:   false,
 		rigidity: rigidity,
 		gravity:  gravity,
+		vel:      vel,
 	}
 }
 

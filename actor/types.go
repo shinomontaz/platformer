@@ -24,3 +24,5 @@ type Stater interface {
 type soundeffect struct {
 	List []string
 }
+
+type OnKillHandler func(pos, vel pixel.Vec)

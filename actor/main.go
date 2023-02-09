@@ -76,12 +76,15 @@ type Actor struct {
 	activeSkill  *Skill
 	currObjs     []common.Objecter
 	phrasesClass string
+
+	onkill OnKillHandler
 }
 
 var loader *common.Loader
 
 func Init(l *common.Loader) {
 	loader = l
+	counter = 0
 }
 
 func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Actor {
@@ -104,7 +107,7 @@ func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Acto
 		opt(a)
 	}
 
-	p := common.NewPhys(rect, 0, a.grav) // TODO does we really need phys to know run and walk speeds?
+	p := common.NewPhys(rect, a.vel, 0, a.grav) // TODO does we really need phys to know run and walk speeds?
 	a.phys = p
 
 	a.initStates()
@@ -380,6 +383,17 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 	}
 	a.SetState(state.HIT)
 	a.Inform(events.ALERT, pixel.Vec{-vec.X, vec.Y})
+}
+
+func (a *Actor) OnKill() {
+	// create random velocity vec
+	rnd := float64(rand.Intn(4) - 1)
+	y := 100.0 * rnd
+	a.onkill(a.rect.Center(), pixel.V(a.walkspeed*float64(rand.Intn(3)-1), y))
+}
+
+func (a *Actor) SetOnKill(okh OnKillHandler) {
+	a.onkill = okh
 }
 
 func (a *Actor) Interact() {

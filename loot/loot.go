@@ -26,14 +26,13 @@ type Loot struct {
 	vec           pixel.Vec // delta speed
 	vel           pixel.Vec
 
-	w Worlder
-
 	sounds map[string]soundeffect
 
 	sbrs []common.Subscriber
+	grav float64
 }
 
-func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Loot {
+func New(anim common.Animater, rect pixel.Rect, opts ...Option) *Loot {
 	counter++
 	a := &Loot{
 		id:      counter,
@@ -42,7 +41,6 @@ func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Loot
 		dir:     1,
 		animdir: 1,
 		vel:     pixel.ZV,
-		w:       w,
 		sounds:  make(map[string]soundeffect),
 		sbrs:    make([]common.Subscriber, 0),
 		sprite:  pixel.NewSprite(nil, pixel.Rect{}),
@@ -52,7 +50,7 @@ func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Loot
 		opt(a)
 	}
 
-	p := common.NewPhys(rect, 0.2, w.GetGravity()) // TODO does we really need phys to know run and walk speeds?
+	p := common.NewPhys(rect, a.vel, 0.5, a.grav) // TODO does we really need phys to know run and walk speeds?
 	a.phys = p
 
 	return a

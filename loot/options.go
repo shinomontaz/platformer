@@ -2,6 +2,8 @@ package loot
 
 import (
 	"platformer/config"
+
+	"github.com/shinomontaz/pixel"
 )
 
 type Option func(*Loot)
@@ -11,6 +13,13 @@ func WithAnimDir(animdir float64) Option {
 		a.animdir = animdir
 	}
 }
+
+func WithGravity(grav float64) Option {
+	return func(a *Loot) {
+		a.grav = grav
+	}
+}
+
 func WithSound(seffects []config.Soundeffect) Option {
 	return func(a *Loot) {
 		for _, se := range seffects {
@@ -18,5 +27,11 @@ func WithSound(seffects []config.Soundeffect) Option {
 				List: se.List,
 			}
 		}
+	}
+}
+
+func WithVelocity(v pixel.Vec) Option {
+	return func(a *Loot) {
+		a.vel = v
 	}
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="left-down" width="500" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="42">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="left-down" width="500" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="43">
  <properties>
   <property name="gravity" type="float" value="9"/>
  </properties>
@@ -80,13 +80,26 @@
    </properties>
   </object>
   <object id="23" name="hero" class="hero" x="1159.67" y="1300.33" width="32.3333" height="40.6667"/>
-  <object id="25" name="oldman" class="npc" x="789.167" y="1281.67" width="32.3333" height="40.6667"/>
-  <object id="27" name="mummy" class="enemy" x="1673.33" y="1150.33" width="51" height="61">
+  <object id="25" name="oldman" class="npc" x="789.167" y="1281.67" width="32.3333" height="40.6667">
    <properties>
-    <property name="reward" value="coin"/>
+    <property name="ai" value="npc_roaming"/>
+    <property name="interact" value="phrase"/>
    </properties>
   </object>
-  <object id="28" name="coin" class="coin" x="1126.33" y="1135" width="15" height="17"/>
+  <object id="27" name="mummy" class="enemy" x="1673.33" y="1150.33" width="51" height="61">
+   <properties>
+    <property name="ai" value="enemy_idle"/>
+    <property name="reward" value="key"/>
+   </properties>
+  </object>
+  <object id="42" name="chest" class="npc" x="1856.83" y="1237.67" width="32.3333" height="40.6667">
+   <properties>
+    <property name="interact" value="die"/>
+    <property name="required" value="key"/>
+    <property name="reward" value="coin"/>
+    <property name="reward_count" type="int" value="3"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="4" name="geom">
   <object id="1" x="897.334" y="1344.21" width="1438.96" height="255.886">

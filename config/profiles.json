@@ -137,5 +137,13 @@
         ],
         "phrases": "grandma",
         "dialog": 1
+    },
+    {
+        "type": "chest",
+        "anim": "chest",
+        "dir": -1,
+        "width": 32,
+        "height": 32,
+        "margin": 0
     }
 ]

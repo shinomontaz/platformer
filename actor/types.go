@@ -26,3 +26,4 @@ type soundeffect struct {
 }
 
 type OnKillHandler func(pos, vel pixel.Vec)
+type OnInteractHandler func()

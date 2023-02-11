@@ -101,17 +101,44 @@ func (g *Game) Init() {
 		if o.Class == "enemy" {
 			enemy := factories.NewActor(config.Profiles[o.Name], g.w)
 			enemy.Move(pixel.V(o.X, o.Y))
-			if o.Properties.GetString("reward") != "" {
-				// make OnKill handler
+			rew := o.Properties.GetString("reward")
+			if rew == "coin" { // make OnKill handler
 				enemy.SetOnKill(loot.AddCoin)
+			} else if rew == "key" {
+				enemy.SetOnKill(loot.AddKey)
 			}
-			factories.NewAi(config.Profiles[o.Name].Type, enemy, w)
+			ai_type := o.Properties.GetString("ai")
+			if ai_type != "" {
+				factories.NewAi(ai_type, enemy, w)
+			}
 			creatures.AddEnemy(enemy)
 		}
 		if o.Class == "npc" {
 			npc := factories.NewActor(config.Profiles[o.Name], g.w)
 			npc.Move(pixel.V(o.X, o.Y))
-			factories.NewAi(config.Profiles[o.Name].Type, npc, w)
+			rew := o.Properties.GetString("reward")
+			if rew == "coin" {
+				// make OnKill handler
+				npc.SetOnKill(loot.AddCoin)
+				// rew_count := o.Properties.GetInt("reward_count")
+				// if rew_count > 0 {
+				// }
+			} else if rew == "key" {
+				npc.SetOnKill(loot.AddKey)
+			}
+
+			interact_type := o.Properties.GetString("interact")
+			if interact_type == "phrase" {
+				// create interact handler
+				npc.SetOnInteract(npc.Phrasing)
+			} else if interact_type == "die" {
+				npc.SetOnInteract(npc.Kill)
+			}
+			ai_type := o.Properties.GetString("ai")
+			if ai_type != "" {
+				factories.NewAi(ai_type, npc, w)
+			}
+
 			creatures.AddNpc(npc)
 		}
 		if o.Class == "coin" {

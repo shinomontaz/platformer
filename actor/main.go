@@ -57,6 +57,7 @@ type Actor struct {
 	walkspeed float64
 	grav      float64
 	jumpforce float64
+	mass      float64
 	isShift   bool
 
 	sm *statemachine.Machine
@@ -77,7 +78,8 @@ type Actor struct {
 	currObjs     []common.Objecter
 	phrasesClass string
 
-	onkill OnKillHandler
+	onkill     OnKillHandler
+	oninteract OnInteractHandler
 }
 
 var loader *common.Loader
@@ -98,6 +100,7 @@ func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Acto
 		vel:     pixel.ZV,
 		grav:    w.GetGravity(),
 		w:       w,
+		mass:    1,
 		sounds:  make(map[string]soundeffect),
 		sbrs:    make([]common.Subscriber, 0),
 		skills:  make([]*Skill, 0),
@@ -107,7 +110,7 @@ func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Acto
 		opt(a)
 	}
 
-	p := common.NewPhys(rect, a.vel, 0, a.grav) // TODO does we really need phys to know run and walk speeds?
+	p := common.NewPhys(rect, a.vel, 0, a.grav, a.mass) // TODO does we really need phys to know run and walk speeds?
 	a.phys = p
 
 	a.initStates()
@@ -257,7 +260,6 @@ func (a *Actor) UpdateSpecial(dt float64, objs []common.Objecter) {
 		if o.Type == common.WATER {
 			if part.H() == a.rect.H() && a.hp > 0 {
 				a.Hit(pixel.ZV, a.hp+1)
-				a.phys.SetDead(true)
 			}
 			a.phys.SetWater(true)
 		}
@@ -377,19 +379,36 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 	a.vec = vec
 	a.hp -= power
 	if a.hp <= 0 {
-		a.SetState(state.DEAD)
-		a.Inform(events.GAMEVENT_DIE, pixel.ZV)
+		a.Kill()
 		return
 	}
 	a.SetState(state.HIT)
 	a.Inform(events.ALERT, pixel.Vec{-vec.X, vec.Y})
 }
 
+func (a *Actor) Kill() {
+	a.hp = 0
+	a.SetState(state.DEAD)
+	a.mass = 0
+	a.phys.SetMass(a.mass)
+	a.Inform(events.GAMEVENT_DIE, pixel.ZV)
+	a.onkill = nil
+	a.oninteract = nil
+}
+
+func (a *Actor) Phrasing() {
+	// talks.AddPhrase(a.rect.Min, a.phrasesClass)
+	talks.AddPhrase(a.rect.Min, a.phrasesClass)
+}
+
 func (a *Actor) OnKill() {
+	if a.onkill == nil {
+		return
+	}
 	// create random velocity vec
 	rnd := float64(rand.Intn(4) - 1)
 	y := 100.0 * rnd
-	a.onkill(a.rect.Center(), pixel.V(a.walkspeed*float64(rand.Intn(3)-1), y))
+	a.onkill(a.rect.Center(), pixel.V(30*float64(rand.Intn(3)-1), y))
 }
 
 func (a *Actor) SetOnKill(okh OnKillHandler) {
@@ -400,9 +419,16 @@ func (a *Actor) Interact() {
 	activities.AddInteraction(a, a.rect, 1, pixel.ZV) // owner common.Actorer, rect pixel.Rect, power int, speed pixel.Vec)
 }
 
+func (a *Actor) SetOnInteract(oih OnInteractHandler) {
+	a.oninteract = oih
+}
+
 func (a *Actor) OnInteract() {
 	// now only one interaction posible: phrase
-	talks.AddPhrase(a.rect.Min, a.phrasesClass)
+	if a.oninteract == nil {
+		return
+	}
+	a.oninteract()
 }
 
 func (a *Actor) GetId() int {

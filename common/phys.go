@@ -18,12 +18,12 @@ type Phys struct {
 	ground   bool
 	color    color.Color
 	iswater  bool
-	isdead   bool
 	rigidity float64
+	mass     float64
 	currObjs []Objecter
 }
 
-func NewPhys(r pixel.Rect, vel pixel.Vec, rigidity, gravity float64) Phys {
+func NewPhys(r pixel.Rect, vel pixel.Vec, rigidity, gravity, mass float64) Phys {
 	return Phys{
 		rect:     r,
 		color:    colorful.HappyColor(),
@@ -31,6 +31,7 @@ func NewPhys(r pixel.Rect, vel pixel.Vec, rigidity, gravity float64) Phys {
 		rigidity: rigidity,
 		gravity:  gravity,
 		vel:      vel,
+		mass:     mass,
 	}
 }
 
@@ -42,16 +43,16 @@ func (p *Phys) Impulse(v pixel.Vec) {
 	p.vel = p.vel.Add(v)
 }
 
+func (p *Phys) SetMass(m float64) {
+	p.mass = m
+}
+
 func (p *Phys) IsGround() bool {
 	return p.ground
 }
 
 func (p *Phys) SetWater(iswater bool) {
 	p.iswater = iswater
-}
-
-func (p *Phys) SetDead(isdead bool) {
-	p.isdead = isdead
 }
 
 func (p *Phys) Update(dt float64, move *pixel.Vec, objs []Objecter) {
@@ -73,9 +74,7 @@ func (p *Phys) Update(dt float64, move *pixel.Vec, objs []Objecter) {
 	}
 	if p.iswater {
 		p.vel = p.vel.Scaled(0.9)
-		if p.isdead {
-			p.vel.Y += p.gravity * 1.1
-		}
+		p.vel.Y += (1 - p.mass) * p.gravity * 1.1
 	}
 	if p.ground && move.Y > 0 {
 		p.vel.Y = move.Y

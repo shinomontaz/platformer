@@ -38,6 +38,25 @@ func AddCoin(pos, vel pixel.Vec) {
 	add(l)
 }
 
+func AddKey(pos, vel pixel.Vec) {
+	var prof config.Profile
+	var ok bool
+	if prof, ok = profiles["key"]; !ok {
+		fmt.Println("key profile in loot not found!")
+		panic("!")
+	}
+	lootRect := pixel.R(0, 0, prof.Width, prof.Height)
+	l := New(animation.Get(prof.Type), lootRect,
+		WithAnimDir(prof.Dir),
+		WithSound(config.Sounds[prof.Type].List),
+		WithGravity(grav),
+		WithVelocity(vel),
+	)
+
+	l.Move(pos)
+	add(l)
+}
+
 func add(l common.SimpleObjecter) {
 	list = append(list, l)
 }

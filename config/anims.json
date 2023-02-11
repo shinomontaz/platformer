@@ -363,5 +363,59 @@
                 "frames": [4, 0, 4]
             }
         ]
+    },
+    {
+        "type": "key",
+        "width": 12,
+        "height": 10,
+        "margin": 0,    
+        "list":  [
+            {
+                "name": "idle",
+                "file":"tiles/swamp-tileset/4 Animated objects/Key.png",
+                "frames": [4, 0, 4]
+            }
+        ]
+    },
+    {
+        "type": "greenrune",
+        "width": 16,
+        "height": 16,
+        "margin": 0,    
+        "list":  [
+            {
+                "name": "idle",
+                "file":"tiles/swamp-tileset/4 Animated objects/Rune.png",
+                "frames": [4, 0, 4]
+            }
+        ]
+    },
+    {
+        "type": "chest",
+        "width": 32,
+        "height": 32,
+        "margin": 0,    
+        "list":  [
+        {
+            "name": "stand",
+            "file":"tiles/swamp-tileset/4 Animated objects/Chest.png",
+            "frames": [1, 0, 1]
+        },
+        {
+            "name": "idle",
+            "file":"tiles/swamp-tileset/4 Animated objects/Chest.png",
+            "frames": [1, 0, 1]
+        },
+        {
+            "name": "die",
+            "file":"tiles/swamp-tileset/4 Animated objects/Chest.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "dead",
+            "file":"tiles/swamp-tileset/4 Animated objects/Chest.png",
+            "frames": [4, 3, 4]
+        }
+        ]
     }
 ]

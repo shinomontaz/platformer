@@ -14,6 +14,7 @@ var counter int
 type Loot struct {
 	id   int
 	phys common.Phys
+	mass float64
 
 	rect pixel.Rect
 
@@ -38,6 +39,7 @@ func New(anim common.Animater, rect pixel.Rect, opts ...Option) *Loot {
 		id:      counter,
 		anim:    anim,
 		rect:    rect,
+		mass:    1,
 		dir:     1,
 		animdir: 1,
 		vel:     pixel.ZV,
@@ -50,7 +52,7 @@ func New(anim common.Animater, rect pixel.Rect, opts ...Option) *Loot {
 		opt(a)
 	}
 
-	p := common.NewPhys(rect, a.vel, 0.5, a.grav) // TODO does we really need phys to know run and walk speeds?
+	p := common.NewPhys(rect, a.vel, 0.5, a.grav, a.mass) // TODO does we really need phys to know run and walk speeds?
 	a.phys = p
 
 	return a

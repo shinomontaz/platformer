@@ -50,6 +50,12 @@ func WithStrength(strength int) Option {
 	}
 }
 
+func WithMass(mass float64) Option {
+	return func(a *Actor) {
+		a.mass = mass
+	}
+}
+
 func WithAttackrange(attackrange float64) Option {
 	return func(a *Actor) {
 		a.attackrange = attackrange

@@ -2,7 +2,7 @@ package state
 
 import (
 	"math"
-	"math/rand"
+	"platformer/common"
 	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
@@ -25,7 +25,7 @@ func NewIdle(a Actor, an Animater) *Idle {
 			trs:   a.GetTransition(IDLE),
 		},
 		sprite:    pixel.NewSprite(nil, pixel.Rect{}),
-		idleLimit: rand.Float64() * 2.0, // seconds before idle
+		idleLimit: common.GetRandFloat() * 2.0, // seconds before idle
 	}
 
 	return fs

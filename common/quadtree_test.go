@@ -143,9 +143,9 @@ func createRandomsqares(w, h float64, cnt int) []pixel.Rect {
 }
 
 func rndSqr(w, h float64) pixel.Rect {
-	mix := rand.Float64() * w
-	max := mix + rand.Float64()*(w-mix)
-	miy := rand.Float64() * h
-	may := miy + rand.Float64()*(h-miy)
+	mix := common.GetRandFloat() * w
+	max := mix + common.GetRandFloat()*(w-mix)
+	miy := common.GetRandFloat() * h
+	may := miy + common.GetRandFloat()*(h-miy)
 	return pixel.R(mix, miy, max, may)
 }

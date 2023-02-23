@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="left-down" width="500" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="43">
  <properties>
-  <property name="gravity" type="float" value="9"/>
+  <property name="gravity" type="float" value="400"/>
  </properties>
  <tileset firstgid="1" source="Tileset.tsx"/>
  <tileset firstgid="61" source="Water.tsx"/>

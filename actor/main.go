@@ -40,7 +40,7 @@ var counter int
 
 type Actor struct {
 	id   int
-	phys common.Phys
+	phys common.Phys2
 
 	state  Stater
 	states map[int]Stater
@@ -51,7 +51,6 @@ type Actor struct {
 	anim      common.Animater
 	sprite    *pixel.Sprite
 	dir       float64
-	vec       pixel.Vec // delta speed
 	vel       pixel.Vec
 	runspeed  float64
 	walkspeed float64
@@ -63,11 +62,12 @@ type Actor struct {
 	sm *statemachine.Machine
 	w  Worlder
 
-	hp          int
-	strength    int
-	portrait    *pixel.Sprite
-	sounds      map[string]soundeffect
-	attackrange float64
+	hp           int
+	strength     int
+	portrait     *pixel.Sprite
+	sounds       map[string]soundeffect
+	appliedForce pixel.Vec
+	attackrange  float64
 
 	target pixel.Vec
 
@@ -110,7 +110,10 @@ func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Acto
 		opt(a)
 	}
 
-	p := common.NewPhys(rect, a.vel, 0, a.grav, a.mass) // TODO does we really need phys to know run and walk speeds?
+	p := common.NewPhys2(rect,
+		common.WithGravity(a.grav),
+		common.WithMass(a.mass),
+	) // TODO does we really need phys to know run and walk speeds?
 	a.phys = p
 
 	a.initStates()
@@ -178,6 +181,8 @@ func (a *Actor) StepPrediction(e int, v pixel.Vec) float64 {
 }
 
 func (a *Actor) Listen(e int, v pixel.Vec) {
+	a.appliedForce = pixel.ZV
+
 	if a.state.Busy() {
 		return
 	}
@@ -190,21 +195,21 @@ func (a *Actor) Listen(e int, v pixel.Vec) {
 		}
 		if a.isShift {
 			if math.Abs(a.vel.X) < a.runspeed {
-				v.X *= a.runspeed / 20
-			} else {
-				v.X = 0
+				a.appliedForce.X = v.X * a.runspeed
 			}
 		} else {
 			if math.Abs(a.vel.X) < a.walkspeed*19/20 {
-				v.X *= a.walkspeed / 20
-			} else {
-				v.X = 0
+				a.appliedForce.X = v.X * a.walkspeed
 			}
 		}
 	}
 
 	if v.Y > 0 {
-		v.Y *= a.grav * a.jumpforce
+		multiplier := 0.5
+		if math.Abs(a.vel.X) > a.walkspeed {
+			multiplier = 1
+		}
+		a.appliedForce.Y = v.Y * a.grav * (a.jumpforce*multiplier + float64(a.strength) - a.mass)
 	}
 
 	if e == events.SHIFT {
@@ -212,8 +217,6 @@ func (a *Actor) Listen(e int, v pixel.Vec) {
 	}
 
 	a.state.Listen(e, &a.vel)
-
-	a.vec = v
 }
 
 func (a *Actor) Move(v pixel.Vec) {
@@ -222,7 +225,6 @@ func (a *Actor) Move(v pixel.Vec) {
 }
 
 func (a *Actor) GetPos() pixel.Vec {
-	//	return a.rect.Center()
 	return a.rect.Min
 }
 
@@ -232,8 +234,15 @@ func (a *Actor) GetRect() pixel.Rect {
 
 func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	a.currObjs = objs
-	a.phys.Update(dt, &a.vec, objs)
-	a.vec = pixel.ZV
+	if a.appliedForce.X == 0 && math.Abs(a.vel.X) > a.walkspeed*0.1 && a.vel.Y == 0 { // active slowing in case of no active force applied
+		a.appliedForce.X = -a.walkspeed
+		if a.vel.X < 0 {
+			a.appliedForce.X *= -1
+		}
+
+	}
+	a.phys.Apply(a.appliedForce)
+	a.phys.Update(dt, objs)
 	newspeed := a.phys.GetVel()
 	var event int
 	if math.Abs(newspeed.X) <= a.runspeed && math.Abs(newspeed.X) > a.walkspeed {
@@ -246,10 +255,12 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 
 	a.rect = a.phys.GetRect()
 	a.state.Update(dt)
+	a.appliedForce = pixel.ZV
 }
 
 func (a *Actor) UpdateSpecial(dt float64, objs []common.Objecter) {
-	a.phys.SetWater(false)
+	force := pixel.ZV
+
 	for _, o := range objs {
 		isIntercects := a.rect.Intersects(o.R)
 		if !isIntercects { // no collision
@@ -257,13 +268,21 @@ func (a *Actor) UpdateSpecial(dt float64, objs []common.Objecter) {
 		}
 
 		part := a.rect.Intersect(o.R)
+
 		if o.Type == common.WATER {
-			if part.H() == a.rect.H() && a.hp > 0 {
-				a.Hit(pixel.ZV, a.hp+1)
+			ratio := part.H() / a.rect.H()
+			if ratio == 1 {
+				if a.hp > 0 {
+					a.Kill()
+				}
+				ratio += 0.5
 			}
-			a.phys.SetWater(true)
+
+			force.Y += a.grav * ratio // archimedus
+			a.phys.SetSpeed(a.vel.Scaled(0.9))
 		}
 	}
+	a.phys.Apply(force)
 }
 
 func (a *Actor) SetState(id int) {
@@ -374,9 +393,10 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 	if _, ok := a.states[state.HIT]; !ok { // cannot hit unhittable
 		return
 	}
-	vec.X *= a.walkspeed * float64(a.strength+1)
-	vec.Y = 100
-	a.vec = vec
+
+	v := pixel.V(vec.X*(20*math.Max(a.walkspeed+float64(power)-a.mass, 0)), a.grav*(8+float64(power)-a.mass))
+	a.phys.Apply(v)
+
 	a.hp -= power
 	if a.hp <= 0 {
 		a.Kill()
@@ -389,8 +409,8 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 func (a *Actor) Kill() {
 	a.hp = 0
 	a.SetState(state.DEAD)
-	a.mass = 0
-	a.phys.SetMass(a.mass)
+	// a.mass = 0
+	// a.phys.SetMass(a.mass)
 	a.Inform(events.GAMEVENT_DIE, pixel.ZV)
 	a.onkill = nil
 	a.oninteract = nil
@@ -406,9 +426,9 @@ func (a *Actor) OnKill() {
 		return
 	}
 	// create random velocity vec
-	rnd := float64(rand.Intn(4) - 1)
+	rnd := float64(common.GetRandInt() - 5)
 	y := 100.0 * rnd
-	a.onkill(a.rect.Center(), pixel.V(30*float64(rand.Intn(3)-1), y))
+	a.onkill(a.rect.Center(), pixel.V(30*float64(common.GetRandInt()-5), y))
 }
 
 func (a *Actor) SetOnKill(okh OnKillHandler) {

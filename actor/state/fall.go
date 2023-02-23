@@ -31,6 +31,7 @@ func NewFall(a Actor, an Animater) *Fall {
 func (s *Fall) Start() {
 	s.a.Inform(events.BUSY, pixel.ZV)
 	s.fallLimit = 1.0
+	s.busy = true
 	s.animSpriteNum = 3
 }
 

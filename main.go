@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"platformer/events"
 	"time"
 
@@ -29,10 +28,6 @@ var (
 )
 
 func init() {
-	rand.Seed(time.Now().UTC().UnixNano())
-
-	// read start config
-
 	// load video mode and sound volumes
 	initRuntime()
 }

@@ -1,7 +1,7 @@
 package ai
 
 import (
-	"math/rand"
+	"platformer/common"
 	"platformer/creatures"
 	"platformer/events"
 
@@ -72,7 +72,7 @@ func (s *StateAttack) Update(dt float64) {
 	currDist := l.Len()
 	if currDist < s.ai.attackskill.Min || currDist > s.ai.attackskill.Max {
 		// make decision - to step out or choose another attack skill
-		dice := rand.Float64()
+		dice := common.GetRandFloat()
 		if dice > 0.5 {
 			s.ai.SetState(CHOOSEATTACK, s.lastpos)
 			return

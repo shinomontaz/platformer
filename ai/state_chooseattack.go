@@ -1,8 +1,8 @@
 package ai
 
 import (
-	"math/rand"
 	"platformer/actor"
+	"platformer/common"
 	"platformer/creatures"
 	"platformer/events"
 	"sort"
@@ -93,7 +93,7 @@ func (s *StateChooseAttack) Update(dt float64) {
 						minWeightSkill = choosed
 						maxWeightSkill = skill
 					}
-					dice := rand.Float64() * float64(w1+w2)
+					dice := common.GetRandFloat() * float64(w1+w2)
 					if dice > float64(w1) {
 						choosed = minWeightSkill
 					} else {

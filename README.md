@@ -46,7 +46,7 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] game stages ( menu->loading->game->menu->game->... ) + separate controllers, bugfix
 - [x] in-game menu, restart game
 - [x] npc quotes
-- [ ] interactive objects
+- [x] interactive objects
 - [ ] blood
 - [ ] projectile attacks
 - [ ] RELEASE v0.9

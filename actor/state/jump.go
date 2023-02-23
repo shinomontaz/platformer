@@ -34,6 +34,7 @@ func (s *Jump) Start() {
 	s.jumpLimit = 1.0
 	s.animSpriteNum = 0
 	s.counter = 0
+	s.busy = true
 	s.a.AddSound("jump")
 }
 

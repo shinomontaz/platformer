@@ -9,38 +9,82 @@ import (
 	"github.com/shinomontaz/pixel/imdraw"
 )
 
-const MINSPEED = 4
-
 type Phys struct {
-	rect     pixel.Rect
-	vel      pixel.Vec
-	gravity  float64
-	ground   bool
+	rect  pixel.Rect
+	vel   pixel.Vec
+	force pixel.Vec
+
+	rigidity       float64
+	rigidityBottom float64
+	gravity        float64
+	mass           float64
+	friction       float64
+	maxvelocity    float64
+
+	isground bool
 	color    color.Color
-	iswater  bool
-	rigidity float64
-	mass     float64
+
 	currObjs []Objecter
 }
 
-func NewPhys(r pixel.Rect, vel pixel.Vec, rigidity, gravity, mass float64) Phys {
-	return Phys{
-		rect:     r,
-		color:    colorful.HappyColor(),
-		ground:   false,
-		rigidity: rigidity,
-		gravity:  gravity,
-		vel:      vel,
-		mass:     mass,
+type PhysOption func(p *Phys)
+
+func WithGravity(g float64) PhysOption {
+	return func(p *Phys) {
+		p.gravity = g
 	}
+}
+
+func WithRigidity(r float64) PhysOption {
+	return func(p *Phys) {
+		p.rigidity = r
+	}
+}
+
+func WithRigidityBottom(r float64) PhysOption {
+	return func(p *Phys) {
+		p.rigidityBottom = r
+	}
+}
+
+func WithFriction(f float64) PhysOption {
+	return func(p *Phys) {
+		p.friction = f
+	}
+}
+
+func WithMass(m float64) PhysOption {
+	return func(p *Phys) {
+		p.mass = m
+	}
+}
+
+func WithMaxVel(max float64) PhysOption {
+	return func(p *Phys) {
+		p.maxvelocity = max
+	}
+}
+
+func NewPhys(r pixel.Rect, opts ...PhysOption) Phys {
+	p := Phys{
+		rect:           r,
+		color:          colorful.HappyColor(),
+		rigidity:       0.5,
+		rigidityBottom: 0,
+		friction:       0.01,
+		vel:            pixel.ZV,
+		mass:           1,
+	}
+
+	for _, opt := range opts {
+		opt(&p)
+	}
+
+	return p
 }
 
 func (p *Phys) GetVel() *pixel.Vec {
 	return &p.vel
-}
-
-func (p *Phys) Impulse(v pixel.Vec) {
-	p.vel = p.vel.Add(v)
 }
 
 func (p *Phys) SetMass(m float64) {
@@ -48,53 +92,60 @@ func (p *Phys) SetMass(m float64) {
 }
 
 func (p *Phys) IsGround() bool {
-	return p.ground
+	return p.isground
 }
 
-func (p *Phys) SetWater(iswater bool) {
-	p.iswater = iswater
+func (p *Phys) Apply(force pixel.Vec) {
+	p.force = p.force.Add(force)
 }
 
-func (p *Phys) Update(dt float64, move *pixel.Vec, objs []Objecter) {
-	// do speed update by move vec
+func (p *Phys) SetSpeed(newspeed pixel.Vec) {
+	p.vel = newspeed
+}
+
+func (p *Phys) Update(dt float64, objs []Objecter) {
 	p.currObjs = objs
-	if p.ground {
-		if move.X != 0 {
-			p.vel.X += move.X
-		} else {
-			p.vel.X /= 1.1
-			if math.Abs(p.vel.X) <= MINSPEED {
-				p.vel.X = 0
-			}
+
+	if p.vel.X != 0 && math.Abs(p.vel.X) >= dt*p.friction*p.gravity && p.isground {
+		sign := -1.0
+		if p.vel.X > 0 {
+			sign = 1.0
+		}
+		p.force.X -= sign * p.friction * p.mass * p.gravity // Friction force apply
+	}
+
+	if math.Abs(p.vel.X) <= dt*p.friction*p.mass*p.gravity { // static friction force check: no mass in this equation
+		p.vel.X = 0
+	}
+
+	if p.mass > 0 && !p.isground {
+		p.force.Y -= p.gravity // Gravity force to the forces
+	}
+
+	if p.isground {
+		if p.vel.Y < 0 {
+			p.vel.Y = 0
+		}
+		if p.force.Y < 0 {
+			p.force.Y = 0
 		}
 	}
 
-	if !p.ground {
-		p.vel.Y -= p.gravity
-	}
-	if p.iswater {
-		p.vel = p.vel.Scaled(0.9)
-		p.vel.Y += (1 - p.mass) * p.gravity * 1.1
-	}
-	if p.ground && move.Y > 0 {
-		p.vel.Y = move.Y
-	}
+	dt = math.Min(dt, 1.0)
+	p.vel = p.vel.Add(p.force.Scaled(dt))
 
 	if p.vel.X != 0 || p.vel.Y != 0 {
-		p.ground = false
+		p.isground = false
 		vec := p.vel.Scaled(dt)
-		ground, vel, vec := p.StepPrediction(vec) // p.vel and vec can be updated here
-		oldvel := p.vel
-		p.vel = vel
+		ground, newvel, vec := p.StepPrediction(vec) // p.vel and vec can be updated here
+		p.vel = newvel
 		if ground > 0 {
-			p.ground = true
-			// do a vertical bouncing
-			if oldvel.Y < 0 && oldvel.Y < -MINSPEED {
-				p.vel.Y = -oldvel.Y * p.rigidity
-			}
+			p.isground = true
 		}
 		p.rect = p.rect.Moved(vec)
 	}
+
+	p.force = pixel.ZV
 }
 
 // in: v - move vector, out - ground rate, new velocity, available move
@@ -127,79 +178,20 @@ func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec) {
 				ground = (r - l) / p.rect.W()
 			} else {
 				collisiontimes = append(collisiontimes, coltime)
-				if n.Y > 0 {
+				if n.Y > 0 { // hit floor
 					l := math.Min(rect.Min.X, p.rect.Min.X)
 					r := math.Min(rect.Max.X, p.rect.Max.X)
 					ground = (r - l) / p.rect.W()
-					vel.Y = 0
-				} else if n.Y < 0 {
-					vel.Y = -vel.Y * 0.5
+					//					vel.Y = 0
+					vel.Y = -vel.Y * p.rigidityBottom
+				} else if n.Y < 0 { // hit ceiling
+					vel.Y = -vel.Y * p.rigidity
 				}
-				if n.X != 0 && ground == 0 {
-					vel.X = -vel.X * 0.5
-				}
-			}
-		}
-	}
-
-	if len(collisiontimes) > 0 {
-		mintime := collisiontimes[0]
-		// find minimal collision time
-		for _, ct := range collisiontimes {
-			if mintime > ct {
-				mintime = ct
-			}
-		}
-
-		v.X *= mintime
-		v.Y *= mintime
-	}
-
-	return ground, vel, v
-}
-
-/*
-// in: v - velocity, out - ground rate, new velocity, available move
-func StepPrediction(dt float64, rect pixel.Rect, vel pixel.Vec, currObjs []Objecter) (float64, pixel.Vec, pixel.Vec) {
-	ground := 0.0
-	vel := vel
-	v := vel.Scaled(dt)
-	broadbox := Broadbox(rect, v)
-	collisiontimes := []float64{}
-	if len(currObjs) == 0 {
-		return ground, vel, v
-	}
-	// precise check for each object that can intersects
-	for _, obj := range currObjs {
-		orect := obj.Rect()
-		if Isinbox(rect, broadbox) { // return !(p.Max.X < q.Min.X || p.Min.X > q.Max.X || p.Max.Y < q.Min.Y || p.Min.Y > q.Max.Y)
-			if orect.Max.Y == rect.Min.Y {
-				l := math.Max(orect.Min.X, orect.Min.X)
-				r := math.Min(orect.Max.X, orect.Max.X)
-				ground = (r - l) / rect.W()
-				continue
-			}
-			coltime, n := collide(rect, orect, v) // coltime in [0,1], where 1 means no collision
-			if coltime == 1 {                     // no collision
-				continue
-			}
-
-			if n.X == 0 && vel.Y == 0 { // here we step on ground, no collision actually
-				l := math.Max(orect.Min.X, orect.Min.X)
-				r := math.Min(orect.Max.X, orect.Max.X)
-				ground = (r - l) / rect.W()
-			} else {
-				collisiontimes = append(collisiontimes, coltime)
-				if n.Y > 0 {
-					l := math.Min(orect.Min.X, rect.Min.X)
-					r := math.Min(orect.Max.X, rect.Max.X)
-					ground = (r - l) / rect.W()
-					vel.Y = 0
-				} else if n.Y < 0 {
-					vel.Y = -vel.Y * 0.5
-				}
-				if n.X != 0 && ground == 0 {
-					vel.X = -vel.X * 0.5
+				if n.X != 0 {
+					vel.X = -vel.X * p.rigidity // horisontal bouncing
+					if ground != 0 {
+						vel.X *= p.rigidity
+					}
 				}
 			}
 		}
@@ -220,7 +212,7 @@ func StepPrediction(dt float64, rect pixel.Rect, vel pixel.Vec, currObjs []Objec
 
 	return ground, vel, v
 }
-*/
+
 func (p *Phys) Move(v pixel.Vec) {
 	p.rect = p.rect.Moved(v)
 }

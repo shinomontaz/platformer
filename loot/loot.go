@@ -13,7 +13,7 @@ var counter int
 
 type Loot struct {
 	id   int
-	phys common.Phys2
+	phys common.Phys
 	mass float64
 
 	rect pixel.Rect
@@ -52,7 +52,7 @@ func New(anim common.Animater, rect pixel.Rect, opts ...Option) *Loot {
 		opt(a)
 	}
 
-	p := common.NewPhys2(rect,
+	p := common.NewPhys(rect,
 		common.WithGravity(a.grav),
 		common.WithMass(a.mass),
 		common.WithRigidityBottom(0.5),

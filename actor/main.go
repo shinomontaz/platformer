@@ -40,7 +40,7 @@ var counter int
 
 type Actor struct {
 	id   int
-	phys common.Phys2
+	phys common.Phys
 
 	state  Stater
 	states map[int]Stater
@@ -110,7 +110,7 @@ func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Acto
 		opt(a)
 	}
 
-	p := common.NewPhys2(rect,
+	p := common.NewPhys(rect,
 		common.WithGravity(a.grav),
 		common.WithMass(a.mass),
 	) // TODO does we really need phys to know run and walk speeds?

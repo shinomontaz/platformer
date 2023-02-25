@@ -14,6 +14,7 @@ import (
 	"platformer/factories"
 	"platformer/loot"
 	"platformer/magic"
+	"platformer/particles"
 	"platformer/sound"
 	"platformer/talks"
 	"platformer/ui"
@@ -92,6 +93,9 @@ func (g *Game) Init() {
 	}
 	g.w = w
 	g.hero = factories.NewActor(config.Profiles["player"], g.w)
+
+	particles.Init(5000)
+	particles.SetGravity(w.GetGravity())
 
 	loot.Init(g.w, config.Loots)
 	talks.Init(g.assetloader)

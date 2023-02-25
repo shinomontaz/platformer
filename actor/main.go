@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"platformer/common"
 	"platformer/events"
+	"platformer/particles"
 	"platformer/sound"
 	"platformer/talks"
 
@@ -342,6 +343,11 @@ func (a *Actor) Strike() {
 
 		activities.AddStrike(a, rect, power, pixel.ZV)
 	}
+
+	// n := 10 * common.GetRandInt()
+	// for i := 0; i < n; i++ {
+	// 	particles.AddBlood(a.rect.Center(), pixel.V(common.GetRandFloat()*1000-500, common.GetRandFloat()*10000))
+	// }
 }
 
 func (a *Actor) Cast() {
@@ -401,6 +407,11 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 	if a.hp <= 0 {
 		a.Kill()
 		return
+	}
+	//pos, f pixel.Vec
+	n := 10 * common.GetRandInt()
+	for i := 0; i < n; i++ {
+		particles.AddBlood(a.rect.Center(), pixel.V(common.GetRandFloat()*1000-500, common.GetRandFloat()*10000))
 	}
 	a.SetState(state.HIT)
 	a.Inform(events.ALERT, pixel.Vec{-vec.X, vec.Y})

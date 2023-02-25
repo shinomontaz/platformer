@@ -1,24 +1,36 @@
 package particles
 
 import (
+	"image/color"
 	"platformer/common"
 
-	"github.com/faiface/pixel"
 	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/imdraw"
 )
 
 type particle struct {
-	active   bool
-	rect     pixel.Rect
-	mass     float64
-	color    uint32
-	ttl      float64
-	rigidity float64
-	gravity  float64
-	pos      pixel.Vec
-	prev     pixel.Vec
-	vel      pixel.Vec
-	force    pixel.Vec
+	phys   common.Phys
+	active bool
+	color  color.Color
+	//	color    uint32
+	ttl float64
+}
+
+func newParticle(pos, force pixel.Vec, mass, size float64, col color.Color) particle {
+	rect := pixel.R(pos.X-size/2, pos.Y-size/2, pos.X+size/2, pos.Y+size/2)
+	phys := common.NewPhys(rect,
+		common.WithGravity(grav),
+		common.WithMass(mass),
+	)
+	phys.Apply(force)
+	p := particle{
+		active: true,
+		color:  col,
+		ttl:    2,
+		phys:   phys,
+	}
+
+	return p
 }
 
 func (p *particle) update(dt float64, objs []common.Objecter) {
@@ -27,26 +39,27 @@ func (p *particle) update(dt float64, objs []common.Objecter) {
 		return
 	}
 
-	p.prev = p.pos
-	p.life -= dt
-	//	vec := p.vel.Scaled(dt).ScaledXY(p.force).Scaled(p.mass)
-
-	//	p.phys.Update(dt, &vel, objs)
-
-	p.vel = p.vel.Scaled(dt).ScaledXY(p.force).Scaled(p.mass)
-	ground_rate, newvel, move := common.StepPrediction(dt, p.rect, objs) // (dt float64, rect pixel.Rect, vel pixel.Vec, currObjs []common.Objecter), out - ground rate, new velocity, available move
-
-	// new position
-	// Broadbox
-	// detect collision
-	// find new pos, new velocity with regard of rigidity
-	// change force with gravity
-	// vec = new vec to move
-
-	p.force.Y -= dt * p.gravity
-	if p.force.X > 0 {
-		p.force.X -= dt * p.gravity * p.mass
-	} else {
-		p.force.X = 0
-	}
+	p.ttl -= dt
+	p.phys.Update(dt, objs)
 }
+
+func (p *particle) draw(imd *imdraw.IMDraw) {
+	vertices := p.phys.GetRect().Vertices()
+	imd.Color = p.color
+	for _, v := range vertices {
+		imd.Push(v)
+	}
+	imd.Rectangle(1) // filled rectangle
+}
+
+// func (p *particle) draw(t pixel.Target) {
+// 	imd := imdraw.New(nil)
+// 	r := p.phys.GetRect()
+// 	vertices := r.Vertices()
+// 	imd.Color = p.color
+// 	for _, v := range vertices {
+// 		imd.Push(v)
+// 	}
+// 	imd.Rectangle(1) // filled rectangle
+// 	imd.Draw(t)
+// }

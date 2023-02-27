@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"math/rand"
 	"testing"
 	"time"
@@ -20,12 +21,16 @@ func BenchmarkCreate(b *testing.B) {
 		randomsqrs[i] = createRandomsqares(w, h, 10000)
 	}
 
-	for i := 0; i < b.N; i++ {
-		qt := New(1, Qtsize, mainrect)
-		for j := 0; j < 10000; j++ {
-			qt.Insert(Objecter{R: randomsqrs[i][j]})
-		}
-	}
+	b.Run(
+		fmt.Sprintf("input_size_%d", b.N),
+		func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				qt := New(1, Qtsize, mainrect)
+				for j := 0; j < 10000; j++ {
+					qt.Insert(Objecter{R: randomsqrs[i][j]})
+				}
+			}
+		})
 }
 
 func BenchmarkRetrieve(b *testing.B) {
@@ -143,9 +148,9 @@ func createRandomsqares(w, h float64, cnt int) []pixel.Rect {
 }
 
 func rndSqr(w, h float64) pixel.Rect {
-	mix := common.GetRandFloat() * w
-	max := mix + common.GetRandFloat()*(w-mix)
-	miy := common.GetRandFloat() * h
-	may := miy + common.GetRandFloat()*(h-miy)
+	mix := GetRandFloat() * w
+	max := mix + GetRandFloat()*(w-mix)
+	miy := GetRandFloat() * h
+	may := miy + GetRandFloat()*(h-miy)
 	return pixel.R(mix, miy, max, may)
 }

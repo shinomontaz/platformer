@@ -2,7 +2,6 @@ package loot
 
 import (
 	"math"
-	"math/rand"
 	"platformer/common"
 	"platformer/sound"
 
@@ -109,7 +108,7 @@ func (a *Loot) Draw(t pixel.Target) {
 func (a *Loot) AddSound(event string) {
 	if s, ok := a.sounds[event]; ok {
 		// select random sound
-		i := rand.Intn(len(s.List))
+		i := int(math.Round(common.GetRandFloat() * float64(len(s.List)-1)))
 		sound.AddEffect(s.List[i], a.rect.Center())
 	}
 }

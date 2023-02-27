@@ -3,7 +3,7 @@ package talks
 import (
 	"encoding/json"
 	"io"
-	"math/rand"
+	"math"
 	"platformer/common"
 
 	"github.com/shinomontaz/pixel"
@@ -38,7 +38,7 @@ func initPhrases(loader *common.Loader) {
 func AddPhrase(pos pixel.Vec, class string) {
 	if p, ok := phrases[class]; ok {
 		// get random string
-		txt := p.Variants[rand.Intn(len(p.Variants))]
+		txt := p.Variants[int(math.Round(common.GetRandFloat()*float64(len(p.Variants)-1)))]
 		al := addAlert(pos, colornames.Green, txt, 2, 1)
 		alerts = append(alerts, al)
 	}

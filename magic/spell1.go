@@ -3,7 +3,6 @@ package magic
 import (
 	"fmt"
 	"math"
-	"math/rand"
 	"platformer/activities"
 	"platformer/actor"
 	"platformer/animation"
@@ -116,7 +115,7 @@ func (d *Deathstrike) Draw(t pixel.Target) {
 func randSeq(letters []rune, n int) string {
 	b := make([]rune, n)
 	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
+		b[i] = letters[int(math.Round(common.GetRandFloat()*float64(len(letters)-1)))]
 	}
 	return string(b)
 }

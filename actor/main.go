@@ -2,10 +2,8 @@ package actor
 
 import (
 	"math"
-	"math/rand"
 	"platformer/common"
 	"platformer/events"
-	"platformer/particles"
 	"platformer/sound"
 	"platformer/talks"
 
@@ -80,6 +78,7 @@ type Actor struct {
 	phrasesClass string
 
 	onkill     OnKillHandler
+	onhit      OnKillHandler
 	oninteract OnInteractHandler
 }
 
@@ -343,11 +342,6 @@ func (a *Actor) Strike() {
 
 		activities.AddStrike(a, rect, power, pixel.ZV)
 	}
-
-	// n := 10 * common.GetRandInt()
-	// for i := 0; i < n; i++ {
-	// 	particles.AddBlood(a.rect.Center(), pixel.V(common.GetRandFloat()*1000-500, common.GetRandFloat()*10000))
-	// }
 }
 
 func (a *Actor) Cast() {
@@ -368,7 +362,7 @@ func (a *Actor) SetTarget(t pixel.Vec) {
 func (a *Actor) AddSound(event string) {
 	if s, ok := a.sounds[event]; ok {
 		// select random sound
-		i := rand.Intn(len(s.List))
+		i := int(math.Round(common.GetRandFloat() * float64(len(s.List)-1)))
 		sound.AddEffect(s.List[i], a.rect.Center())
 	}
 }
@@ -400,7 +394,7 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 		return
 	}
 
-	v := pixel.V(vec.X*(20*math.Max(a.walkspeed+float64(power)-a.mass, 0)), a.grav*(8+float64(power)-a.mass))
+	v := pixel.V(vec.X*(20*math.Max(a.walkspeed+float64(power)*5-a.mass, 0)), a.grav*(8+float64(power)*5-a.mass))
 	a.phys.Apply(v)
 
 	a.hp -= power
@@ -408,13 +402,11 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 		a.Kill()
 		return
 	}
-	//pos, f pixel.Vec
-	n := 10 * common.GetRandInt()
-	for i := 0; i < n; i++ {
-		particles.AddBlood(a.rect.Center(), pixel.V(common.GetRandFloat()*1000-500, common.GetRandFloat()*10000))
-	}
 	a.SetState(state.HIT)
 	a.Inform(events.ALERT, pixel.Vec{-vec.X, vec.Y})
+	if a.onhit != nil {
+		a.onhit(a.rect.Center(), v)
+	}
 }
 
 func (a *Actor) Kill() {
@@ -424,6 +416,7 @@ func (a *Actor) Kill() {
 	// a.phys.SetMass(a.mass)
 	a.Inform(events.GAMEVENT_DIE, pixel.ZV)
 	a.onkill = nil
+	a.onhit = nil
 	a.oninteract = nil
 }
 

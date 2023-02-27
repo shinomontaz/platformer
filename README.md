@@ -47,7 +47,7 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] in-game menu, restart game
 - [x] npc quotes
 - [x] interactive objects
-- [ ] blood
+- [x] blood
 - [ ] projectile attacks
 - [ ] RELEASE v0.9
 - [ ] more menu functions: volumes and screen modes

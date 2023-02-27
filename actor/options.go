@@ -2,7 +2,9 @@ package actor
 
 import (
 	"platformer/actor/statemachine"
+	"platformer/common"
 	"platformer/config"
+	"platformer/particles"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -97,5 +99,19 @@ func WithSkills(skills []config.Skill) Option {
 func WithPhrases(key string) Option {
 	return func(a *Actor) {
 		a.phrasesClass = key
+	}
+}
+
+func WithBody(body string) Option {
+	return func(a *Actor) {
+		if body == "human" {
+			a.onhit = func(pos, vel pixel.Vec) {
+				n := 10 * common.GetRandInt()
+				for i := 0; i < n; i++ {
+					particles.AddBlood(pos, pixel.V(vel.X+common.GetRandFloat()*1000-500, common.GetRandFloat()*10000))
+				}
+			}
+		}
+
 	}
 }

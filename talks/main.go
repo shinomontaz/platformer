@@ -2,7 +2,7 @@ package talks
 
 import (
 	"image/color"
-	"math/rand"
+	"math"
 	"platformer/activities"
 	"platformer/common"
 
@@ -23,7 +23,7 @@ func Init(loader *common.Loader) {
 }
 
 func AddAlert(pos pixel.Vec, force float64) {
-	al := addAlert(pos, colornames.Red, randSeq([]rune("#$%&@*?arlTVXx"), 2+rand.Intn(3))+"!", 1, force)
+	al := addAlert(pos, colornames.Red, randSeq([]rune("#$%&@*?arlTVXx"), 2+int(common.GetRandFloat()*3))+"!", 1, force)
 	alerts = append(alerts, al)
 	activities.Alert(al.GetRect())
 }
@@ -58,7 +58,7 @@ func Draw(win *pixelgl.Window, camPos, center pixel.Vec) {
 func randSeq(letters []rune, n int) string {
 	b := make([]rune, n)
 	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
+		b[i] = letters[int(math.Round(common.GetRandFloat()*float64(len(letters)-1)))]
 	}
 	return string(b)
 }

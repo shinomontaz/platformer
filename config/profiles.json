@@ -14,6 +14,7 @@
         "jump": 40,
         "walk": 80,
         "run": 200,
+        "body": "human",
         "skills": [
             {
                 "type": "melee",
@@ -36,6 +37,7 @@
         "jump": 0,
         "walk": 60,
         "run": 60,
+        "body": "undead",
         "skills": [
             {
                 "type": "melee",
@@ -61,6 +63,7 @@
         "jump": 0,
         "walk": 60,
         "run": 60,
+        "body": "undead",
         "skills": [
             {
                 "type": "melee",
@@ -93,6 +96,7 @@
         "jump": 0,
         "walk": 50,
         "run": 50,
+        "body": "reptile",
         "skills": [
             {
                 "type": "melee",

@@ -55,6 +55,7 @@ type Profile struct {
 	Type     string  `json:"type"`
 	Anim     string  `json:"anim"`
 	Portrait string  `json:"portrait"`
+	Body     string  `json:"body"`
 	Dir      float64 `json:"dir"`
 	Hp       int     `json:"hp"`
 	Strength int     `json:"strength"`

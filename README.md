@@ -42,12 +42,12 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] some fragment shaders [b8831e9a](https://github.com/shinomontaz/platformer/commit/b8831e9ad6b09ffc68a90c8199247f61a279bcf8)
 - [x] main menu
 - [x] RELEASE v0.8 [v0.8](https://github.com/shinomontaz/platformer/releases/tag/v0.8)
-- [x] main game shaders ( sunlight, shadows )
-- [x] game stages ( menu->loading->game->menu->game->... ) + separate controllers, bugfix
-- [x] in-game menu, restart game
-- [x] npc quotes
-- [x] interactive objects
-- [x] blood
+- [x] main game shaders ( sunlight, shadows ) [46230fe7](https://github.com/shinomontaz/platformer/commit/46230fe7133a7f93eb90c624f3032896501469d4)
+- [x] game stages ( menu->loading->game->menu->game->... ) + separate controllers, bugfix [3bf38d00](https://github.com/shinomontaz/platformer/commit/3bf38d00da26bdad04da591fcd6881e2999740a7) + [d55db5b0](https://github.com/shinomontaz/platformer/commit/d55db5b0ab2f43407e5be50e8400c301b1874e82)
+- [x] in-game menu, restart game [17f12682](https://github.com/shinomontaz/platformer/commit/17f126823a19cbf453b7338277d708089136dba7)
+- [x] npc quotes [331d1619](https://github.com/shinomontaz/platformer/commit/331d1619f9511d5712b360608b407d2e92af04fc)
+- [x] interactive objects [fb9083ad](https://github.com/shinomontaz/platformer/commit/fb9083adadfec30bc33565fb08f8261df63ca76c)
+- [x] blood [9e8bc765](https://github.com/shinomontaz/platformer/commit/9e8bc76527ff207a01f64dfc2af13244a14d126e)
 - [ ] projectile attacks
 - [ ] RELEASE v0.9
 - [ ] more menu functions: volumes and screen modes

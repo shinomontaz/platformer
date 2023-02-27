@@ -17,6 +17,7 @@ type particle struct {
 	mass     float64
 	size     float64
 	rigidity float64
+	friction float64
 }
 
 func (p *particle) Init() {
@@ -25,6 +26,7 @@ func (p *particle) Init() {
 		common.WithGravity(grav),
 		common.WithMass(p.mass),
 		common.WithRigidity(p.rigidity),
+		common.WithFriction(p.friction),
 	)
 	p.phys.Apply(p.force)
 }

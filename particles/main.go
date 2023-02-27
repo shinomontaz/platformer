@@ -7,8 +7,6 @@ import (
 	"github.com/shinomontaz/pixel/pixelgl"
 )
 
-const DEFAULT_SIZE = 2
-
 var (
 	canvas    *pixelgl.Canvas
 	particles []particle
@@ -68,11 +66,12 @@ func AddBlood(pos, f pixel.Vec) {
 		active:   true,
 		color:    col,
 		pos:      pos,
-		ttl:      2*common.GetRandFloat() + 0.5,
+		ttl:      2*common.GetRandFloat() + 1,
 		force:    f,
-		size:     DEFAULT_SIZE,
+		size:     1 + 3*common.GetRandFloat(),
 		mass:     0.1,
 		rigidity: 0.1,
+		friction: 1,
 	}
 	p.Init()
 	particles[idx] = p

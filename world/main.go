@@ -13,6 +13,7 @@ import (
 	"platformer/creatures"
 	"platformer/loot"
 	"platformer/particles"
+	"platformer/projectiles"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/shinomontaz/pixel/imdraw"
@@ -377,6 +378,7 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 	creatures.Update(dt, w.visiblePhys, w.visibleSpec)
 	loot.Update(dt, w.visiblePhys)
 	particles.Update(dt, w.visiblePhys)
+	projectiles.Update(dt, w.visiblePhys, w.visibleSpec)
 }
 
 func (w *World) GetGravity() float64 {
@@ -493,6 +495,7 @@ func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel
 	creatures.Draw(w.cnv2)
 	loot.Draw(w.cnv2)
 	particles.Draw(w.cnv2)
+	projectiles.Draw(w.cnv2)
 
 	w.cnv2.Draw(w.cnv, pixel.IM.Moved(w.cnv.Bounds().Center()))
 	w.cnv.Draw(t, pixel.IM.Moved(center))

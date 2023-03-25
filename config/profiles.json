@@ -74,10 +74,10 @@
                 "weight": 1
             },
             {
-                "type": "spell",
-                "name": "deathstrike",
+                "type": "ranged",
+                "name": "deathbolt",
                 "max": 250,
-                "min": 100,
+                "min": 20,
                 "weight": 9
             }
         ]

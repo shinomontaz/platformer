@@ -27,7 +27,7 @@ func init() {
 	plboxes = make([]HitBox, 0)
 }
 
-func AddStrike(owner common.Actorer, rect pixel.Rect, power int, speed pixel.Vec) {
+func AddStrike(owner common.Actorer, rect pixel.Rect, power int, speed pixel.Vec) HitBox {
 	center := rect.Center()
 	from := pixel.V(rect.Min.X, center.Y)
 	to := pixel.V(rect.Max.X, center.Y)
@@ -51,6 +51,8 @@ func AddStrike(owner common.Actorer, rect pixel.Rect, power int, speed pixel.Vec
 	} else {
 		enboxes = append(enboxes, b)
 	}
+
+	return b
 }
 
 func UpdateStrikes(dt float64, enemies []common.Actorer, player common.Actorer) {
@@ -139,4 +141,8 @@ func DrawStrikes(t pixel.Target) {
 		imd.Rectangle(1)
 	}
 	imd.Draw(t)
+}
+
+func (hb *HitBox) Move(vel pixel.Vec) {
+	hb.rect = hb.rect.Moved(vel)
 }

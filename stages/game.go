@@ -15,6 +15,7 @@ import (
 	"platformer/loot"
 	"platformer/magic"
 	"platformer/particles"
+	"platformer/projectiles"
 	"platformer/sound"
 	"platformer/talks"
 	"platformer/ui"
@@ -94,8 +95,10 @@ func (g *Game) Init() {
 	g.w = w
 	g.hero = factories.NewActor(config.Profiles["player"], g.w)
 
+	grav := w.GetGravity()
 	particles.Init(5000)
-	particles.SetGravity(w.GetGravity())
+	projectiles.Init(grav)
+	particles.SetGravity(grav)
 
 	loot.Init(g.w, config.Loots)
 	talks.Init(g.assetloader)
@@ -115,6 +118,12 @@ func (g *Game) Init() {
 			if ai_type != "" {
 				factories.NewAi(ai_type, enemy, w)
 			}
+
+			dir := o.Properties.GetFloat("dir")
+			if dir != 0 {
+				enemy.SetDir(dir)
+			}
+
 			creatures.AddEnemy(enemy)
 		}
 		if o.Class == "npc" {
@@ -141,6 +150,11 @@ func (g *Game) Init() {
 			ai_type := o.Properties.GetString("ai")
 			if ai_type != "" {
 				factories.NewAi(ai_type, npc, w)
+			}
+
+			dir := o.Properties.GetFloat("dir")
+			if dir != 0 {
+				npc.SetDir(dir)
 			}
 
 			creatures.AddNpc(npc)

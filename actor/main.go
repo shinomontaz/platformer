@@ -4,6 +4,7 @@ import (
 	"math"
 	"platformer/common"
 	"platformer/events"
+	"platformer/projectiles"
 	"platformer/sound"
 	"platformer/talks"
 
@@ -294,6 +295,10 @@ func (a *Actor) GetDir() int {
 	return int(a.dir)
 }
 
+func (a *Actor) SetDir(d float64) {
+	a.dir = d
+}
+
 func (a *Actor) Draw(t pixel.Target) {
 	a.sprite = a.state.GetSprite()
 	drawrect := a.rect.ResizedMin(pixel.Vec{a.rect.W() * 1.25, a.rect.H() * 1.25})
@@ -349,6 +354,11 @@ func (a *Actor) Cast() {
 		//		activities.AddSpell(a, a.target, a.activeSkill.Name, a.currObjs)
 		a.w.AddSpell(a, a.target, a.activeSkill.Name, a.currObjs)
 	}
+	if a.activeSkill.Type == "ranged" {
+		//t string, pos, f pixel.Vec, strength float64, owner common.Actorer
+		projectiles.AddProjectile(a.activeSkill.Name, a.GetRect().Center(), pixel.V(10000*a.dir, 0), 1, a.dir, a)
+	}
+
 }
 
 func (a *Actor) SetSkill(s *Skill) {

@@ -9,6 +9,7 @@ const (
 	RUN
 	ALERT
 	CAST
+	RANGED
 	BUSY
 	RELEASED
 	ENTER

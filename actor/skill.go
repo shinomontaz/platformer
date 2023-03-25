@@ -24,6 +24,8 @@ func NewSkill(pr config.Skill) *Skill {
 		e = events.CTRL
 	case "spell":
 		e = events.CAST
+	case "ranged":
+		e = events.RANGED
 	}
 
 	s := &Skill{

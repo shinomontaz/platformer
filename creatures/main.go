@@ -63,6 +63,7 @@ func List() []common.Actorer {
 }
 
 func Draw(t pixel.Target) {
+	//	activities.DrawStrikes(t)
 	for _, e := range enemies {
 		e.Draw(t)
 	}

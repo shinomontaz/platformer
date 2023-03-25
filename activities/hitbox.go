@@ -19,15 +19,15 @@ type HitBox struct {
 	speed  pixel.Vec
 }
 
-var enboxes []HitBox
-var plboxes []HitBox
+var enboxes []*HitBox
+var plboxes []*HitBox
 
 func init() {
-	enboxes = make([]HitBox, 0)
-	plboxes = make([]HitBox, 0)
+	enboxes = make([]*HitBox, 0)
+	plboxes = make([]*HitBox, 0)
 }
 
-func AddStrike(owner common.Actorer, rect pixel.Rect, power int, speed pixel.Vec) HitBox {
+func AddStrike(owner common.Actorer, rect pixel.Rect, power int, speed pixel.Vec, opts ...HitBoxOption) *HitBox {
 	center := rect.Center()
 	from := pixel.V(rect.Min.X, center.Y)
 	to := pixel.V(rect.Max.X, center.Y)
@@ -36,7 +36,7 @@ func AddStrike(owner common.Actorer, rect pixel.Rect, power int, speed pixel.Vec
 		to = pixel.V(rect.Min.X, center.Y)
 		from = pixel.V(rect.Max.X, center.Y)
 	}
-	b := HitBox{
+	b := &HitBox{
 		rect:   rect,
 		ttl:    0.2,
 		power:  power,
@@ -44,6 +44,10 @@ func AddStrike(owner common.Actorer, rect pixel.Rect, power int, speed pixel.Vec
 		dir:    pixel.L(from, to),
 		hitted: make(map[common.Actorer]struct{}),
 		speed:  speed,
+	}
+
+	for _, o := range opts {
+		o(b)
 	}
 
 	if owner.GetId() == 1 {
@@ -82,7 +86,7 @@ func updatePlStrikes(dt float64, hittable []common.Actorer) {
 			}
 		}
 		b.timer += dt
-		if b.timer < b.ttl {
+		if b.ttl < 0 || b.timer < b.ttl {
 			plboxes[i] = b
 			i++
 		}
@@ -113,7 +117,7 @@ func updateEnStrikes(dt float64, hittable []common.Actorer) {
 			}
 		}
 		b.timer += dt
-		if b.timer < b.ttl {
+		if b.ttl < 0 || b.timer < b.ttl {
 			enboxes[i] = b
 			i++
 		}
@@ -124,16 +128,16 @@ func updateEnStrikes(dt float64, hittable []common.Actorer) {
 
 func DrawStrikes(t pixel.Target) {
 	imd := imdraw.New(nil)
-	for _, box := range enboxes {
-		vertices := box.rect.Vertices()
+	for i := range enboxes {
+		vertices := enboxes[i].rect.Vertices()
 		imd.Color = colornames.Red
 		for _, v := range vertices {
 			imd.Push(v)
 		}
 		imd.Rectangle(1)
 	}
-	for _, box := range plboxes {
-		vertices := box.rect.Vertices()
+	for i := range plboxes {
+		vertices := plboxes[i].rect.Vertices()
 		imd.Color = colornames.Red
 		for _, v := range vertices {
 			imd.Push(v)
@@ -143,6 +147,6 @@ func DrawStrikes(t pixel.Target) {
 	imd.Draw(t)
 }
 
-func (hb *HitBox) Move(vel pixel.Vec) {
-	hb.rect = hb.rect.Moved(vel)
+func (hb *HitBox) Move(vec pixel.Vec) {
+	hb.rect = hb.rect.Moved(vec)
 }

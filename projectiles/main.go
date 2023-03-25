@@ -1,7 +1,6 @@
 package projectiles
 
 import (
-	"fmt"
 	"platformer/activities"
 	"platformer/animation"
 	"platformer/common"
@@ -20,7 +19,6 @@ func Init(g float64) {
 }
 
 func AddProjectile(t string, pos, f pixel.Vec, strength float64, dir float64, owner common.Actorer) {
-	fmt.Println("AddProjectile force", f)
 	p := projectile{
 		pos:      pos,
 		force:    f,
@@ -39,8 +37,9 @@ func AddProjectile(t string, pos, f pixel.Vec, strength float64, dir float64, ow
 		p.rect,
 		int(strength),
 		pixel.ZV,
+		activities.WithTTL(-1),
 	)
-	p.hb = &hb
+	p.hb = hb
 	projectiles = append(projectiles, p)
 }
 

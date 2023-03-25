@@ -48,7 +48,7 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] npc quotes [331d1619](https://github.com/shinomontaz/platformer/commit/331d1619f9511d5712b360608b407d2e92af04fc)
 - [x] interactive objects [fb9083ad](https://github.com/shinomontaz/platformer/commit/fb9083adadfec30bc33565fb08f8261df63ca76c)
 - [x] blood [9e8bc765](https://github.com/shinomontaz/platformer/commit/9e8bc76527ff207a01f64dfc2af13244a14d126e)
-- [ ] projectile attacks
+- [x] projectile attacks
 - [ ] RELEASE v0.9
 - [ ] more menu functions: volumes and screen modes
 - [ ] npc dialogs and interactions

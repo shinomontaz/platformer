@@ -150,3 +150,11 @@ func DrawStrikes(t pixel.Target) {
 func (hb *HitBox) Move(vec pixel.Vec) {
 	hb.rect = hb.rect.Moved(vec)
 }
+
+func (hb *HitBox) IsHitted() bool {
+	return len(hb.hitted) > 0
+}
+
+func (hb *HitBox) SetTtl(ttl float64) {
+	hb.ttl = ttl
+}

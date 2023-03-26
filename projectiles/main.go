@@ -46,11 +46,17 @@ func AddProjectile(t string, pos, f pixel.Vec, strength float64, dir float64, ow
 func Update(dt float64, objs, spec []common.Objecter) {
 	i := 0
 	for _, pr := range projectiles {
+		if pr.hb.IsHitted() {
+			pr.active = false
+		}
 		if pr.active {
 			projectiles[i] = pr
 			projectiles[i].update(dt, objs, spec)
 			i++
 		}
+	}
+	for j := i; j < len(projectiles); j++ {
+		projectiles[j].hb.SetTtl(0)
 	}
 	projectiles = projectiles[:i]
 }

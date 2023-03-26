@@ -1,6 +1,7 @@
 package actor
 
 import (
+	"fmt"
 	"math"
 	"platformer/common"
 	"platformer/events"
@@ -210,7 +211,7 @@ func (a *Actor) Listen(e int, v pixel.Vec) {
 		if math.Abs(a.vel.X) > a.walkspeed {
 			multiplier = 1
 		}
-		a.appliedForce.Y = v.Y * a.grav * (a.jumpforce*multiplier + float64(a.strength) - a.mass)
+		a.appliedForce.Y = v.Y * a.grav * (a.jumpforce + multiplier*float64(a.strength) - a.mass)
 	}
 
 	if e == events.SHIFT {
@@ -404,7 +405,8 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 		return
 	}
 
-	v := pixel.V(vec.X*(20*math.Max(a.walkspeed+float64(power)*5-a.mass, 0)), a.grav*(8+float64(power)*5-a.mass))
+	v := pixel.V(vec.X*(20*math.Max(a.walkspeed+float64(power)*10-a.mass, 0)), a.grav*(8+float64(power)*10-a.mass))
+	fmt.Println("hit apply force", v)
 	a.phys.Apply(v)
 
 	a.hp -= power

@@ -38,7 +38,7 @@ type Anims struct {
 	Name   string    `json:"type"`
 	Width  int       `json:"width"`
 	Height int       `json:"height"`
-	Margin int       `json:"margin"`
+	Margin []int     `json:"margin"`
 	List   []Anim    `json:"list"`
 	Groups []AnGroup `json:"groups"`
 }

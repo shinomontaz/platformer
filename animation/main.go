@@ -23,7 +23,7 @@ type Anims struct {
 	groups map[string]map[string]*Anim
 	rect   pixel.Rect
 	sprite *pixel.Sprite
-	m      float64 // margin
+	m      [4]float64 // margin
 }
 
 var loader *common.Loader
@@ -67,7 +67,7 @@ func GetGroup(name string) *Anims {
 	return anims[name]
 }
 
-func New(rect pixel.Rect, margin float64) *Anims {
+func New(rect pixel.Rect, margin [4]float64) *Anims {
 	return &Anims{
 		rect:   rect,
 		items:  make(map[string]*Anim),
@@ -115,17 +115,17 @@ func (a *Anims) PrepareAnim(name, file string, frames []int) (*Anim, error) {
 	frs := make([]pixel.Rect, 0, frames[0])
 
 	frameWidth := a.rect.W()
+	frameHeight := a.rect.H()
 	for x := 0.0; x+frameWidth <= spritesheet.Bounds().Max.X; x += frameWidth {
+		x += a.m[0]
 		frs = append(frs, pixel.R(
 			x,
-			0,
+			a.m[3],
 			x+frameWidth,
-			spritesheet.Bounds().H(),
+			a.m[3]+frameHeight,
 		))
-		x += a.m
+		x += a.m[2]
 	}
-
-	//	a.items[name] =
 
 	return &Anim{
 		sheet:  spritesheet,

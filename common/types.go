@@ -11,6 +11,7 @@ const (
 	GROUND = iota
 	BARRIER
 	WATER
+	OBJECT
 )
 
 type Animater interface {

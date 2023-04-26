@@ -21,6 +21,7 @@ func Machine(name string) *statemachine.Machine {
 func newPlayer() *statemachine.Machine {
 	m := statemachine.New()
 
+	m.Set(state.DEADSUNK, statemachine.Transition{})
 	m.Set(state.MELEE, statemachine.Transition{})
 	m.Set(state.MELEEMOVE, statemachine.Transition{})
 	m.Set(state.STAND, statemachine.Transition{

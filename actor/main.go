@@ -81,6 +81,7 @@ type Actor struct {
 	onkill     OnKillHandler
 	onhit      OnKillHandler
 	oninteract OnInteractHandler
+	iswater    bool
 }
 
 var loader *common.Loader
@@ -196,16 +197,16 @@ func (a *Actor) Listen(e int, v pixel.Vec) {
 		}
 		if a.isShift {
 			if math.Abs(a.vel.X) < a.runspeed {
-				a.appliedForce.X = v.X * a.runspeed
+				a.appliedForce.X = v.X * a.runspeed * 2
 			}
 		} else {
 			if math.Abs(a.vel.X) < a.walkspeed*19/20 {
-				a.appliedForce.X = v.X * a.walkspeed
+				a.appliedForce.X = v.X * a.walkspeed * 2
 			}
 		}
 	}
 
-	if v.Y > 0 {
+	if v.Y > 0 && a.state.GetId() != state.JUMP {
 		multiplier := 0.5
 		if math.Abs(a.vel.X) > a.walkspeed {
 			multiplier = 1
@@ -235,12 +236,11 @@ func (a *Actor) GetRect() pixel.Rect {
 
 func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	a.currObjs = objs
-	if a.appliedForce.X == 0 && math.Abs(a.vel.X) > a.walkspeed*0.1 && a.vel.Y == 0 { // active slowing in case of no active force applied
+	if a.appliedForce.X == 0 && math.Abs(a.vel.X) > a.walkspeed*0.1 { // active slowing in case of no active force applied
 		a.appliedForce.X = -a.walkspeed
 		if a.vel.X < 0 {
 			a.appliedForce.X *= -1
 		}
-
 	}
 	a.phys.Apply(a.appliedForce)
 	a.phys.Update(dt, objs)
@@ -274,6 +274,7 @@ func (a *Actor) UpdateSpecial(dt float64, objs []common.Objecter) {
 			ratio := part.H() / a.rect.H()
 			if ratio == 1 {
 				if a.hp > 0 {
+					a.iswater = true
 					a.Kill()
 				}
 				ratio += 0.5
@@ -301,7 +302,7 @@ func (a *Actor) SetDir(d float64) {
 
 func (a *Actor) Draw(t pixel.Target) {
 	a.sprite = a.state.GetSprite()
-	drawrect := a.rect.ResizedMin(pixel.Vec{a.rect.W() * 1.25, a.rect.H() * 1.25})
+	drawrect := a.rect
 	a.sprite.Draw(t, pixel.IM.
 		ScaledXY(pixel.ZV, pixel.V(
 			drawrect.W()/a.sprite.Frame().W(),
@@ -421,7 +422,12 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 
 func (a *Actor) Kill() {
 	a.hp = 0
-	a.SetState(state.DEAD)
+	if a.iswater {
+		a.SetState(state.DEADSUNK)
+	} else {
+		a.SetState(state.DEAD)
+	}
+
 	// a.mass = 0
 	// a.phys.SetMass(a.mass)
 	a.Inform(events.GAMEVENT_DIE, pixel.ZV)

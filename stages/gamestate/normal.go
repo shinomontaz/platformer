@@ -71,6 +71,7 @@ func (n *Normal) Draw(win *pixelgl.Window) {
 
 	n.w.Draw(win, n.lastPos, camPos, cntr)
 	talks.Draw(win, camPos, cntr) // we do not need world shaders upon alerts and replys
+	//	objects.Draw(win, camPos, cntr)
 	n.u.Draw(win)
 
 }

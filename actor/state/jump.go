@@ -2,7 +2,6 @@ package state
 
 import (
 	"math"
-	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -30,11 +29,11 @@ func NewJump(a Actor, an Animater) *Jump {
 }
 
 func (s *Jump) Start() {
-	s.a.Inform(events.BUSY, pixel.ZV)
+	//	s.a.Inform(events.BUSY, pixel.ZV)
 	s.jumpLimit = 1.0
 	s.animSpriteNum = 0
 	s.counter = 0
-	s.busy = true
+	//	s.busy = true
 	s.a.AddSound("jump")
 }
 

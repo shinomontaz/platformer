@@ -21,6 +21,8 @@ func New(code int, a Actor, an Animater) Stater {
 		st = NewHit(a, an)
 	case DEAD:
 		st = NewDead(a, an)
+	case DEADSUNK:
+		st = NewDeadSunk(a, an)
 	case ATTACK:
 		st = NewAttack(a, an)
 	case MELEE:

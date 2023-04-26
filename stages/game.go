@@ -14,6 +14,7 @@ import (
 	"platformer/factories"
 	"platformer/loot"
 	"platformer/magic"
+	"platformer/objects"
 	"platformer/particles"
 	"platformer/projectiles"
 	"platformer/sound"
@@ -100,6 +101,8 @@ func (g *Game) Init() {
 	projectiles.Init(grav)
 	particles.SetGravity(grav)
 
+	objects.Init(grav) // to load portrait only
+
 	loot.Init(g.w, config.Loots)
 	talks.Init(g.assetloader)
 	creatures.Init()
@@ -161,6 +164,11 @@ func (g *Game) Init() {
 		}
 		if o.Class == "coin" {
 			loot.AddCoin(pixel.V(o.X, o.Y), pixel.ZV)
+		}
+		if o.Class == "object" {
+			ai_type := o.Properties.GetString("ai")
+			//			ids := o.Properties.GetString("ids")
+			objects.Add(o.Name, pixel.R(o.X, o.Y-o.Height, o.X+o.Width, o.Y), ai_type /*, ids*/)
 		}
 	}
 	creatures.SetHero(g.hero)

@@ -121,8 +121,15 @@ func (a *Anims) H() float64 {
 	return float64(a.Height)
 }
 
-func (a *Anims) M() float64 {
-	return float64(a.Margin)
+func (a *Anims) M() [4]float64 {
+	m := [4]float64{0, 0, 0, 0}
+
+	if a.Margin != nil {
+		for i, ii := range a.Margin {
+			m[i] = float64(ii)
+		}
+	}
+	return m
 }
 
 func (a *Anims) N() string {

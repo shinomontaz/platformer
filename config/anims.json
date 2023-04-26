@@ -1,9 +1,9 @@
 [
     {
         "type": "player",
-        "width": 40,
-        "height": 40,
-        "margin": 8,    
+        "width": 36,
+        "height": 34,
+        "margin": [0, 0, 12, 0],
         "list":  [
         {
             "name": "stand",
@@ -61,6 +61,16 @@
             "frames": [6, 5, 6]
         },
         {
+            "name": "die2",
+            "file":"characters/graverobber/GraveRobber_death2.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "dead2",
+            "file":"characters/graverobber/GraveRobber_death2.png",
+            "frames": [6, 5, 6]
+        },
+        {
             "name": "meleemove",
             "file":"characters/graverobber/GraveRobber_attack3.png",
             "frames": [6, 0, 6]
@@ -86,9 +96,9 @@
     },
     {
         "type": "mummy",
-        "width": 40,
-        "height": 40,
-        "margin": 8,    
+        "width": 32,
+        "height": 38,
+        "margin": [8, 0, 8, 0],
         "list":  [
         {
             "name": "stand",
@@ -136,9 +146,9 @@
     },
     {
         "type": "deceased",
-        "width": 40,
-        "height": 40,
-        "margin": 8,    
+        "width": 32,
+        "height": 38,
+        "margin": [8, 0, 8, 0],
         "list":  [
         {
             "name": "stand",
@@ -264,9 +274,9 @@
     },
     {
         "type": "oldman",
-        "width": 40,
-        "height": 40,
-        "margin": 8,    
+        "width": 32,
+        "height": 34,
+        "margin": [8, 0, 8, 0],
         "list":  [
         {
             "name": "stand",
@@ -316,7 +326,6 @@
         "type": "deathstrike",
         "width": 48,
         "height": 64,
-        "margin": 0,    
         "list":  [
             {
                 "name": "spell",
@@ -329,7 +338,6 @@
         "type": "deathbolt",
         "width": 8,
         "height": 6,
-        "margin": 0,    
         "list":  [
             {
                 "name": "spell",
@@ -342,7 +350,6 @@
         "type": "scenery",
         "width": 64,
         "height": 64,
-        "margin": 0,    
         "list":  [
             {
                 "name": "campfire",
@@ -355,7 +362,6 @@
         "type": "coin",
         "width": 10,
         "height": 10,
-        "margin": 0,    
         "list":  [
             {
                 "name": "idle",
@@ -368,7 +374,6 @@
         "type": "key",
         "width": 12,
         "height": 10,
-        "margin": 0,    
         "list":  [
             {
                 "name": "idle",
@@ -381,7 +386,6 @@
         "type": "greenrune",
         "width": 16,
         "height": 16,
-        "margin": 0,    
         "list":  [
             {
                 "name": "idle",
@@ -394,7 +398,6 @@
         "type": "chest",
         "width": 32,
         "height": 32,
-        "margin": 0,    
         "list":  [
         {
             "name": "stand",
@@ -415,6 +418,29 @@
             "name": "dead",
             "file":"tiles/swamp-tileset/4 Animated objects/Chest.png",
             "frames": [4, 3, 4]
+        }
+        ]
+    },
+    {
+        "type": "turtle",
+        "width": 32,
+        "height": 16,
+        "margin": [8, 0, 8, 14],
+        "list":  [
+        {
+            "name": "stand",
+            "file":"animals/turtle/Idle.png",
+            "frames": [1, 0, 1]
+        },
+        {
+            "name": "idle",
+            "file":"animals/turtle/Idle.png",
+            "frames": [1, 0, 4]
+        },
+        {
+            "name": "walk",
+            "file":"animals/turtle/Walk.png",
+            "frames": [6, 0, 6]
         }
         ]
     }

@@ -12,6 +12,7 @@ import (
 	"platformer/common"
 	"platformer/creatures"
 	"platformer/loot"
+	"platformer/objects"
 	"platformer/particles"
 	"platformer/projectiles"
 
@@ -133,7 +134,7 @@ func (w *World) init() {
 					w.meta = o
 				}
 
-				if o.Class == "enemy" || o.Class == "npc" || o.Class == "coin" {
+				if o.Class == "enemy" || o.Class == "npc" || o.Class == "coin" || o.Class == "object" { // TODO: refactor!
 					o.Y = w.Height - o.Y
 					w.creaturesmeta = append(w.creaturesmeta, o)
 				}
@@ -289,6 +290,7 @@ func (w *World) initTiles() {
 			w.tiles[tile.ID] = tile
 			res := w.qtTile.Insert(common.Objecter{ID: tile.ID, R: pixel.R(pos.X, pos.Y, pos.X+float64(ts.TileWidth), pos.Y+float64(ts.TileHeight))})
 			if !res {
+				fmt.Println(layer.Name, ts.FirstGID, tile.ID, common.Objecter{ID: tile.ID, R: pixel.R(pos.X, pos.Y, pos.X+float64(ts.TileWidth), pos.Y+float64(ts.TileHeight))})
 				panic("cannot insert tile!")
 			}
 		}
@@ -375,10 +377,13 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 	}
 	w.uNumObjects = int32(len(w.uObjects))
 
+	w.visiblePhys = append(w.visiblePhys, objects.List(w.viewport)...)
+
 	creatures.Update(dt, w.visiblePhys, w.visibleSpec)
 	loot.Update(dt, w.visiblePhys)
 	particles.Update(dt, w.visiblePhys)
 	projectiles.Update(dt, w.visiblePhys, w.visibleSpec)
+	objects.Update(dt, w.qtPhys)
 }
 
 func (w *World) GetGravity() float64 {
@@ -496,6 +501,7 @@ func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel
 	loot.Draw(w.cnv2)
 	particles.Draw(w.cnv2)
 	projectiles.Draw(w.cnv2)
+	objects.Draw(w.cnv2)
 
 	w.cnv2.Draw(w.cnv, pixel.IM.Moved(w.cnv.Bounds().Center()))
 	w.cnv.Draw(t, pixel.IM.Moved(center))

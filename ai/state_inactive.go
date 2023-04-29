@@ -1,6 +1,10 @@
 package ai
 
-import "github.com/shinomontaz/pixel"
+import (
+	"fmt"
+
+	"github.com/shinomontaz/pixel"
+)
 
 type StateInactive struct {
 	id int
@@ -21,7 +25,7 @@ func (s *StateInactive) Update(dt float64) {
 }
 
 func (s *StateInactive) Start(poi pixel.Vec) {
-
+	fmt.Println("state inactive")
 }
 
 func (s *StateInactive) Listen(e int, v pixel.Vec) {

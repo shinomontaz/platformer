@@ -1,6 +1,7 @@
 package ai
 
 import (
+	"fmt"
 	"platformer/common"
 	"platformer/creatures"
 	"platformer/events"
@@ -14,6 +15,7 @@ type StateAttack struct {
 	ai          *Ai
 	timer       float64
 	nonseelimit float64
+	counter     int
 	lastpos     pixel.Vec
 	vec         pixel.Vec
 	isbusy      bool
@@ -36,6 +38,22 @@ func (s *StateAttack) Update(dt float64) {
 	if s.ai.attackskill == nil {
 		s.ai.SetState(CHOOSEATTACK, s.lastpos)
 		return
+	}
+
+	if s.counter > 0 { // here we made decision to switch to state BUSTLE with some probability - after strike
+		coeff := 0.25
+		if s.ai.attackskill.Type == "melee" {
+			coeff = 0.5
+		} else if s.ai.attackskill.Type == "spell" {
+			coeff = 0
+		}
+		dice := float64(s.counter) * common.GetRandFloat()
+		fmt.Println(dice, coeff)
+		if dice > coeff {
+			s.ai.SetState(BUSTLE, s.lastpos)
+			s.counter = 0
+			return
+		}
 	}
 
 	hero := creatures.GetHero()
@@ -91,11 +109,12 @@ func (s *StateAttack) Update(dt float64) {
 	s.vec = pixel.ZV
 	s.ai.obj.SetTarget(heropos)
 	s.ai.obj.SetSkill(s.ai.attackskill)
-	//	fmt.Println("attack state notify: ", s.ai.attackskill.Event, s.vec)
 	s.ai.obj.Listen(s.ai.attackskill.Event, s.vec)
+	s.counter++
 }
 
 func (s *StateAttack) Start(poi pixel.Vec) {
+	fmt.Println("state attack start")
 	s.lastpos = poi
 }
 

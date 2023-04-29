@@ -1,6 +1,7 @@
 package ai
 
 import (
+	"fmt"
 	"platformer/actor"
 	"platformer/common"
 	"platformer/creatures"
@@ -18,15 +19,28 @@ type StateChooseAttack struct {
 	nonseelimit float64
 	lastpos     pixel.Vec
 	isbusy      bool
+	skills      []*actor.Skill
+	skills2     []*actor.Skill
 }
 
 func NewChooseAttack(ai *Ai, w Worlder) *StateChooseAttack {
-	return &StateChooseAttack{
+	cha := &StateChooseAttack{
 		id:          CHOOSEATTACK,
 		ai:          ai,
 		w:           w,
 		nonseelimit: 1,
 	}
+
+	cha.skills = ai.obj.GetSkills()
+	sort.Slice(cha.skills, func(i, j int) bool {
+		return cha.skills[i].Max < cha.skills[j].Max
+	})
+	cha.skills2 = ai.obj.GetSkills()
+	sort.Slice(cha.skills2, func(i, j int) bool {
+		return cha.skills2[i].Min < cha.skills2[j].Min
+	})
+
+	return cha
 }
 
 func (s *StateChooseAttack) Update(dt float64) {
@@ -58,25 +72,18 @@ func (s *StateChooseAttack) Update(dt float64) {
 		}
 	}
 
-	skills := s.ai.obj.GetSkills()
-	sort.Slice(skills, func(i, j int) bool {
-		return skills[i].Max < skills[j].Max
-	})
-	skills2 := s.ai.obj.GetSkills()
-	sort.Slice(skills2, func(i, j int) bool {
-		return skills2[i].Min < skills2[j].Min
-	})
-
 	l := pixel.L(pos, heropos)
 	currDist := l.Len()
 	var choosed *actor.Skill
 
-	if currDist > skills[len(skills)-1].Max {
-		choosed = skills[len(skills)-1]
-	} else if currDist < skills2[0].Min {
-		choosed = skills2[0]
+	if currDist > s.skills[len(s.skills)-1].Max {
+		//		choosed = s.skills[len(s.skills)-1]
+		s.ai.SetState(INVESTIGATE, heropos)
+		return
+	} else if currDist < s.skills2[0].Min {
+		choosed = s.skills2[0]
 	} else {
-		for _, skill := range skills {
+		for _, skill := range s.skills {
 			if currDist < skill.Max && currDist > skill.Min {
 				if choosed != nil { // we already choosed some appropriate skill
 					var minWeightSkill *actor.Skill
@@ -113,6 +120,7 @@ func (s *StateChooseAttack) Update(dt float64) {
 
 func (s *StateChooseAttack) Start(poi pixel.Vec) {
 	s.lastpos = poi
+	fmt.Println("state chooseattack start")
 }
 
 func (s *StateChooseAttack) Listen(e int, v pixel.Vec) {

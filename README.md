@@ -50,7 +50,7 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] interactive objects [fb9083ad](https://github.com/shinomontaz/platformer/commit/fb9083adadfec30bc33565fb08f8261df63ca76c)
 - [x] blood [9e8bc765](https://github.com/shinomontaz/platformer/commit/9e8bc76527ff207a01f64dfc2af13244a14d126e)
 - [x] projectile attacks [cbbcae63](https://github.com/shinomontaz/platformer/commit/cbbcae6350ff0c17d79ffd28b58b21ba9ef2317e)
-- [ ] RELEASE v0.9 [v0.9](https://github.com/shinomontaz/platformer/releases/tag/v0.9)
+- [x] RELEASE v0.9 [v0.9](https://github.com/shinomontaz/platformer/releases/tag/v0.9)
 - [ ] more menu functions: volumes and screen modes
 - [ ] npc dialogs and interactions
 - [ ] level design

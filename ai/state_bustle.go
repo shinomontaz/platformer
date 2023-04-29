@@ -5,75 +5,61 @@ import (
 	"platformer/common"
 	"platformer/creatures"
 	"platformer/events"
-	"platformer/talks"
 
 	"github.com/shinomontaz/pixel"
 )
 
-type StateRoaming struct {
+// Состояние суеты. Используется между атаками с некоторой вероятностью, особенно между дальними
+type StateBustle struct {
 	id         int
 	w          Worlder
 	ai         *Ai
 	isbusy     bool
-	isagro     bool
 	timeout    float64
 	timer      float64
 	dir        float64
 	groundrate float64
+	isswitched bool
+	poi        pixel.Vec
 }
 
-func NewRoaming(ai *Ai, w Worlder, isagro bool) *StateRoaming {
-	return &StateRoaming{
-		id:      ROAMING,
-		ai:      ai,
-		w:       w,
-		isagro:  isagro,
-		timeout: 2,
+func NewBustle(ai *Ai, w Worlder) *StateBustle {
+	return &StateBustle{
+		id: BUSTLE,
+		ai: ai,
+		w:  w,
 	}
 }
 
-func (s *StateRoaming) Update(dt float64) {
+func (s *StateBustle) Update(dt float64) {
 	if s.isbusy {
 		return
 	}
-
-	if s.isagro {
+	s.timer += dt
+	if s.timer > s.timeout {
+		//go to previos state
 		pos := s.ai.obj.GetPos()
-
 		hero := creatures.GetHero()
-		// look for hero
 		herohp := hero.GetHp()
 		heropos := hero.GetPos()
 		dir := s.ai.obj.GetDir()
 		if (heropos.X < pos.X && dir < 0) || (heropos.X > pos.X && dir > 0) {
 			// check if we see hero
 			if s.w.IsSee(pos, heropos) && herohp > 0 {
-				talks.AddAlert(pos, 200)
-				// 	al := addAlert(pos, force)
-				// 	for _, en := range w.enemies {
-				// 		alrect := al.GetRect()
-				// 		if alrect.Contains(en.GetPos()) {
-				// 			a := ai.GetByObj(en)
-				// 			if a != nil {
-				// 				a.Listen(events.ALERT, alrect.Center())
-				// 			}
-				// 		}
-				// 	}
-
 				s.ai.SetState(CHOOSEATTACK, heropos)
 			}
-			return
+		} else {
+			s.ai.SetState(INVESTIGATE, heropos)
 		}
 	}
 
-	s.timer += dt
-	if s.timer > s.timeout {
+	if s.timer > s.timeout/2 && !s.isswitched {
 		if s.dir != 0 {
 			s.dir = 0
 		} else {
 			s.dir = float64(common.GetRandInt() - 5)
 		}
-		s.timer = 0
+		s.isswitched = true
 	}
 
 	if s.dir != 0 {
@@ -88,7 +74,7 @@ func (s *StateRoaming) Update(dt float64) {
 	}
 }
 
-func (s *StateRoaming) Listen(e int, v pixel.Vec) {
+func (s *StateBustle) Listen(e int, v pixel.Vec) {
 	if e == events.BUSY {
 		s.isbusy = true
 	}
@@ -97,10 +83,14 @@ func (s *StateRoaming) Listen(e int, v pixel.Vec) {
 	}
 }
 
-func (s *StateRoaming) Start(poi pixel.Vec) {
-	fmt.Println("state roaming")
+func (s *StateBustle) Start(poi pixel.Vec) {
+	s.timeout = 0.5 + float64(common.GetRandInt())/20
+	s.dir = float64(common.GetRandInt() - 5)
+	fmt.Println("bustle start", s.timeout, s.dir)
+	s.isswitched = false
+	s.poi = poi
 }
 
-func (s *StateRoaming) IsAlerted() bool {
+func (s *StateBustle) IsAlerted() bool {
 	return false
 }

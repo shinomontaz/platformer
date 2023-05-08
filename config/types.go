@@ -89,9 +89,10 @@ type Spellprofile struct {
 }
 
 type Options struct {
-	Vsync        bool    `json:"Vsync"`
-	Fullscreen   bool    `json:"Fullscreen"`
-	WindowHeight float64 `json:"WindowHeight"`
-	WindowWidth  float64 `json:"WindowWidth"`
-	CurrentMap   int     `json:"CurrentMap"`
+	Vsync        bool               `json:"Vsync"`
+	Fullscreen   bool               `json:"Fullscreen"`
+	WindowHeight float64            `json:"WindowHeight"`
+	WindowWidth  float64            `json:"WindowWidth"`
+	CurrentMap   int                `json:"CurrentMap"`
+	Volumes      map[string]float64 `json:"Volumes"`
 }

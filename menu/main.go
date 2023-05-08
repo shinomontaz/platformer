@@ -1,98 +1,92 @@
 package menu
 
 import (
-	"platformer/events"
+	"fmt"
+	"platformer/config"
 
 	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/text"
 )
 
-type Menu struct {
-	items    []*Item
-	curr     int
-	rect     pixel.Rect
-	isactive bool
-}
+type MenuOption func(*Menu)
 
-func New(r pixel.Rect) *Menu {
-	return &Menu{
-		items: make([]*Item, 0),
-		rect:  r,
+func WithQuit(quit func()) MenuOption {
+	return func(m *Menu) {
+		m.onquit = quit
 	}
 }
 
-func (m *Menu) GetRect() pixel.Rect {
-	return m.rect
-}
+var soundmenu *Menu
 
-func (m *Menu) SetActive(a bool) {
-	m.isactive = a
-}
-
-func (m *Menu) UpdateSelectedItemText(title string) {
-	m.items[m.curr].title = title
-}
-
-func (m *Menu) Select(idx int) {
-	m.items[m.curr].Select(false)
-	m.curr = idx
-	m.items[m.curr].Select(true)
-}
-
-func (m *Menu) Listen(e int, v pixel.Vec) {
-	if !m.isactive {
-		return
+func NewSound(r pixel.Rect, atlas *text.Atlas, opts ...MenuOption) *Menu {
+	if soundmenu != nil {
+		soundmenu.rect = r
+		for _, o := range opts {
+			o(soundmenu)
+		}
+		return soundmenu
 	}
 
-	// if up or down - handle just here, otherwise make item handle it
-	curr := m.curr
-	ismoved := false
-	if v.Y > 0 {
-		curr = (curr - 1 + len(m.items)) % len(m.items)
-		ismoved = true
+	soundmenu = New(r)
+	for _, o := range opts {
+		o(soundmenu)
 	}
-	if v.Y < 0 {
-		curr = (curr + 1) % len(m.items)
-		ismoved = true
-	}
-	if ismoved {
-		m.Select(curr)
-		return
-	}
-	if e == events.ENTER {
-		m.items[m.curr].Action()
-		return
-	}
+	txt := text.New(pixel.V(0, 0), atlas)
 
-	m.items[m.curr].Listen(e, v)
-}
+	it := NewItem(fmt.Sprintf("%v: %-10v", "Master", config.Opts.Volumes["main"]), txt,
+		WithHandle(func(e int, v pixel.Vec) {
+			if v.X == 0 {
+				return
+			}
+			if v.X < 0 && config.Opts.Volumes["main"] > 0 {
+				config.Opts.Volumes["main"] -= 10
+			} else if v.X > 0 && config.Opts.Volumes["main"] < 100 {
+				config.Opts.Volumes["main"] += 10
+			}
+			soundmenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", "Master", config.Opts.Volumes["main"]))
+		}),
+	)
+	soundmenu.AddItem(it)
+	it.Select(true)
 
-func (m *Menu) AddItem(it *Item) {
-	offsetY := m.rect.H() / 1.6
-	b := it.Bounds()
-	i := len(m.items)
-	c := m.rect.Center()
+	txt = text.New(pixel.V(0, 0), atlas)
+	it = NewItem(fmt.Sprintf("%v: %-10v", "Music", config.Opts.Volumes["music"]), txt,
+		WithHandle(func(e int, v pixel.Vec) {
+			if v.X == 0 {
+				return
+			}
+			if v.X < 0 && config.Opts.Volumes["music"] > 0 {
+				config.Opts.Volumes["music"] -= 10
+			} else if v.X > 0 && config.Opts.Volumes["music"] < 100 {
+				config.Opts.Volumes["music"] += 10
+			}
+			soundmenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", "Music", config.Opts.Volumes["music"]))
+		}),
+	)
+	soundmenu.AddItem(it)
 
-	pos := pixel.V(c.X-m.rect.W()/16, offsetY-float64(i)*b.H())
+	txt = text.New(pixel.V(0, 0), atlas)
+	it = NewItem(fmt.Sprintf("%v: %-10v", "Actions", config.Opts.Volumes["actions"]), txt,
+		WithHandle(func(e int, v pixel.Vec) {
+			if v.X == 0 {
+				return
+			}
+			if v.X < 0 && config.Opts.Volumes["actions"] > 0 {
+				config.Opts.Volumes["actions"] -= 10
+			} else if v.X > 0 && config.Opts.Volumes["actions"] < 100 {
+				config.Opts.Volumes["actions"] += 10
+			}
+			soundmenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", "Actions", config.Opts.Volumes["actions"]))
+		}),
+	)
+	soundmenu.AddItem(it)
 
-	it.Place(pos)
-
-	m.items = append(m.items, it)
-}
-
-func (m *Menu) ReplaceItem(idx int, it *Item) {
-	pos := m.items[idx].GetPlace()
-	it.Place(pos)
-	m.items[idx] = it
-}
-
-func (m *Menu) Update(dt float64) {
-	for _, it := range m.items {
-		it.Update(dt)
-	}
-}
-
-func (m *Menu) Draw(t pixel.Target) {
-	for _, it := range m.items {
-		it.Draw(t)
-	}
+	txt = text.New(pixel.V(0, 0), atlas)
+	it = NewItem("Quit", txt, WithAction(func() {
+		if soundmenu.onquit != nil {
+			soundmenu.onquit()
+		}
+	}))
+	soundmenu.AddItem(it)
+	return soundmenu
 }

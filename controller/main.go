@@ -12,12 +12,14 @@ type Controller struct {
 	win  *pixelgl.Window
 	vec  pixel.Vec
 	sbrs []common.Subscriber
+	jr   bool
 }
 
-func New(win *pixelgl.Window) *Controller {
+func New(win *pixelgl.Window, justReleased bool) *Controller {
 	ctrl := &Controller{
 		win:  win,
 		sbrs: make([]common.Subscriber, 0),
+		jr:   justReleased,
 	}
 
 	return ctrl
@@ -55,9 +57,19 @@ func (pc *Controller) Update() {
 
 	if pc.win.Pressed(pixelgl.KeyLeft) {
 		pc.vec.X--
-		isMoved = true
+		if !pc.jr {
+			isMoved = true
+		}
 	} else if pc.win.Pressed(pixelgl.KeyRight) {
 		pc.vec.X++
+		if !pc.jr {
+			isMoved = true
+		}
+	}
+
+	if pc.win.JustPressed(pixelgl.KeyLeft) {
+		isMoved = true
+	} else if pc.win.JustPressed(pixelgl.KeyRight) {
 		isMoved = true
 	}
 

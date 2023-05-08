@@ -7,6 +7,7 @@ import (
 	"os"
 	"platformer/common"
 	"platformer/config"
+	"platformer/sound"
 
 	"github.com/shinomontaz/pixel/pixelgl"
 
@@ -85,4 +86,8 @@ func initScreen(win *pixelgl.Window) {
 		win.SetBounds(currBounds)
 		win.SetCursorVisible(true)
 	}
+}
+
+func initSound() {
+	sound.SetVolumes(config.Opts.Volumes["main"], (config.Opts.Volumes["music"] - 100), (config.Opts.Volumes["actions"] - 100))
 }

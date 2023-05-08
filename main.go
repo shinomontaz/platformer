@@ -48,6 +48,7 @@ func run() {
 	win.SetSmooth(true)
 
 	initScreen(win)
+	initSound()
 
 	stgs = make(map[int]stages.Stager, 0)
 	loadingStage = stages.NewLoading(inform, assetloader)
@@ -106,6 +107,8 @@ func inform(e int) {
 		}
 	case events.GAMEVENT_INITSCREEN:
 		initScreen(win)
+	case events.GAMEVENT_UPDATEVOLUME:
+		initSound()
 	case events.STAGEVENT_NOTREADY:
 		loadingStage.SetUp(stages.WithJob(currStage.Init), stages.WithNext(events.STAGEVENT_DONE, currStage.GetID()))
 		setStage(loadingStage.GetID())

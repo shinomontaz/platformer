@@ -35,7 +35,7 @@ func NewNormal(game Gamer, currBounds pixel.Rect, u *ui.Ui, w *world.World, hero
 			lastPos:    pixel.ZV,
 		},
 		win:  win,
-		ctrl: controller.New(win),
+		ctrl: controller.New(win, false),
 	}
 
 	n.ctrl.AddListener(n.hero) // make hero listen keyboard input

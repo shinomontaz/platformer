@@ -56,7 +56,7 @@ func NewDead(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Window)
 			lastPos: pixel.ZV,
 		},
 		win:  win,
-		ctrl: controller.New(win),
+		ctrl: controller.New(win, false),
 	}
 
 	d.cnv = pixelgl.NewCanvas(win.Bounds())

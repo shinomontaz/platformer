@@ -4,6 +4,7 @@ import (
 	"image/color"
 	"platformer/actor"
 	"platformer/common"
+	"platformer/config"
 	"platformer/controller"
 	"platformer/events"
 	"platformer/menu"
@@ -43,12 +44,17 @@ void main() {
 
 type Menu struct {
 	Common
-	win        *pixelgl.Window
-	ctrl       *controller.Controller
 	cnv        *pixelgl.Canvas
 	uTime      float32
 	ingamemenu *menu.Menu
+
+	displaymenu *menu.Menu
+	soundmenu   *menu.Menu
+
+	activemenu *menu.Menu
 	atlas      *text.Atlas
+
+	ctrl *controller.Controller
 }
 
 func NewMenu(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Window) *Menu {
@@ -60,8 +66,7 @@ func NewMenu(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Window)
 			hero:    hero,
 			lastPos: pixel.ZV,
 		},
-		win:  win,
-		ctrl: controller.New(win),
+		ctrl: controller.New(win, true),
 	}
 
 	m.cnv = pixelgl.NewCanvas(win.Bounds())
@@ -71,6 +76,7 @@ func NewMenu(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Window)
 	m.cnv.SetFragmentShader(fragSource3)
 
 	m.ingamemenu = menu.New(win.Bounds())
+	m.activemenu = m.ingamemenu
 
 	fnt := common.GetFont("menu")
 	m.atlas = text.NewAtlas(fnt, text.ASCII)
@@ -87,12 +93,24 @@ func NewMenu(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Window)
 	m.ingamemenu.AddItem(it)
 
 	txt = text.New(pixel.V(0, 0), m.atlas)
+	it = menu.NewItem("Sound", txt, menu.WithAction(func() {
+		m.ingamemenu.SetActive(false)
+		m.soundmenu.SetActive(true)
+		m.soundmenu.Select(0)
+		m.activemenu = m.soundmenu
+	}))
+	m.ingamemenu.AddItem(it)
+
+	txt = text.New(pixel.V(0, 0), m.atlas)
 	it = menu.NewItem("Quit to main", txt, menu.WithAction(func() {
 		m.game.Notify(events.STAGEVENT_QUIT)
 	}))
 	m.ingamemenu.AddItem(it)
 
-	m.ctrl.AddListener(m.ingamemenu)
+	// sound menu
+	m.soundmenu = menu.NewSound(win.Bounds(), m.atlas, menu.WithQuit(soundMenuQuit(m)))
+
+	m.ctrl.AddListener(m)
 
 	return m
 }
@@ -113,7 +131,7 @@ func (m *Menu) Draw(win *pixelgl.Window) {
 	m.w.Draw(m.cnv, m.lastPos, camPos, m.cnv.Bounds().Center())
 
 	m.cnv.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
-	m.ingamemenu.Draw(win)
+	m.activemenu.Draw(win)
 }
 
 func (d *Menu) GetId() int {
@@ -125,8 +143,25 @@ func (m *Menu) Start() {
 	m.lastPos = m.hero.GetPos()
 
 	m.ingamemenu.Select(0)
-	m.ingamemenu.SetActive(true)
+	m.soundmenu.Invoke(m.currBounds, menu.WithQuit(soundMenuQuit(m)))
+
+	m.activemenu.SetActive(true)
 }
 
 func (m *Menu) Listen(e int, v pixel.Vec) {
+	m.activemenu.Listen(e, v)
+}
+
+func (m *Menu) saveOptions() {
+	go config.SaveRuntime()
+}
+
+func soundMenuQuit(m *Menu) func() {
+	return func() {
+		m.game.Notify(events.GAMEVENT_UPDATEVOLUME)
+		m.saveOptions()
+		m.soundmenu.SetActive(false)
+		m.ingamemenu.SetActive(true)
+		m.activemenu = m.ingamemenu
+	}
 }

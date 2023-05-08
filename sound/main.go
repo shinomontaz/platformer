@@ -1,6 +1,7 @@
 package sound
 
 import (
+	"fmt"
 	"log"
 	"platformer/common"
 	"platformer/config"
@@ -19,7 +20,7 @@ type Sound struct {
 }
 
 type PosEffect struct {
-	s   Sound
+	vol *effects.Volume
 	pos pixel.Vec
 }
 
@@ -29,26 +30,56 @@ var (
 	music        map[string]Sound
 
 	currEffects []PosEffect
+	currMusic   *effects.Volume
 
+	volBase    float64
 	volMusic   *effects.Volume
 	volEffects *effects.Volume
 )
+
+var sbrs []common.Subscriber
+
+func AddSubscriber(sbr common.Subscriber) {
+	sbrs = append(sbrs, sbr)
+}
+
+func Notify(e int) {
+	for _, s := range sbrs {
+		s.Listen(e, pixel.ZV)
+	}
+}
+
+// main, music, actions in [-100, 100]
+func SetVolumes(main, music, actions float64) {
+	volBase = main/100 - 0.5
+
+	volMusic = &effects.Volume{
+		Base:   2,
+		Volume: volBase + music/10,
+	}
+	if music/100 <= -1 || volBase == -0.5 {
+		volMusic.Silent = true
+	}
+	volEffects = &effects.Volume{
+		Base:   2,
+		Volume: volBase + actions/10,
+	}
+
+	if actions/100 <= -1 || volBase == -0.5 {
+		volEffects.Silent = true
+	}
+
+	if currMusic != nil {
+		currMusic.Volume = volMusic.Volume
+		currMusic.Silent = volMusic.Silent
+	}
+}
 
 func Init(loader *common.Loader) {
 	music = make(map[string]Sound)
 	soundeffects = make(map[string]Sound)
 	currEffects = make([]PosEffect, 0)
-
-	volMusic = &effects.Volume{
-		Base:   2,
-		Volume: -6,
-		Silent: false,
-	}
-	volEffects = &effects.Volume{
-		Base:   2,
-		Volume: -2,
-		Silent: false,
-	}
+	sbrs = make([]common.Subscriber, 0)
 
 	// read effects
 	// read music
@@ -104,6 +135,18 @@ func Init(loader *common.Loader) {
 
 func Update(pos pixel.Vec) {
 	listener = pos
+	i := 0
+	for _, ce := range currEffects {
+		l := pixel.L(listener, ce.pos).Len()
+		if l > 500 {
+			continue
+		}
+		currEffects[i] = ce
+		ce.vol.Volume = volEffects.Volume - l/50
+		ce.vol.Silent = volEffects.Silent
+		i++
+	}
+	currEffects = currEffects[:i]
 }
 
 func AddEffect(name string, pos pixel.Vec) {
@@ -111,22 +154,26 @@ func AddEffect(name string, pos pixel.Vec) {
 	if l > 500 {
 		return
 	}
-	// currEffects = append(currEffects, PosEffect{
-	// 	s:   soundeffects[name],
-	// 	pos: pos,
-	// })
 
 	bfr := soundeffects[name].buff
 	eft := bfr.Streamer(0, bfr.Len())
 
-	currVolume := &effects.Volume{
+	vol := &effects.Volume{
 		Base:     volEffects.Base,
 		Streamer: eft,
-		Volume:   -l / 50,
+		Volume:   volEffects.Volume - l/50, //-l / 50,
 		Silent:   volEffects.Silent,
 	}
 
-	speaker.Play(currVolume)
+	fmt.Println("AddEffect", vol)
+
+	pe := PosEffect{
+		vol,
+		pos,
+	}
+	currEffects = append(currEffects, pe)
+
+	speaker.Play(vol)
 }
 
 func PlauseMusic() {
@@ -135,12 +182,16 @@ func PlauseMusic() {
 
 func PlayMusic(name string) {
 	speaker.Clear()
-
 	bfr := music[name].buff
 	mus := bfr.Streamer(0, bfr.Len())
 	ctrl := &beep.Ctrl{Streamer: beep.Loop(-1, mus), Paused: false}
 
-	volMusic.Streamer = ctrl
+	currMusic = &effects.Volume{
+		Base:     volMusic.Base,
+		Streamer: ctrl,
+		Volume:   volMusic.Volume,
+		Silent:   volMusic.Silent,
+	}
 
-	speaker.Play(volMusic)
+	speaker.Play(currMusic)
 }

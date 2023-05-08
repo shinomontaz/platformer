@@ -92,7 +92,7 @@
   <object id="111" gid="171" x="5920" y="768" width="7" height="14"/>
   <object id="112" gid="172" x="6005.09" y="736.818" width="8" height="14"/>
   <object id="113" gid="167" x="5932.45" y="704.545" width="14" height="16"/>
-  <object id="114" gid="156" x="5721" y="864.667" width="47" height="55"/>
+  <object id="114" gid="156" x="5736.73" y="864.212" width="47" height="55"/>
   <object id="115" gid="142" x="5901.67" y="673" width="199" height="183"/>
   <object id="116" gid="202" x="8064" y="672" width="140" height="123"/>
   <object id="117" gid="195" x="7938.13" y="672.375" width="32" height="33"/>
@@ -295,7 +295,7 @@
     <property name="color" value="#3d253b"/>
    </properties>
   </object>
-  <object id="47" x="4799.33" y="864.292" width="928.818" height="222.166">
+  <object id="47" x="4799.33" y="864.292" width="928.658" height="222.166">
    <properties>
     <property name="color" value="#3d253b"/>
    </properties>
@@ -315,7 +315,7 @@
     <property name="color" value="#3d253b"/>
    </properties>
   </object>
-  <object id="51" x="5728.1" y="864.292" width="287.622" height="289.166">
+  <object id="51" x="5728" y="864.292" width="287.72" height="289.166">
    <properties>
     <property name="color" value="#3d253b"/>
    </properties>

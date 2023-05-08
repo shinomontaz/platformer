@@ -98,6 +98,9 @@ func Init(loader *common.Loader, rtcfg *os.File) error {
 
 	byteValue, _ = io.ReadAll(runtimecfg)
 	json.Unmarshal(byteValue, &Opts)
+	if Opts.Volumes == nil {
+		Opts.Volumes = map[string]float64{"main": 10, "music": 10, "actions": 10}
+	}
 	return nil
 }
 

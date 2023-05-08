@@ -55,7 +55,7 @@ func NewDialog(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Windo
 			lastPos: pixel.ZV,
 		},
 		win:  win,
-		ctrl: controller.New(win),
+		ctrl: controller.New(win, true),
 	}
 
 	d.cnv = pixelgl.NewCanvas(win.Bounds())

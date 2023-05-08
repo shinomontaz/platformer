@@ -61,7 +61,7 @@ func NewGame(f Inform, l *common.Loader, win *pixelgl.Window, currBounds pixel.R
 			eventMap: map[int]int{events.STAGEVENT_QUIT: MENU},
 		},
 		assetloader:   l,
-		ctrl:          controller.New(win),
+		ctrl:          controller.New(win, false),
 		initialBounds: currBounds,
 		win:           win,
 	}

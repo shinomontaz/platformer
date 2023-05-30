@@ -74,6 +74,9 @@ func NewActiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	sBustle := NewBustle(a, a.w)
 	a.states[BUSTLE] = sBustle
 
+	sIdle := NewIdle(a, a.w, true)
+	a.states[IDLE] = sIdle
+
 	sInvestigate := NewInvestigate(a, a.w)
 	a.states[INVESTIGATE] = sInvestigate
 

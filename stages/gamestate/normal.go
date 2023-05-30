@@ -95,11 +95,8 @@ func (n *Normal) Listen(e int, v pixel.Vec) {
 		n.game.SetState(DEAD)
 	case events.INTERACT: // from hero
 		fmt.Println("handle event INTERACT")
-		// world -> check interactions, get interaction action
-		// if dialog =>
-		// hero => set active dialog
-		// n.game.SetState(DIALOG)
-		// if reply => world add reply
-		// if action => do action on world
+	case events.DIALOG: // from hero
+		fmt.Println("handle event DIALOG")
+		n.game.SetState(DIALOG)
 	}
 }

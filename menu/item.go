@@ -22,21 +22,7 @@ type Item struct {
 	selected bool
 }
 
-type Option func(*Item)
-
-func WithHandle(f func(int, pixel.Vec)) Option {
-	return func(i *Item) {
-		i.handle = f
-	}
-}
-
-func WithAction(f func()) Option {
-	return func(i *Item) {
-		i.action = f
-	}
-}
-
-func NewItem(title string, txt *text.Text, opts ...Option) *Item {
+func NewItem(title string, txt *text.Text, opts ...ItemOption) *Item {
 	i := &Item{
 		title:        title,
 		txt:          txt,
@@ -92,4 +78,5 @@ func (i *Item) Draw(t pixel.Target) {
 	}
 	fmt.Fprintln(i.txt, i.title)
 	i.txt.Draw(t, pixel.IM.Moved(i.rect.Center()))
+
 }

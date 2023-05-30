@@ -50,7 +50,7 @@ func NewDeathstrike(s string, owner *actor.Actor, target pixel.Vec, objs []commo
 		currObjs:     objs,
 	}
 
-	ds.fnt = common.GetFont("regular")
+	ds.fnt = common.GetFont("regular8")
 	ds.atlas = text.NewAtlas(ds.fnt, text.ASCII)
 
 	ds.init()

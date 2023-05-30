@@ -3,6 +3,8 @@ package ui
 import (
 	"platformer/common"
 
+	"platformer/inventory"
+
 	"github.com/shinomontaz/pixel"
 )
 
@@ -44,4 +46,7 @@ func (ui *Ui) Draw(t pixel.Target) {
 		vec = vec.Add(pixel.Vec{marginx, 0})
 		ui.heart.Draw(t, pixel.IM.Moved(vec))
 	}
+
+	vec = pixel.V(ui.viewport.Max.X-100.0, ui.viewport.Max.Y-marginy)
+	inventory.Draw(t, pixel.IM.Moved(vec))
 }

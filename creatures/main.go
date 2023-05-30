@@ -31,6 +31,18 @@ func AddNpc(npc *actor.Actor) {
 	npcs = append(npcs, npc)
 }
 
+func DeleteNpc(npc *actor.Actor) {
+	i := 0
+	for _, n := range npcs {
+		if n == npc {
+			continue
+		}
+		npcs[i] = n
+		i++
+	}
+	npcs = npcs[:i]
+}
+
 func GetHero() common.Actorer {
 	return hero
 }

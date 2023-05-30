@@ -1,8 +1,12 @@
 package gamestate
 
 import (
+	"image/color"
 	"platformer/actor"
 	"platformer/controller"
+	"platformer/dialogs"
+	"platformer/events"
+	"platformer/ui"
 	"platformer/world"
 
 	"github.com/shinomontaz/pixel/pixelgl"
@@ -13,43 +17,44 @@ import (
 var fragSource2 = `
 #version 330 core
 
-in vec2 vTexCoords;
+in vec2  vTexCoords;
+
 out vec4 fragColor;
 
-uniform sampler2D uTexture;
 uniform vec4 uTexBounds;
-
-// custom uniforms
+uniform sampler2D uTexture;
 uniform float uTime;
 
 void main() {
-    vec2 t = vTexCoords / uTexBounds.zw;
-	vec3 influence = texture(uTexture, t).rgb;
-	float uSpeed = 5.0;
+	// Get our current screen coordinate
+	vec2 t = (vTexCoords - uTexBounds.xy) / uTexBounds.zw;
 
-    if (influence.r + influence.g + influence.b > 0.3) {
-		t.y += cos(t.x * 40.0 + (uTime * uSpeed))*0.005;
-		t.x += cos(t.y * 40.0 + (uTime * uSpeed))*0.01;
-	}
+	// Sum our 3 color channels
+	float sum  = texture(uTexture, t).r;
+	      sum += texture(uTexture, t).g;
+	      sum += texture(uTexture, t).b;
 
-    vec3 col = texture(uTexture, t).rgb;
-	fragColor = vec4(col * vec3(0.6, 0.6, 1.2),1.0);
+	// Divide by 3, and set the output to the result
+	vec4 color = vec4( sum/3, sum/3, sum/3, 1.0);
+	fragColor = color;
 }
 `
 
 type Dialog struct {
 	Common
-	win   *pixelgl.Window
-	ctrl  *controller.Controller
-	cnv   *pixelgl.Canvas
-	uTime float32
+	win     *pixelgl.Window
+	ctrl    *controller.Controller
+	cnv     *pixelgl.Canvas
+	uTime   float32
+	currDlg *dialogs.Dialog
 }
 
-func NewDialog(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Window) *Dialog {
+func NewDialog(game Gamer, u *ui.Ui, w *world.World, hero *actor.Actor, win *pixelgl.Window) *Dialog {
 	d := &Dialog{
 		Common: Common{
 			game:    game,
 			id:      DIALOG,
+			u:       u,
 			w:       w,
 			hero:    hero,
 			lastPos: pixel.ZV,
@@ -69,9 +74,15 @@ func NewDialog(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Windo
 }
 
 func (d *Dialog) Update(dt float64) {
+	d.currDlg = dialogs.GetActive()
+	if d.currDlg == nil {
+		d.game.SetState(NORMAL)
+		return
+	}
+
 	if dt > 0 {
 		d.ctrl.Update()
-		d.w.Update(d.currBounds, dt)
+		//		d.w.Update(d.currBounds, dt)
 		d.uTime = float32(dt)
 	}
 }
@@ -79,9 +90,14 @@ func (d *Dialog) Update(dt float64) {
 func (d *Dialog) Draw(win *pixelgl.Window) {
 	camPos := d.lastPos.Add(pixel.V(0, 150))
 
+	d.cnv.Clear(color.RGBA{0, 0, 0, 1})
+
 	d.w.Draw(d.cnv, d.lastPos, camPos, d.cnv.Bounds().Center())
+	//	d.u.Draw(d.cnv)
 	d.cnv.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
+
 	// draw dialog on center of window, no shaders upplied to it, only to background
+	d.currDlg.Draw(win)
 }
 
 func (d *Dialog) GetId() int {
@@ -89,16 +105,26 @@ func (d *Dialog) GetId() int {
 }
 
 func (d *Dialog) Start() {
-	d.currBounds = d.w.GetViewport()
 	d.lastPos = d.hero.GetPos()
 
+	d.currDlg = dialogs.GetActive()
+	d.currDlg.Start(d.win.Bounds())
 	// hero => get active dialog
 	// prepare options and dialog
 }
 
 func (d *Dialog) Listen(e int, v pixel.Vec) {
-	// switch e {
-	// case events.ESCAPE: // from controller
-	// 	d.game.SetState(NORMAL)
-	// }
+	// if up or down - handle just here, otherwise make item handle it
+	if v.Y > 0 {
+		d.currDlg.UpdateAnswer(-1)
+	}
+	if v.Y < 0 {
+		d.currDlg.UpdateAnswer(+1)
+	}
+	if e == events.ENTER {
+		d.currDlg.Action()
+	}
+	if e == events.ESCAPE {
+		d.game.SetState(NORMAL)
+	}
 }

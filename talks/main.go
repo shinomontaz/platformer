@@ -17,7 +17,7 @@ var atlas *text.Atlas
 
 func Init(loader *common.Loader) {
 	alerts = make([]*Alert, 0)
-	fnt := common.GetFont("regular")
+	fnt := common.GetFont("regular16")
 	atlas = text.NewAtlas(fnt, text.ASCII)
 	initPhrases(loader)
 }

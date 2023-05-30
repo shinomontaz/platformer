@@ -11,6 +11,7 @@ import (
 	"platformer/background"
 	"platformer/common"
 	"platformer/creatures"
+	"platformer/inventory"
 	"platformer/loot"
 	"platformer/objects"
 	"platformer/particles"
@@ -381,6 +382,8 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 
 	creatures.Update(dt, w.visiblePhys, w.visibleSpec)
 	loot.Update(dt, w.visiblePhys)
+	collectedloot := loot.Collect(creatures.GetHero())
+	inventory.Add(collectedloot)
 	particles.Update(dt, w.visiblePhys)
 	projectiles.Update(dt, w.visiblePhys, w.visibleSpec)
 	objects.Update(dt, w.qtPhys)

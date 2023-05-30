@@ -5,6 +5,7 @@
         "sound": "coin",
         "width": 10,
         "height": 10,
+        "portrait": "icons/25.png",
         "mass": 1
     },
     {
@@ -13,6 +14,7 @@
         "sound": "key",
         "width": 12,
         "height": 10,
+        "portrait": "icons/28.png",
         "mass": 1
     },
     {
@@ -21,6 +23,7 @@
         "sound": "rune",
         "width": 16,
         "height": 16,
+        "portrait": "icons/52.png",
         "mass": 1
     }
 ]

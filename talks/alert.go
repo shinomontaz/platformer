@@ -34,7 +34,7 @@ func (a *Alert) Update(dt float64) bool {
 func (a *Alert) Draw(win *pixelgl.Window, camPos, center pixel.Vec) {
 	pos := a.rect.Center().Add(pixel.Vec{-1.0, 40.0})
 	txt := text.New(pos, atlas)
-	txt.LineHeight = atlas.LineHeight() * 1.3
+	txt.LineHeight = atlas.LineHeight() * 1.1
 	txt.Color = borderColor
 	strChunks := splitToChunks(a.txt, 10) // use not a long strings and make it wordwrapped
 	for _, st := range strChunks {
@@ -43,7 +43,7 @@ func (a *Alert) Draw(win *pixelgl.Window, camPos, center pixel.Vec) {
 
 	pos = a.rect.Center().Add(pixel.Vec{1.0, 40.0})
 	txt2 := text.New(pos, atlas)
-	txt2.LineHeight = atlas.LineHeight() * 1.3
+	txt2.LineHeight = atlas.LineHeight() * 1.1
 	txt2.Color = borderColor
 	for _, st := range strChunks {
 		fmt.Fprintln(txt2, st)
@@ -51,7 +51,7 @@ func (a *Alert) Draw(win *pixelgl.Window, camPos, center pixel.Vec) {
 
 	pos = a.rect.Center().Add(pixel.Vec{0.0, 41.0})
 	txt3 := text.New(pos, atlas)
-	txt3.LineHeight = atlas.LineHeight() * 1.3
+	txt3.LineHeight = atlas.LineHeight() * 1.1
 	txt3.Color = borderColor
 	for _, st := range strChunks {
 		fmt.Fprintln(txt3, st)
@@ -59,7 +59,7 @@ func (a *Alert) Draw(win *pixelgl.Window, camPos, center pixel.Vec) {
 
 	pos = a.rect.Center().Add(pixel.Vec{0.0, 39.0})
 	txt4 := text.New(pos, atlas)
-	txt4.LineHeight = atlas.LineHeight() * 1.3
+	txt4.LineHeight = atlas.LineHeight() * 1.1
 	txt4.Color = borderColor
 	for _, st := range strChunks {
 		fmt.Fprintln(txt4, st)
@@ -67,7 +67,7 @@ func (a *Alert) Draw(win *pixelgl.Window, camPos, center pixel.Vec) {
 
 	pos = a.rect.Center().Add(pixel.Vec{0.0, 40.0})
 	txt5 := text.New(pos, atlas)
-	txt5.LineHeight = atlas.LineHeight() * 1.3
+	txt5.LineHeight = atlas.LineHeight() * 1.1
 	txt5.Color = a.col
 	for _, st := range strChunks {
 		fmt.Fprintln(txt5, st)

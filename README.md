@@ -51,8 +51,9 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] blood [9e8bc765](https://github.com/shinomontaz/platformer/commit/9e8bc76527ff207a01f64dfc2af13244a14d126e)
 - [x] projectile attacks [cbbcae63](https://github.com/shinomontaz/platformer/commit/cbbcae6350ff0c17d79ffd28b58b21ba9ef2317e)
 - [x] RELEASE v0.9 [v0.9](https://github.com/shinomontaz/platformer/releases/tag/v0.9)
-- [ ] more menu functions: volumes and screen modes
-- [ ] npc dialogs and interactions
+- [x] more menu functions: sound volumes
+- [ ] inventory, inventory usage
+- [ ] npc dialogs
 - [ ] level design
 - [ ] stats system, exp
 - [ ] victory screen, score

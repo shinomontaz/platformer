@@ -10,8 +10,10 @@ import (
 	"platformer/config"
 	"platformer/controller"
 	"platformer/creatures"
+	"platformer/dialogs"
 	"platformer/events"
 	"platformer/factories"
+	"platformer/inventory"
 	"platformer/loot"
 	"platformer/magic"
 	"platformer/objects"
@@ -100,11 +102,16 @@ func (g *Game) Init() {
 	particles.Init(5000)
 	projectiles.Init(grav)
 	particles.SetGravity(grav)
+	inventory.Init(g.assetloader)
 
 	objects.Init(grav) // to load portrait only
 
 	loot.Init(g.w, config.Loots)
 	talks.Init(g.assetloader)
+
+	dialogs.Init(g.assetloader)
+	dialogs.SetWorld(g.w)
+
 	creatures.Init()
 	list := g.w.GetMetas()
 	for _, o := range list {
@@ -145,10 +152,18 @@ func (g *Game) Init() {
 
 			interact_type := o.Properties.GetString("interact")
 			if interact_type == "phrase" {
+				phrasesClass := o.Properties.GetString("phrasesClass")
 				// create interact handler
-				npc.SetOnInteract(npc.Phrasing)
+				npc.SetOnInteract(func(a *actor.Actor) { talks.AddPhrase(a.GetRect().Min, phrasesClass) })
 			} else if interact_type == "die" {
-				npc.SetOnInteract(npc.Kill)
+				npc.SetOnInteract(func(a *actor.Actor) { a.Kill() })
+			} else if interact_type == "dialog" {
+				dialog_id := o.Properties.GetInt("dialog")
+				npc.SetOnInteract(func(a *actor.Actor) {
+					fmt.Println("DIALOG!!!")
+					dialogs.SetActive(dialog_id, a)
+					g.SetState(gamestate.DIALOG)
+				})
 			}
 			ai_type := o.Properties.GetString("ai")
 			if ai_type != "" {
@@ -201,13 +216,13 @@ func (g *Game) initStates(currBounds pixel.Rect) {
 	sNormal := gamestate.NewNormal(g, currBounds, g.u, g.w, g.hero, g.win)
 	sDead := gamestate.NewDead(g, g.w, g.hero, g.win)
 	sMenu := gamestate.NewMenu(g, g.w, g.hero, g.win)
-	//	sDialog := gamestate.NewDialog(g, g.w, g.hero, g.win)
+	sDialog := gamestate.NewDialog(g, g.u, g.w, g.hero, g.win)
 
 	g.states = map[int]Gamestater{
 		gamestate.NORMAL: sNormal,
 		gamestate.DEAD:   sDead,
 		gamestate.MENU:   sMenu,
-		//		gamestate.DIALOG: sDialog,
+		gamestate.DIALOG: sDialog,
 	}
 
 	g.SetState(gamestate.NORMAL)

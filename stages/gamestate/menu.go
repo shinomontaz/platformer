@@ -75,10 +75,11 @@ func NewMenu(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Window)
 	m.cnv.SetUniform("uTime", &m.uTime)
 	m.cnv.SetFragmentShader(fragSource3)
 
-	m.ingamemenu = menu.New(win.Bounds())
+	menurect := pixel.R(0, 0, 240, 240)
+	m.ingamemenu = menu.New(menurect.Moved(win.Bounds().Center().Sub(menurect.Center())))
 	m.activemenu = m.ingamemenu
 
-	fnt := common.GetFont("menu")
+	fnt := common.GetFont("menu28")
 	m.atlas = text.NewAtlas(fnt, text.ASCII)
 
 	txt := text.New(pixel.V(0, 0), m.atlas)
@@ -108,7 +109,8 @@ func NewMenu(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Window)
 	m.ingamemenu.AddItem(it)
 
 	// sound menu
-	m.soundmenu = menu.NewSound(win.Bounds(), m.atlas, menu.WithQuit(soundMenuQuit(m)))
+	soundmenurect := pixel.R(0, 0, 200, 240)
+	m.soundmenu = menu.NewSound(soundmenurect.Moved(win.Bounds().Center().Sub(soundmenurect.Center())), m.atlas, menu.WithQuit(soundMenuQuit(m)))
 
 	m.ctrl.AddListener(m)
 

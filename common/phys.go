@@ -131,7 +131,7 @@ func (p *Phys) Update(dt float64, objs []Objecter) {
 		}
 	}
 
-	dt = math.Min(dt, 1.0)
+	dt = math.Min(dt, 0.1) // some fix for debugger
 	p.vel = p.vel.Add(p.force.Scaled(dt))
 
 	if p.vel.X != 0 || p.vel.Y != 0 {
@@ -141,6 +141,9 @@ func (p *Phys) Update(dt float64, objs []Objecter) {
 		p.vel = newvel
 		if ground > 0 {
 			p.isground = true
+			if p.vel.Y > 0 && p.vel.Y < p.gravity*dt {
+				p.vel.Y = 0
+			}
 		}
 		p.rect = p.rect.Moved(vec)
 	}

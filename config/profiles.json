@@ -66,19 +66,11 @@
         "body": "undead",
         "skills": [
             {
-                "type": "melee",
-                "name": "melee",
-                "max": 19,
-                "min": 5,
-                "hitbox": [-15, -5, -10, 5],
-                "weight": 1
-            },
-            {
                 "type": "ranged",
                 "name": "deathbolt",
                 "max": 250,
-                "min": 20,
-                "weight": 9
+                "min": 50,
+                "weight": 1
             }
         ]
     },
@@ -129,6 +121,7 @@
         "jump": 0,
         "walk": 30,
         "run": 30,
+        "portrait": "tiles/fishing-assets/4 Icons/Icons_02.png",
         "skills": [
             {
                 "type": "melee",

@@ -25,7 +25,7 @@ func NewRanged(a Actor, an Animater) *Ranged {
 			anims: an,
 			trs:   a.GetTransition(RANGED),
 		},
-		idleLimit: 1.5, // seconds before state transition
+		idleLimit: 3, // seconds before state transition
 		variants:  an.GetLen("cast"),
 	}
 

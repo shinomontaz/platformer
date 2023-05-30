@@ -50,10 +50,28 @@ func (m *Menu) Init() {
 	m.mainmenuback = menu.NewBack(m.currBounds, m.assetloader)
 
 	// main menu
-	m.mainmenu = menu.New(m.currBounds)
+	logopic, err := m.assetloader.LoadPicture("logo.png")
+	logo := pixel.NewSprite(logopic, pixel.R(0, 0, logopic.Bounds().W(), logopic.Bounds().H()))
+	if err != nil {
+		panic(err)
+	}
+	soundmenupic, err := m.assetloader.LoadPicture("sound.png")
+	soundlogo := pixel.NewSprite(soundmenupic, pixel.R(0, 0, soundmenupic.Bounds().W(), soundmenupic.Bounds().H()))
+	if err != nil {
+		panic(err)
+	}
+	displaymenupic, err := m.assetloader.LoadPicture("display.png")
+	displaylogo := pixel.NewSprite(displaymenupic, pixel.R(0, 0, displaymenupic.Bounds().W(), displaymenupic.Bounds().H()))
+	if err != nil {
+		panic(err)
+	}
+
+	menurect := pixel.R(0, 0, 200, 240)
+	m.mainmenu = menu.New(menurect.Moved(m.currBounds.Center().Sub(menurect.Center())), menu.WithLogo(logo))
+
 	m.activemenu = m.mainmenu
 
-	fnt := common.GetFont("menu")
+	fnt := common.GetFont("menu28")
 	m.atlas = text.NewAtlas(fnt, text.ASCII)
 
 	txt := text.New(pixel.V(0, 0), m.atlas)
@@ -89,7 +107,9 @@ func (m *Menu) Init() {
 	m.mainmenu.AddItem(it)
 
 	// display menu
-	m.displaymenu = menu.New(m.currBounds)
+	displaymenurect := pixel.R(0, 0, 400, 140)
+	m.displaymenu = menu.New(displaymenurect.Moved(m.currBounds.Center().Sub(displaymenurect.Center())), menu.WithLogo(displaylogo))
+
 	txt = text.New(pixel.V(0, 0), m.atlas)
 
 	mode := videoModes[currentVideoMode]
@@ -123,7 +143,8 @@ func (m *Menu) Init() {
 	m.displaymenu.AddItem(it)
 
 	// sound menu
-	m.soundmenu = menu.NewSound(m.currBounds, m.atlas, menu.WithQuit(soundMenuQuit(m)))
+	soundmenurect := pixel.R(0, 0, 200, 240)
+	m.soundmenu = menu.NewSound(soundmenurect.Moved(m.currBounds.Center().Sub(soundmenurect.Center())), m.atlas, menu.WithQuit(soundMenuQuit(m)), menu.WithLogo(soundlogo))
 
 	m.ctrl.AddListener(m)
 	m.isReady = true
@@ -140,7 +161,8 @@ func (m *Menu) Start() {
 
 	m.mainmenu.Select(0)
 
-	m.soundmenu.Invoke(m.currBounds, menu.WithQuit(soundMenuQuit(m)))
+	soundmenurect := pixel.R(0, 0, 200, 240)
+	m.soundmenu.Invoke(soundmenurect.Moved(m.currBounds.Center().Sub(soundmenurect.Center())), menu.WithQuit(soundMenuQuit(m)))
 	m.activemenu.SetActive(true)
 	m.isActive = true
 }
@@ -159,8 +181,6 @@ func (m *Menu) Run(win *pixelgl.Window, dt float64) {
 	m.mainmenuback.Draw(win)
 
 	m.activemenu.Update(dt)
-
-	//	fmt.Println(m.activemenu)
 
 	m.activemenu.Draw(win)
 }

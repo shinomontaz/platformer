@@ -14,38 +14,68 @@ var loader *Loader
 func InitFont(l *Loader) {
 	loader = l
 	fonts = make(map[string]font.Face)
-	bold, err := loadFont("fonts/GravityBold8.ttf", 8)
+
+	reg8, err := loadFont("fonts/MatchupPro.ttf", 8)
 	if err != nil {
 		panic(err)
 	}
-	fonts["bold"] = bold
+	fonts["regular8"] = reg8
 
-	reg, err := loadFont("fonts/GravityRegular5.ttf", 8)
-	//	reg, err := loadFont("fonts/ka1.ttf", 8)
+	reg16, err := loadFont("fonts/MatchupPro.ttf", 16)
+	if err != nil {
+		panic(err)
+	}
+	fonts["regular16"] = reg16
+
+	reg20, err := loadFont("fonts/MatchupPro.ttf", 20)
+	if err != nil {
+		panic(err)
+	}
+	fonts["regular20"] = reg20
+
+	reg24, err := loadFont("fonts/MatchupPro.ttf", 24)
+	if err != nil {
+		panic(err)
+	}
+	fonts["regular24"] = reg24
+
+	reg28, err := loadFont("fonts/MatchupPro.ttf", 28)
+	if err != nil {
+		panic(err)
+	}
+	fonts["regular28"] = reg28
+
+	reg32, err := loadFont("fonts/MatchupPro.ttf", 32)
+	if err != nil {
+		panic(err)
+	}
+	fonts["regular32"] = reg32
+
+	//	menu, err := loadFont("fonts/capture.ttf", 20)
+	menu28, err := loadFont("fonts/CompassPro.ttf", 28)
 
 	if err != nil {
 		panic(err)
 	}
-	fonts["regular"] = reg
+	fonts["menu28"] = menu28
 
-	regbig, err := loadFont("fonts/ka1.ttf", 16)
-
+	menu20, err := loadFont("fonts/CompassPro.ttf", 20)
 	if err != nil {
 		panic(err)
 	}
-	fonts["regular_big"] = regbig
+	fonts["menu20"] = menu20
 
-	menu, err := loadFont("fonts/capture.ttf", 20)
+	fancy20, err := loadFont("fonts/NicerNightie.ttf", 20)
 	if err != nil {
 		panic(err)
 	}
-	fonts["menu"] = menu
+	fonts["fancy20"] = fancy20
 
-	menusmall, err := loadFont("fonts/capture.ttf", 12)
+	fancy32, err := loadFont("fonts/NicerNightie.ttf", 32)
 	if err != nil {
 		panic(err)
 	}
-	fonts["menusmall"] = menusmall
+	fonts["fancy32"] = fancy32
 
 }
 

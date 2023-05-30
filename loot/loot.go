@@ -1,14 +1,13 @@
 package loot
 
 import (
+	"fmt"
 	"math"
 	"platformer/common"
 	"platformer/sound"
 
 	"github.com/shinomontaz/pixel"
 )
-
-var counter int
 
 type Loot struct {
 	id   int
@@ -25,20 +24,22 @@ type Loot struct {
 	dir           float64
 	vec           pixel.Vec // delta speed
 	vel           pixel.Vec
+	appliedForce  pixel.Vec
 
 	sounds map[string]soundeffect
 
 	sbrs []common.Subscriber
 	grav float64
+
+	portrait string // path to image for invetory
 }
 
-func New(anim common.Animater, rect pixel.Rect, opts ...Option) *Loot {
-	counter++
+func New(id int, anim common.Animater, rect pixel.Rect, opts ...Option) *Loot {
 	a := &Loot{
-		id:      counter,
+		id:      id,
 		anim:    anim,
 		rect:    rect,
-		mass:    0.1,
+		mass:    1,
 		dir:     1,
 		animdir: 1,
 		vel:     pixel.ZV,
@@ -52,9 +53,10 @@ func New(anim common.Animater, rect pixel.Rect, opts ...Option) *Loot {
 	}
 
 	p := common.NewPhys(rect,
+
 		common.WithGravity(a.grav),
 		common.WithMass(a.mass),
-		common.WithRigidityBottom(0.5),
+		common.WithRigidityBottom(0.3),
 	) // TODO does we really need phys to know run and walk speeds?
 	a.phys = p
 
@@ -76,6 +78,10 @@ func (a *Loot) GetRect() pixel.Rect {
 
 func (a *Loot) Update(dt float64, objs []common.Objecter) {
 	//	a.phys.Update(dt, &a.vec, objs)
+	if a.phys.IsGround() {
+		fmt.Println("loot on ground", a.phys.GetVel(), a.vel)
+	}
+	a.phys.Apply(a.appliedForce)
 	a.phys.Update(dt, objs)
 
 	a.vec = pixel.ZV
@@ -86,30 +92,35 @@ func (a *Loot) Update(dt float64, objs []common.Objecter) {
 
 	a.counter += dt
 	a.animSpriteNum = int(math.Floor(a.counter / 0.2))
+	a.appliedForce = pixel.ZV
 }
 
 func (a *Loot) GetDir() int {
 	return int(a.dir)
 }
 
-func (a *Loot) Draw(t pixel.Target) {
-	pic, rect := a.anim.GetSprite("idle", a.animSpriteNum)
-	a.sprite.Set(pic, rect)
-	drawrect := a.rect
-	a.sprite.Draw(t, pixel.IM.
+func (l *Loot) GetImagePath() string {
+	return l.portrait
+}
+
+func (l *Loot) Draw(t pixel.Target) {
+	pic, rect := l.anim.GetSprite("idle", l.animSpriteNum)
+	l.sprite.Set(pic, rect)
+	drawrect := l.rect
+	l.sprite.Draw(t, pixel.IM.
 		ScaledXY(pixel.ZV, pixel.V(
-			drawrect.W()/a.sprite.Frame().W(),
-			drawrect.H()/a.sprite.Frame().H(),
+			drawrect.W()/l.sprite.Frame().W(),
+			drawrect.H()/l.sprite.Frame().H(),
 		)).
 		Moved(drawrect.Center()),
 	)
 }
 
-func (a *Loot) AddSound(event string) {
-	if s, ok := a.sounds[event]; ok {
+func (l *Loot) AddSound(event string) {
+	if s, ok := l.sounds[event]; ok {
 		// select random sound
 		i := int(math.Round(common.GetRandFloat() * float64(len(s.List)-1)))
-		sound.AddEffect(s.List[i], a.rect.Center())
+		sound.AddEffect(s.List[i], l.rect.Center())
 	}
 }
 

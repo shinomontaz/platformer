@@ -6,7 +6,6 @@ import (
 	"platformer/events"
 	"platformer/projectiles"
 	"platformer/sound"
-	"platformer/talks"
 
 	"platformer/activities"
 
@@ -436,10 +435,9 @@ func (a *Actor) Kill() {
 	a.oninteract = nil
 }
 
-func (a *Actor) Phrasing() {
-	// talks.AddPhrase(a.rect.Min, a.phrasesClass)
-	talks.AddPhrase(a.rect.Min, a.phrasesClass)
-}
+// func (a *Actor) Phrasing() {
+// 	talks.AddPhrase(a.rect.Min, a.phrasesClass)
+// }
 
 func (a *Actor) OnKill() {
 	if a.onkill == nil {
@@ -468,7 +466,8 @@ func (a *Actor) OnInteract() {
 	if a.oninteract == nil {
 		return
 	}
-	a.oninteract()
+	//	a.oninteract()
+	a.oninteract(a)
 }
 
 func (a *Actor) GetId() int {

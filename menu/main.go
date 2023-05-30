@@ -8,14 +8,6 @@ import (
 	"github.com/shinomontaz/pixel/text"
 )
 
-type MenuOption func(*Menu)
-
-func WithQuit(quit func()) MenuOption {
-	return func(m *Menu) {
-		m.onquit = quit
-	}
-}
-
 var soundmenu *Menu
 
 func NewSound(r pixel.Rect, atlas *text.Atlas, opts ...MenuOption) *Menu {

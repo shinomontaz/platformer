@@ -1,33 +1,37 @@
 [
     {
         "id": 1,
-        "dialog": true,
-        "data": [
+        "variants": [
             {
-                "id": 1,
-                "title": "Where is my hooks?",
-                "variants": [
-                {
-                    "goto": 2,
-                    "title": "What?"
-                },
-                {
-                    "title": "Right away for them!",
-                    "quit": true
-                }
+                "idx": 1,
+                "text": "option 1 lsdkfjlsdkjf lskdjflskf092w89 sjkdfosi owiero woiwue roiwue roiweu roiwue roieuw oriuew od!",
+                "answers": [
+                    {
+                        "text": "answer 1",
+                        "goto": 2
+                    },
+                    {
+                        "text": "answer 2",
+                        "code": 1,
+                        "exit": true
+                    }
                 ]
             },
             {
-                "id": 2,
-                "title": "Do not where here! Go and take my hooks right now!",
-                "variants": [
-                {
-                    "title": "Ay Ay, grandpa!",
-                    "quit": true
-                }
+                "idx": 2,
+                "text": "option 2 lsdkfjlsdkjf lskdjflskf092w89 sjkdfosi owiero woiwue roiwue roiweu roiwue roieuw oriuew od!",
+                "answers": [
+                    {
+                        "text": "answer 3",
+                        "goto": 1
+                    },
+                    {
+                        "text": "answer 4",
+                        "code": 2,
+                        "exit": true
+                    }
                 ]
             }
-
         ]
     }
 ]

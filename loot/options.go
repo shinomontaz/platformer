@@ -35,3 +35,9 @@ func WithVelocity(v pixel.Vec) Option {
 		a.vel = v
 	}
 }
+
+func WithPortrait(path string) Option {
+	return func(a *Loot) {
+		a.portrait = path
+	}
+}

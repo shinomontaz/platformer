@@ -360,13 +360,13 @@
     },
     {
         "type": "coin",
-        "width": 10,
-        "height": 10,
+        "width": 16,
+        "height": 16,
         "list":  [
             {
                 "name": "idle",
-                "file":"tiles/swamp-tileset/4 Animated objects/Coin.png",
-                "frames": [4, 0, 4]
+                "file":"scenery/coins/coin3.png",
+                "frames": [14, 0, 14]
             }
         ]
     },

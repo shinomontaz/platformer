@@ -121,17 +121,18 @@
     <property name="color" value="#56587b"/>
    </properties>
   </object>
-  <object id="23" name="hero" class="hero" x="2187.01" y="858.997" width="32.3333" height="40.6667"/>
+  <object id="23" name="hero" class="hero" x="1062.77" y="928.694" width="32.3333" height="40.6667"/>
   <object id="25" name="oldman" class="npc" x="786.501" y="928.337" width="32.3333" height="40.6667">
    <properties>
     <property name="ai" value="npc_roaming"/>
-    <property name="interact" value="phrase"/>
+    <property name="dialog" type="int" value="1"/>
+    <property name="interact" value="dialog"/>
    </properties>
   </object>
   <object id="27" name="mummy" class="enemy" x="3333.67" y="894.997" width="51" height="61">
    <properties>
     <property name="ai" value="enemy_idle"/>
-    <property name="reward" value="key"/>
+    <property name="reward" value="coin"/>
    </properties>
   </object>
   <object id="42" name="chest" class="npc" x="1679.17" y="822.337" width="32.3333" height="40.6667">
@@ -142,10 +143,11 @@
     <property name="reward_count" type="int" value="3"/>
    </properties>
   </object>
-  <object id="44" name="deceased" class="enemy" x="3538.84" y="895.167" width="51" height="61">
+  <object id="44" name="deceased" class="enemy" x="4547.93" y="828.5" width="51" height="61">
    <properties>
     <property name="ai" value="enemy_idle"/>
     <property name="dir" type="float" value="-1"/>
+    <property name="reward" value="coin"/>
    </properties>
   </object>
   <object id="45" name="turtle" class="object" x="2400.25" y="954.348" width="70.5" height="35.9167">

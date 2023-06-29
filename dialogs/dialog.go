@@ -3,10 +3,11 @@ package dialogs
 import (
 	"encoding/json"
 	"fmt"
-	"platformer/actor"
-	"platformer/common"
 	"strings"
 	"unicode"
+
+	"platformer/actor"
+	"platformer/common"
 
 	"github.com/shinomontaz/pixel"
 	"github.com/shinomontaz/pixel/imdraw"
@@ -124,10 +125,6 @@ func (d *Dialog) Action() {
 	go_to := d.Variants[d.currVariant].Answers[d.currAnswer].Goto
 	fmt.Println("dialog action:", go_to)
 
-	if go_to != 0 {
-		d.SetVariant(go_to)
-	}
-
 	code := d.Variants[d.currVariant].Answers[d.currAnswer].Code
 	if code > 0 {
 		runAction(code, d.a)
@@ -136,8 +133,12 @@ func (d *Dialog) Action() {
 	exit := d.Variants[d.currVariant].Answers[d.currAnswer].Exit
 	if exit {
 		UnsetActive()
+		return
 	}
 
+	if go_to != 0 {
+		d.SetVariant(go_to)
+	}
 }
 
 func (d *Dialog) UpdateAnswer(i int) {

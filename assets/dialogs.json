@@ -4,14 +4,14 @@
         "variants": [
             {
                 "idx": 1,
-                "text": "option 1 lsdkfjlsdkjf lskdjflskf092w89 sjkdfosi owiero woiwue roiwue roiweu roiwue roieuw oriuew od!",
+                "text": "Oh! Finally you are here. A big octopus has appeared in our pond, but you can't get it. Let's get some new gear. One leg there, the other here!",
                 "answers": [
                     {
-                        "text": "answer 1",
+                        "text": "What?",
                         "goto": 2
                     },
                     {
-                        "text": "answer 2",
+                        "text": "I'm running, grandpa!",
                         "code": 1,
                         "exit": true
                     }
@@ -19,15 +19,11 @@
             },
             {
                 "idx": 2,
-                "text": "option 2 lsdkfjlsdkjf lskdjflskf092w89 sjkdfosi owiero woiwue roiwue roiweu roiwue roieuw oriuew od!",
+                "text": "Don't what me here! Quick for a new tackle, brat!",
                 "answers": [
                     {
-                        "text": "answer 3",
-                        "goto": 1
-                    },
-                    {
-                        "text": "answer 4",
-                        "code": 2,
+                        "text": "I'm on my way, grandpa",
+                        "code": 1,
                         "exit": true
                     }
                 ]

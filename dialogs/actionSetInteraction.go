@@ -6,7 +6,7 @@ import (
 )
 
 func actionSetInteraction(a *actor.Actor) {
-	//we need: phrasesClass (string)
-	phrasesClass := ""
+	// we need: phrasesClass (string)
+	phrasesClass := "grandpa"
 	a.SetOnInteract(func(a *actor.Actor) { talks.AddPhrase(a.GetRect().Min, phrasesClass) })
 }

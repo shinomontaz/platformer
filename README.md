@@ -53,7 +53,7 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] RELEASE v0.9 [v0.9](https://github.com/shinomontaz/platformer/releases/tag/v0.9)
 - [x] more menu functions: sound volumes
 - [ ] inventory, inventory usage
-- [ ] npc dialogs
+- [x] npc dialogs
 - [ ] level design
 - [ ] stats system, exp
 - [ ] victory screen, score

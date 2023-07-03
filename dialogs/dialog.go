@@ -15,15 +15,20 @@ import (
 	"golang.org/x/image/colornames"
 )
 
+var margin = 10.0
+var portraitwidth = 16.0
+
 type Dialog struct {
-	ID          int                   `json:"id"`
-	Variants    map[int]DialogVariant `json:"variants"`
-	currVariant int
-	currAnswer  int
-	imd         *imdraw.IMDraw
-	rect        pixel.Rect
-	a           *actor.Actor
-	sbrs        []common.Subscriber
+	ID            int                   `json:"id"`
+	Variants      map[int]DialogVariant `json:"variants"`
+	currVariant   int
+	currAnswer    int
+	imd           *imdraw.IMDraw
+	rect          pixel.Rect
+	a             *actor.Actor
+	sbrs          []common.Subscriber
+	maintxtstring string
+	maintxt       *text.Text
 }
 
 type DialogVariant struct {
@@ -69,38 +74,39 @@ func (d *Dialog) SetVariant(id int) {
 		d.currVariant = id
 		d.currAnswer = 0
 	}
+	d.prepareText()
 }
 
 func (d *Dialog) Start(bounds pixel.Rect) {
-	d.rect = pixel.R(0, 0, 240, 240)
+	d.rect = pixel.R(0, 0, 300, 240)
 	d.rect = d.rect.Moved(bounds.Center().Sub(d.rect.Center()))
 	d.imd = imdraw.New(nil)
 	d.setImdr()
+	d.maintxt = text.New(pixel.V(0, 0), atlas)
+
+	d.prepareText()
 }
 
 func (d *Dialog) Draw(t pixel.Target) {
 	d.imd.Draw(t)
-	margin := 10.0
-
-	maintxtstring := d.Variants[d.currVariant].Text
-	maintxt := text.New(pixel.V(0, 0), atlas)
-	maintxt.Color = colornames.Whitesmoke
-	fmt.Fprintln(maintxt, maintxtstring)
-
-	for maintxt.Bounds().W() > d.rect.W()-2*margin {
-		maintxtstring = splitToChunks(maintxtstring)
-		maintxt.Clear()
-		fmt.Fprintln(maintxt, maintxtstring)
-	}
 
 	pos := pixel.V(d.rect.Min.X+margin+margin+32, d.rect.Max.Y-2*margin)
 
-	maintxtrect := maintxt.Bounds().Moved(pos)
-	//	anstxtrect := pixel.Rect( maintxtrect.Min.X, maintxtrect.Min.
-	portrait := d.a.GetPortrait()
-	portrait.Draw(t, pixel.IM.Moved(pixel.Vec{d.rect.Min.X + margin + 16, d.rect.Max.Y - margin - 16}))
+	maintxtrect := d.maintxt.Bounds().Moved(pos)
 
-	maintxt.Draw(t, pixel.IM.Moved(maintxtrect.Min))
+	portrait := d.a.GetPortrait()
+	portrait.Draw(t, pixel.IM.Moved(pixel.Vec{d.rect.Min.X + margin + portraitwidth, d.rect.Max.Y - margin - portraitwidth}))
+
+	d.maintxt.Draw(t, pixel.IM.Moved(maintxtrect.Min))
+
+	// imd := imdraw.New(nil)
+	// vertices := maintxtrect.Vertices()
+	// imd.Color = colornames.Red
+	// for _, v := range vertices {
+	// 	imd.Push(v)
+	// }
+	// imd.Rectangle(1)
+	// imd.Draw(t)
 
 	pointertxt := text.New(pixel.V(0, 0), atlasbig)
 	pointertxt.Color = colornames.Aliceblue
@@ -161,6 +167,18 @@ func (d *Dialog) setImdr() {
 	d.imd.Push(d.rect.Min.Add(pixel.Vec{3, 3}))
 	d.imd.Push(d.rect.Max.Sub(pixel.Vec{3, 3}))
 	d.imd.Rectangle(2)
+}
+
+func (d *Dialog) prepareText() {
+	d.maintxtstring = d.Variants[d.currVariant].Text
+	d.maintxt.Color = colornames.Whitesmoke
+	fmt.Fprintln(d.maintxt, d.maintxtstring)
+
+	for d.maintxt.Bounds().W() > d.rect.W()-2*margin-(margin+portraitwidth) {
+		d.maintxtstring = splitToChunks(d.maintxtstring)
+		d.maintxt.Clear()
+		fmt.Fprintln(d.maintxt, d.maintxtstring)
+	}
 }
 
 func splitToChunks(s string) string {

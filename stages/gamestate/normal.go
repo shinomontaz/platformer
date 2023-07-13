@@ -54,7 +54,7 @@ func (n *Normal) Update(dt float64) {
 		deltaVec := n.lastPos.To(pos)
 		n.currBounds = n.currBounds.Moved(deltaVec)
 
-		n.w.Update(n.currBounds, dt)
+		n.w.Update(n.currBounds, pos, dt)
 		//		creatures.Update(dt, w.GetVisiblePhys())
 		talks.Update(dt)
 		ai.Update(dt)

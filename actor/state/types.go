@@ -8,6 +8,7 @@ import (
 
 const (
 	STAND = iota
+	SNEER
 	IDLE
 	WALK
 	RUN
@@ -41,7 +42,7 @@ type Actor interface {
 	Interact()
 	AddSound(event string)
 	Inform(e int, v pixel.Vec)
-	GetSkillName() string
+	GetSkillAttr(attr string) (interface{}, error)
 	OnKill()
 }
 

@@ -72,7 +72,7 @@ func NewDead(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Window)
 func (d *Dead) Update(dt float64) {
 	if dt > 0 {
 		d.ctrl.Update()
-		d.w.Update(d.currBounds, dt)
+		d.w.Update(d.currBounds, d.lastPos, dt)
 		d.uTime += float32(dt)
 	}
 }

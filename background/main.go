@@ -7,39 +7,61 @@ import (
 	"github.com/shinomontaz/pixel"
 )
 
+type Option func(*Back)
+
+func WithSpeed(speed float64) Option {
+	return func(b *Back) {
+		b.speed = speed
+	}
+}
+
+func WithOffset(vec pixel.Vec) Option {
+	return func(b *Back) {
+		b.offset = vec
+	}
+}
+
 type Back struct {
-	width    float64
-	height   float64
-	p        pixel.Picture
-	viewport pixel.Rect
-	vector1  pixel.Vec
-	vector2  pixel.Vec
+	width   float64
+	height  float64
+	p       pixel.Picture
+	vector1 pixel.Vec
+	vector2 pixel.Vec
 
 	part1 *pixel.Sprite
 	part2 *pixel.Sprite
 
-	pos   pixel.Vec
-	steps int
+	pos        pixel.Vec
+	start      pixel.Vec
+	currCenter pixel.Vec
+	offset     pixel.Vec
+	steps      int
+	speed      float64
 }
 
-func New(start pixel.Vec, viewport pixel.Rect, loader *common.Loader, path string) *Back {
+func New(start pixel.Vec, viewport pixel.Rect, loader *common.Loader, path string, opts ...Option) *Back {
 	width := viewport.W()
 	height := viewport.H()
 
-	x, y := viewport.Min.X, viewport.Min.Y
 	b := Back{
-		width:    width,
-		height:   height,
-		viewport: viewport,
+		offset: pixel.ZV,
+		width:  width,
+		height: height,
 
-		vector1: pixel.V(x+width/2+1, y+height/2),
-		vector2: pixel.V(x+3*width/2-1, y+height/2),
+		vector1: pixel.V(width/2+1, height/2),
+		vector2: pixel.V(3*width/2-1, height/2),
+
+		speed: 1,
 
 		pos:   start,
+		start: start,
 		steps: 0,
 	}
 
-	//	bg, err := common.LoadPicture(path)
+	for _, o := range opts {
+		o(&b)
+	}
+
 	bg, err := loader.LoadPicture(path)
 
 	if err != nil {
@@ -54,8 +76,8 @@ func New(start pixel.Vec, viewport pixel.Rect, loader *common.Loader, path strin
 	return &b
 }
 
-func (b *Back) Draw(t pixel.Target, pos pixel.Vec, cam pixel.Vec) {
-	x := pos.X
+func (b *Back) Update(dt float64, pos pixel.Vec) {
+	x := (pos.X - b.start.X) * b.speed
 	steps := int(math.Abs(x / b.width))
 
 	if steps != b.steps {
@@ -63,21 +85,20 @@ func (b *Back) Draw(t pixel.Target, pos pixel.Vec, cam pixel.Vec) {
 		b.steps = steps
 	}
 
-	x = math.Mod(x, b.width)
+	b.pos = pixel.V(x-float64(steps)*b.width, 0)
 
-	b.pos = pixel.V(x, 0)
+	b.currCenter = pos.Sub(pixel.Vec{b.width / 2, 150})
+}
 
-	fix := pos.X - b.viewport.Center().X
-
+func (b *Back) Draw(t pixel.Target) {
 	mtx1 := pixel.IM.ScaledXY(pixel.ZV, pixel.V(
 		b.width/b.part1.Frame().W(),
 		b.height/b.part1.Frame().H(),
-	)).Moved(b.vector1.Sub(b.pos).Add(pixel.V(fix, 0))) // .Add(pixel.V(cam.X, 0))
+	)).Moved(b.vector1.Sub(b.pos)).Moved(b.currCenter).Moved(b.offset)
 	mtx2 := pixel.IM.ScaledXY(pixel.ZV, pixel.V(
 		b.width/b.part2.Frame().W(),
 		b.height/b.part2.Frame().H(),
-	)).Moved(b.vector2.Sub(b.pos).Add(pixel.V(fix, 0))) //
-
+	)).Moved(b.vector2.Sub(b.pos)).Moved(b.currCenter).Moved(b.offset)
 	b.part1.Draw(t, mtx1)
 	b.part2.Draw(t, mtx2)
 }

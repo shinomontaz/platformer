@@ -8,7 +8,6 @@ import (
 	"github.com/shinomontaz/pixel"
 
 	"platformer/actor"
-	"platformer/background"
 	"platformer/common"
 	"platformer/creatures"
 	"platformer/inventory"
@@ -25,7 +24,7 @@ import (
 )
 
 type World struct {
-	b      *background.Back
+	b      Background
 	loader *common.Loader
 
 	cnv    *pixelgl.Canvas
@@ -359,7 +358,7 @@ func (w *World) GetVisiblePhys() []common.Objecter {
 	return w.visiblePhys
 }
 
-func (w *World) Update(rect pixel.Rect, dt float64) {
+func (w *World) Update(rect pixel.Rect, hpos pixel.Vec, dt float64) {
 	w.viewport = rect
 
 	w.visibleTiles = w.qtTile.Retrieve(w.viewport)
@@ -387,6 +386,7 @@ func (w *World) Update(rect pixel.Rect, dt float64) {
 	particles.Update(dt, w.visiblePhys)
 	projectiles.Update(dt, w.visiblePhys, w.visibleSpec)
 	objects.Update(dt, w.qtPhys)
+	w.b.Update(dt, hpos)
 }
 
 func (w *World) GetGravity() float64 {
@@ -422,7 +422,7 @@ func (w *World) GetCenter() pixel.Vec {
 	return w.viewport.Center()
 }
 
-func (w *World) SetBackground(b *background.Back) {
+func (w *World) SetBackground(b Background) {
 	w.b = b
 }
 
@@ -430,11 +430,12 @@ func (w *World) SetBackground(b *background.Back) {
 func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel.Vec) {
 
 	w.cnv.Clear(color.RGBA{0, 0, 0, 1})
-	w.cnv2.Clear(color.RGBA{240, 248, 255, 1})
+	//	w.cnv2.Clear(color.RGBA{240, 248, 255, 1})
+	w.cnv2.Clear(color.RGBA{101, 186, 227, 1})
 
 	w.cnv2.SetMatrix(pixel.IM.Moved(w.cnv2.Bounds().Center().Sub(cam)))
 
-	w.b.Draw(w.cnv2, hpos, cam)
+	w.b.Draw(w.cnv2)
 
 	w.imdrawrect.Draw(w.cnv2)
 

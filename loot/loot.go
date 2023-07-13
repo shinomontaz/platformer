@@ -1,7 +1,6 @@
 package loot
 
 import (
-	"fmt"
 	"math"
 	"platformer/common"
 	"platformer/sound"
@@ -77,10 +76,6 @@ func (a *Loot) GetRect() pixel.Rect {
 }
 
 func (a *Loot) Update(dt float64, objs []common.Objecter) {
-	//	a.phys.Update(dt, &a.vec, objs)
-	if a.phys.IsGround() {
-		fmt.Println("loot on ground", a.phys.GetVel(), a.vel)
-	}
 	a.phys.Apply(a.appliedForce)
 	a.phys.Update(dt, objs)
 

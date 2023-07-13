@@ -1,12 +1,13 @@
 package statemachine
 
 type Machine struct {
-	tr map[int]Transition
+	tr    map[int]Transition
+	Start int
 }
 
 func New() Machine {
 	return Machine{
-		tr: make(map[int]Transition),
+		tr: map[int]Transition{},
 	}
 }
 

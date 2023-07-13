@@ -31,11 +31,17 @@ func NewChooseAttack(ai *Ai, w Worlder) *StateChooseAttack {
 		nonseelimit: 1,
 	}
 
-	cha.skills = ai.obj.GetSkills()
+	skills := ai.obj.GetSkills()
+	cha.skills = make([]*actor.Skill, 0, len(skills))
+	cha.skills2 = make([]*actor.Skill, 0, len(skills))
+
+	for _, sk := range skills {
+		cha.skills = append(cha.skills, sk)
+		cha.skills2 = append(cha.skills2, sk)
+	}
 	sort.Slice(cha.skills, func(i, j int) bool {
 		return cha.skills[i].Max < cha.skills[j].Max
 	})
-	cha.skills2 = ai.obj.GetSkills()
 	sort.Slice(cha.skills2, func(i, j int) bool {
 		return cha.skills2[i].Min < cha.skills2[j].Min
 	})
@@ -114,8 +120,11 @@ func (s *StateChooseAttack) Update(dt float64) {
 	}
 
 	s.ai.attackskill = choosed
-	s.ai.SetState(ATTACK, heropos)
-
+	if s.ai.attackskill.Name == "meleemove" {
+		s.ai.SetState(MELEEMOVE, heropos)
+	} else {
+		s.ai.SetState(ATTACK, heropos)
+	}
 }
 
 func (s *StateChooseAttack) Start(poi pixel.Vec) {

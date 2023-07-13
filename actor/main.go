@@ -1,6 +1,8 @@
 package actor
 
 import (
+	"errors"
+	"fmt"
 	"math"
 	"platformer/common"
 	"platformer/events"
@@ -123,8 +125,6 @@ func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Acto
 }
 
 func (a *Actor) initStates() {
-	// basic states
-
 	sStand := state.New(state.STAND, a, a.anim)
 	sWalk := state.New(state.WALK, a, a.anim)
 	sRun := state.New(state.RUN, a, a.anim)
@@ -194,7 +194,7 @@ func (a *Actor) Listen(e int, v pixel.Vec) {
 		} else {
 			a.dir = -1
 		}
-		if a.isShift {
+		if a.isShift || e == events.RUN {
 			if math.Abs(a.vel.X) < a.runspeed {
 				a.appliedForce.X = v.X * a.runspeed * 2
 			}
@@ -215,6 +215,16 @@ func (a *Actor) Listen(e int, v pixel.Vec) {
 
 	if e == events.SHIFT {
 		a.isShift = !a.isShift
+	}
+
+	for _, sk := range a.skills {
+		if e == sk.Event {
+			if sk.Name == "melee" && a.appliedForce.X != 0 {
+				continue
+			}
+			a.SetSkill(sk)
+			break
+		}
 	}
 
 	a.state.Listen(e, &a.vel)
@@ -252,6 +262,10 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	}
 	a.state.Listen(event, newspeed)
 	a.vel = *newspeed
+
+	if a.activeSkill != nil && a.activeSkill.Name == "meleemove" {
+		fmt.Println("a.vel", a.vel)
+	}
 
 	a.rect = a.phys.GetRect()
 	a.state.Update(dt)
@@ -317,11 +331,25 @@ func (a *Actor) GetSkills() []*Skill {
 	return a.skills
 }
 
-func (a *Actor) GetSkillName() string {
-	if a.activeSkill != nil {
-		return a.activeSkill.Name
+func (a *Actor) GetSkillAttr(attr string) (interface{}, error) {
+	if a.activeSkill == nil {
+		return "", errors.New("no active skill")
 	}
-	return ""
+
+	switch attr {
+	case "name":
+		return a.activeSkill.Name, nil
+	case "ttl":
+		return a.activeSkill.Ttl, nil
+	case "type":
+		return a.activeSkill.Type, nil
+	case "min":
+		return a.activeSkill.Min, nil
+	case "max":
+		return a.activeSkill.Max, nil
+	default:
+		return "", errors.New("unknown attribute")
+	}
 }
 
 func (a *Actor) Strike() {

@@ -1,21 +1,18 @@
 package background
 
 import (
+	"image/color"
 	"platformer/common"
 
 	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/imdraw"
 )
 
 type Pback struct {
 	width  float64
 	height float64
-	p1     *Back
-	p2     *Back
-	p3     *Back
-	p4     *Back
-	p5     *Back
-	p6     *Back
-	p7     *Back
+	layers []*Back
+	imd    *imdraw.IMDraw
 }
 
 func NewParallax(start pixel.Vec, viewport pixel.Rect, loader *common.Loader) *Pback {
@@ -25,37 +22,43 @@ func NewParallax(start pixel.Vec, viewport pixel.Rect, loader *common.Loader) *P
 	p := Pback{
 		width:  width,
 		height: height,
+		layers: make([]*Back, 0),
 	}
-	p.p1 = New(start, viewport, loader, "assets/back/1.png")
-	p.p2 = New(start, viewport, loader, "assets/back/2.png")
-	p.p3 = New(start, viewport, loader, "assets/back/3.png")
-	p.p4 = New(start, viewport, loader, "assets/back/4.png")
-	p.p5 = New(start, viewport, loader, "assets/back/5.png")
-	p.p6 = New(start, viewport, loader, "assets/back/6.png")
-	p.p7 = New(start, viewport, loader, "assets/back/8.png")
+	//pixel.Vec{0, 150}
+	p.layers = append(p.layers, New(start, viewport, loader, "back/rocs1/1.png", WithSpeed(0)))
+	p.layers = append(p.layers, New(start, viewport, loader, "back/rocs1/2.png", WithSpeed(0.1)))
+	p.layers = append(p.layers, New(start, viewport, loader, "back/rocs1/3.png", WithSpeed(0.2), WithOffset(pixel.Vec{0, 150})))
+	p.layers = append(p.layers, New(start, viewport, loader, "back/rocs1/4.png", WithSpeed(0.7), WithOffset(pixel.Vec{0, 100})))
+	p.layers = append(p.layers, New(start, viewport, loader, "back/rocs1/5.png", WithOffset(pixel.Vec{0, 50})))
 
-	//background.New(lastPos, currBounds.Moved(pixel.Vec{0, 100}), "assets/gamebackground.png")
+	// p.layers = append(p.layers, New(start, viewport, loader, "back/nature/2.png", WithSpeed(0.1)))
+	// p.layers = append(p.layers, New(start, viewport, loader, "back/nature/3.png", WithSpeed(0.7)))
+	// p.layers = append(p.layers, New(start, viewport, loader, "back/nature/4.png"))
+
+	sky := pixel.R(0, 0, p.width, p.height)
+	p.imd = imdraw.New(nil)
+	//	p.imd.Color = color.RGBA{101, 186, 227, 1} // nature
+	p.imd.Color = color.RGBA{207, 199, 223, 1} // rocs1
+
+	vertices := sky.Vertices()
+	for _, v := range vertices {
+		p.imd.Push(v)
+	}
+	p.imd.Rectangle(0)
+
 	return &p
 }
 
-func Update(r pixel.Rect) {
-
+func (p *Pback) Update(dt float64, pos pixel.Vec) {
+	for _, l := range p.layers {
+		l.Update(dt, pos)
+	}
 }
 
-func (p *Pback) Draw(t pixel.Target, pos pixel.Vec) {
-	// p.p1.Draw(t, pos, pixel.Vec{cam.X * 0.01, cam.Y})
-	// p.p2.Draw(t, pos, pixel.Vec{cam.X * 0.05, cam.Y})
-	// p.p3.Draw(t, pos, pixel.Vec{cam.X * 0.1, cam.Y})
-	// p.p4.Draw(t, pos, pixel.Vec{cam.X * 0.2, cam.Y})
-	// p.p5.Draw(t, pos, pixel.Vec{cam.X * 0.5, cam.Y})
-	// p.p6.Draw(t, pos, pixel.Vec{cam.X * 0.8, cam.Y})
-	// p.p7.Draw(t, pos, pixel.Vec{cam.X * 1, cam.Y})
+func (p *Pback) Draw(t pixel.Target) {
 
-	//	p.p1.Draw(t, pos, viewport)
-	//	p.p2.Draw(t, pos, viewport)
-	//	p.p3.Draw(t, pos, viewport)
-	// p.p4.Draw(t, pos, cam)
-	// p.p5.Draw(t, pos, cam)
-	// p.p6.Draw(t, pos, cam)
-	//	p.p7.Draw(t, pos, viewport)
+	p.imd.Draw(t)
+	for _, l := range p.layers {
+		l.Draw(t)
+	}
 }

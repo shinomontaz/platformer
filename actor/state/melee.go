@@ -43,12 +43,15 @@ func (s *Melee) Start() {
 	s.attackidx = 1
 	s.striked = false
 
-	skillname := s.a.GetSkillName()
-	if skillname == "" {
-		skillname = "melee"
+	skillname, err := s.a.GetSkillAttr("name")
+	if err != nil {
+		panic(err)
 	}
-	s.skillname = skillname
-	s.variants = s.anims.GetGroupLen(skillname)
+	s.skillname = skillname.(string)
+	if s.skillname == "" {
+		s.skillname = "melee"
+	}
+	s.variants = s.anims.GetGroupLen(s.skillname)
 
 	if s.variants > 1 {
 		s.attackidx += int(math.Round(common.GetRandFloat() * float64(s.variants-1)))

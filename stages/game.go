@@ -203,7 +203,8 @@ func (g *Game) Init() {
 
 	g.lastPos = g.hero.GetPos()
 
-	b := background.New(g.lastPos, currBounds.Moved(pixel.V(0, 150)), g.assetloader, "gamebackground.png")
+	//	b := background.New(g.lastPos, currBounds.Moved(pixel.V(0, 150)), g.assetloader, "gamebackground.png")
+	b := background.NewParallax(g.lastPos, currBounds.Moved(pixel.V(0, 150)), g.assetloader)
 
 	g.w.SetBackground(b)
 

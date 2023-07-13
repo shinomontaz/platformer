@@ -39,6 +39,9 @@ func NewCalmEnemy(obj *actor.Actor, w Worlder) *Ai {
 	sAttack := NewAttack(a, a.w)
 	a.states[ATTACK] = sAttack
 
+	sMeleeMove := NewMeleeMove(a, a.w)
+	a.states[MELEEMOVE] = sMeleeMove
+
 	sBustle := NewBustle(a, a.w)
 	a.states[BUSTLE] = sBustle
 
@@ -70,6 +73,9 @@ func NewActiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 
 	sAttack := NewAttack(a, a.w)
 	a.states[ATTACK] = sAttack
+
+	sMeleeMove := NewMeleeMove(a, a.w)
+	a.states[MELEEMOVE] = sMeleeMove
 
 	sBustle := NewBustle(a, a.w)
 	a.states[BUSTLE] = sBustle

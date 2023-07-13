@@ -49,6 +49,7 @@ type Skill struct {
 	Min    float64   `json:"min"`
 	Max    float64   `json:"max"`
 	Weight int       `json:"weight"`
+	Ttl    float64   `json:"ttl"`
 	Hitbox []float64 `json:"hitbox"`
 }
 type Profile struct {

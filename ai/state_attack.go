@@ -106,16 +106,17 @@ func (s *StateAttack) Update(dt float64) {
 	}
 
 	// we already check that we see target and all distances are ok
-	s.vec = pixel.ZV
 	s.ai.obj.SetTarget(heropos)
 	s.ai.obj.SetSkill(s.ai.attackskill)
-	s.ai.obj.Listen(s.ai.attackskill.Event, s.vec)
+	s.ai.obj.Listen(s.ai.attackskill.Event, pixel.ZV)
 	s.counter++
 }
 
 func (s *StateAttack) Start(poi pixel.Vec) {
 	fmt.Println("state attack start")
 	s.lastpos = poi
+	s.timer = 0
+	s.counter = 0
 }
 
 func (s *StateAttack) Listen(e int, v pixel.Vec) {

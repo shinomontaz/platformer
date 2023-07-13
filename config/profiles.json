@@ -109,12 +109,47 @@
         ]
     },
     {
+        "type": "bigplant",
+        "anim": "bigplant",
+        "sound": "bigplant",
+        "dir": -1,
+        "hp": 10,
+        "strength": 1,
+        "width": 96,
+        "height": 45,
+        "margin": 0,
+        "mass": 1,
+        "jump": 0,
+        "walk": 70,
+        "run": 200,
+        "body": "reptile",
+        "skills": [
+            {
+                "type": "melee",
+                "name": "melee",
+                "max": 50,
+                "min": 20,
+                "weight": 1,
+                "hitbox": [20, -5, 36, 10]
+            },
+            {
+                "type": "melee",
+                "name": "meleemove",
+                "max": 200,
+                "min": 50,
+                "weight": 1,
+                "ttl": 2.0,
+                "hitbox": [20, -5, 36, 10]
+            }
+        ]
+    },
+    {
         "type": "oldman",
         "anim": "oldman",
         "dir": 1,
         "hp": 1,
         "strength": 1,
-        "width": 32,
+        "width": 40,
         "height": 34,
         "margin": 8,
         "mass": 25,

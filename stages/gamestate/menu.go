@@ -120,7 +120,7 @@ func NewMenu(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Window)
 func (m *Menu) Update(dt float64) {
 	if dt > 0 {
 		m.ctrl.Update()
-		m.w.Update(m.currBounds, dt)
+		m.w.Update(m.currBounds, m.lastPos, dt)
 		m.uTime = float32(dt)
 	}
 }

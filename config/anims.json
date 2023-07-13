@@ -69,11 +69,6 @@
             "name": "dead2",
             "file":"characters/graverobber/GraveRobber_death2.png",
             "frames": [6, 5, 6]
-        },
-        {
-            "name": "meleemove",
-            "file":"characters/graverobber/GraveRobber_attack3.png",
-            "frames": [6, 0, 6]
         }
         ],
         "groups": [
@@ -91,6 +86,16 @@
                     "frames": [6, 0, 6]
                 }
                 ]
+            },
+            {
+                "name": "meleemove",
+                "group": [
+                {
+                    "name": "attack1",
+                    "file":"characters/graverobber/GraveRobber_attack3.png",
+                    "frames": [6, 0, 6]
+                }
+            ]
             }
         ]
     },
@@ -274,9 +279,9 @@
     },
     {
         "type": "oldman",
-        "width": 32,
+        "width": 40,
         "height": 34,
-        "margin": [8, 0, 8, 0],
+        "margin": [0, 0, 8, 0],
         "list":  [
         {
             "name": "stand",
@@ -318,6 +323,81 @@
                     "file":"npc/old_man/Old_man_attack.png",
                     "frames": [6, 0, 6]
                 }        
+            ]
+            }
+        ]
+    },
+    {
+        "type": "bigplant",
+        "width": 96,
+        "height": 45,
+        "margin": 0,
+        "list":  [
+        {
+            "name": "stand",
+            "file":"bosses/bigplant/Idle.png",
+            "frames": [1, 0, 1]
+        },
+        {
+            "name": "walk",
+            "file":"bosses/bigplant/Walk.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "idle",
+            "file":"bosses/bigplant/Idle.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "sneer",
+            "file":"bosses/bigplant/Special.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "hurt",
+            "file":"bosses/bigplant/Hurt.png",
+            "frames": [2, 0, 2]
+        },
+        {
+            "name": "die",
+            "file":"bosses/bigplant/Death.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "dead",
+            "file":"bosses/bigplant/Death.png",
+            "frames": [6, 5, 6]
+        }
+        ],
+        "groups": [
+            {
+                "name": "melee",
+                "group": [
+                {
+                    "name": "attack1",
+                    "file":"bosses/bigplant/Attack1.png",
+                    "frames": [6, 0, 6]
+                },
+                {
+                    "name": "attack2",
+                    "file":"bosses/bigplant/Attack2.png",
+                    "frames": [6, 0, 6]
+                }
+            ]
+            },
+            {
+                "name": "meleemove",
+                "group": [
+                {
+                    "name": "attack1",
+                    "file":"bosses/bigplant/Attack3.png",
+                    "frames": [6, 0, 6]
+                },
+                {
+                    "name": "attack2",
+                    "file":"bosses/bigplant/Attack4.png",
+                    "frames": [6, 0, 6]
+                }
             ]
             }
         ]

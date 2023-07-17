@@ -15,7 +15,6 @@ uniform sampler2D uTexture;
 // Our custom uniforms
 uniform float uTime;
 uniform vec2 uLight;
-//uniform float uObjects[1000];
 uniform vec4 uObjects[1000];
 
 uniform int uNumObjects;

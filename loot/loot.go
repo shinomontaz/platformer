@@ -81,7 +81,7 @@ func (a *Loot) Update(dt float64, objs []common.Objecter) {
 
 	a.vec = pixel.ZV
 	newspeed := a.phys.GetVel()
-	a.vel = *newspeed
+	a.vel = newspeed
 
 	a.rect = a.phys.GetRect()
 

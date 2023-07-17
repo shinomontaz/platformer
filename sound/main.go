@@ -1,7 +1,6 @@
 package sound
 
 import (
-	"fmt"
 	"log"
 	"platformer/common"
 	"platformer/config"
@@ -164,8 +163,6 @@ func AddEffect(name string, pos pixel.Vec) {
 		Volume:   volEffects.Volume - l/50, //-l / 50,
 		Silent:   volEffects.Silent,
 	}
-
-	fmt.Println("AddEffect", vol)
 
 	pe := PosEffect{
 		vol,

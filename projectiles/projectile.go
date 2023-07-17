@@ -53,7 +53,7 @@ func (p *projectile) update(dt float64, objs, spec []common.Objecter) {
 
 	p.time += dt
 
-	p.vel = *p.phys.GetVel()
+	p.vel = p.phys.GetVel()
 
 	p.hb.Move(p.vel.Scaled(dt))
 

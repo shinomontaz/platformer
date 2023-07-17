@@ -378,7 +378,6 @@ func (w *World) Update(rect pixel.Rect, hpos pixel.Vec, dt float64) {
 	w.uNumObjects = int32(len(w.uObjects))
 
 	w.visiblePhys = append(w.visiblePhys, objects.List(w.viewport)...)
-
 	creatures.Update(dt, w.visiblePhys, w.visibleSpec)
 	loot.Update(dt, w.visiblePhys)
 	collectedloot := loot.Collect(creatures.GetHero())

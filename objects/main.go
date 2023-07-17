@@ -25,7 +25,7 @@ func Init(g float64) {
 	objs = make([]*object, 0)
 }
 
-func Add(name string, rect pixel.Rect, ai string /*, ids string*/) {
+func Add(name string, rect pixel.Rect, ai string) {
 	o := &object{
 		anim:    animation.Get(name),
 		rect:    rect,
@@ -51,12 +51,20 @@ func Add(name string, rect pixel.Rect, ai string /*, ids string*/) {
 
 func List(r pixel.Rect) []common.Objecter {
 	res := make([]common.Objecter, 0)
-	for _, o := range objs {
+	for i, o := range objs {
 		//		if r.Intersects(o.rect) {
-		res = append(res, common.Objecter{ID: 0, R: o.rect, Type: common.OBJECT})
+		res = append(res, common.Objecter{ID: uint32(i + 1), R: o.rect, Type: common.OBJECT})
 		//		}
 	}
 	return res
+}
+
+func GetPhysById(id uint32) *common.Phys {
+	idx := int(id - 1) // REASON: we add objects with i+1 to list of Objecter ( look List method )
+	if idx >= 0 && idx < len(objs)-1 {
+		return &objs[idx].phys
+	}
+	return nil
 }
 
 func Update(dt float64, qt *common.Quadtree) {
@@ -76,7 +84,7 @@ func (o *object) update(dt float64, vPhys []common.Objecter) {
 	o.phys.Update(dt, vPhys)
 	o.rect = o.phys.GetRect()
 
-	o.vel = *o.phys.GetVel()
+	o.vel = o.phys.GetVel()
 	//	fmt.Println(o.vel, math.Signbit(o.vel.X), o.dir)
 	if !math.Signbit(o.vel.X) {
 		o.dir = 1

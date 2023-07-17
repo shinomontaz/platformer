@@ -182,8 +182,7 @@ func (g *Game) Init() {
 		}
 		if o.Class == "object" {
 			ai_type := o.Properties.GetString("ai")
-			//			ids := o.Properties.GetString("ids")
-			objects.Add(o.Name, pixel.R(o.X, o.Y-o.Height, o.X+o.Width, o.Y), ai_type /*, ids*/)
+			objects.Add(o.Name, pixel.R(o.X, o.Y-o.Height, o.X+o.Width, o.Y), ai_type)
 		}
 	}
 	creatures.SetHero(g.hero)

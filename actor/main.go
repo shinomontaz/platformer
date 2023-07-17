@@ -6,6 +6,7 @@ import (
 	"math"
 	"platformer/common"
 	"platformer/events"
+	"platformer/objects"
 	"platformer/projectiles"
 	"platformer/sound"
 
@@ -40,8 +41,9 @@ const (
 var counter int
 
 type Actor struct {
-	id   int
-	phys common.Phys
+	id        int
+	phys      common.Phys
+	groundObj common.Objecter
 
 	state  Stater
 	states map[int]Stater
@@ -95,18 +97,19 @@ func Init(l *common.Loader) {
 func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Actor {
 	counter++
 	a := &Actor{
-		id:      counter,
-		anim:    anim,
-		rect:    rect,
-		dir:     1,
-		animdir: 1,
-		vel:     pixel.ZV,
-		grav:    w.GetGravity(),
-		w:       w,
-		mass:    1,
-		sounds:  make(map[string]soundeffect),
-		sbrs:    make([]common.Subscriber, 0),
-		skills:  make([]*Skill, 0),
+		id:        counter,
+		anim:      anim,
+		rect:      rect,
+		dir:       1,
+		animdir:   1,
+		vel:       pixel.ZV,
+		grav:      w.GetGravity(),
+		w:         w,
+		mass:      1,
+		sounds:    make(map[string]soundeffect),
+		sbrs:      make([]common.Subscriber, 0),
+		skills:    make([]*Skill, 0),
+		groundObj: common.Objecter{},
 	}
 
 	for _, opt := range opts {
@@ -177,7 +180,7 @@ func (a *Actor) StepPrediction(e int, v pixel.Vec) float64 {
 		v.X *= a.runspeed / 20
 	}
 
-	groundrate, _, _ := a.phys.StepPrediction(v)
+	groundrate, _, _, _ := a.phys.StepPrediction(v)
 	return groundrate
 }
 
@@ -253,18 +256,25 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	}
 	a.phys.Apply(a.appliedForce)
 	a.phys.Update(dt, objs)
+	gdObj := a.phys.GetGroundObject()
+	if gdObj.ID != a.groundObj.ID {
+		a.groundObj = gdObj
+		a.phys.SetGroundPhys(objects.GetPhysById(gdObj.ID))
+	}
+
 	newspeed := a.phys.GetVel()
 	var event int
 	if math.Abs(newspeed.X) <= a.runspeed && math.Abs(newspeed.X) > a.walkspeed {
 		event = events.RUN
-	} else if (math.Abs(a.vel.X) >= a.walkspeed && math.Abs(newspeed.X) <= a.walkspeed) || (a.vel.X == 0 && math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed) {
+		//	} else if (math.Abs(a.vel.X) >= a.walkspeed && math.Abs(newspeed.X) <= a.walkspeed) || (a.vel.X == 0 && math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed) {
+	} else if math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed {
 		event = events.WALK
 	}
-	a.state.Listen(event, newspeed)
-	a.vel = *newspeed
+	a.state.Listen(event, &newspeed)
+	a.vel = newspeed
 
 	if a.activeSkill != nil && a.activeSkill.Name == "meleemove" {
-		fmt.Println("a.vel", a.vel)
+		fmt.Println("meleemove a.vel", a.vel)
 	}
 
 	a.rect = a.phys.GetRect()

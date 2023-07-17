@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"image/color"
 	"math"
 
@@ -21,8 +22,10 @@ type Phys struct {
 	friction       float64
 	maxvelocity    float64
 
-	isground bool
-	color    color.Color
+	isground   bool
+	groundObj  Objecter
+	groundPhys *Phys
+	color      color.Color
 
 	currObjs []Objecter
 }
@@ -74,6 +77,7 @@ func NewPhys(r pixel.Rect, opts ...PhysOption) Phys {
 		friction:       0.01,
 		vel:            pixel.ZV,
 		mass:           1,
+		groundObj:      Objecter{},
 	}
 
 	for _, opt := range opts {
@@ -83,8 +87,8 @@ func NewPhys(r pixel.Rect, opts ...PhysOption) Phys {
 	return p
 }
 
-func (p *Phys) GetVel() *pixel.Vec {
-	return &p.vel
+func (p *Phys) GetVel() pixel.Vec {
+	return p.vel
 }
 
 func (p *Phys) SetMass(m float64) {
@@ -95,12 +99,23 @@ func (p *Phys) IsGround() bool {
 	return p.isground
 }
 
+func (p *Phys) GetGroundObject() Objecter {
+	return p.groundObj
+}
+
 func (p *Phys) Apply(force pixel.Vec) {
 	p.force = p.force.Add(force)
 }
 
 func (p *Phys) SetSpeed(newspeed pixel.Vec) {
 	p.vel = newspeed
+}
+
+func (p *Phys) SetGroundPhys(phys *Phys) {
+	p.groundPhys = phys
+	if phys != nil {
+		fmt.Println("set ground phys with vel: ", phys.GetVel())
+	}
 }
 
 func (p *Phys) Update(dt float64, objs []Objecter) {
@@ -132,12 +147,21 @@ func (p *Phys) Update(dt float64, objs []Objecter) {
 	}
 
 	dt = math.Min(dt, 0.1) // some fix for debugger
+	groundVel := pixel.ZV
+	if p.groundPhys != nil {
+		groundVel = p.groundPhys.GetVel()
+		//		fmt.Println("apply ground phys vel: ", groundVel)
+		p.vel = p.vel.Add(groundVel)
+	}
 	p.vel = p.vel.Add(p.force.Scaled(dt))
 
 	if p.vel.X != 0 || p.vel.Y != 0 {
 		p.isground = false
 		vec := p.vel.Scaled(dt)
-		ground, newvel, vec := p.StepPrediction(vec) // p.vel and vec can be updated here
+		ground, newvel, vec, groundObj := p.StepPrediction(vec) // p.vel and vec can be updated here
+		if groundObj.ID != p.groundObj.ID {
+			p.groundObj = groundObj
+		}
 		p.vel = newvel
 		if ground > 0 {
 			p.isground = true
@@ -148,17 +172,22 @@ func (p *Phys) Update(dt float64, objs []Objecter) {
 		p.rect = p.rect.Moved(vec)
 	}
 
+	if groundVel.X != 0 || groundVel.Y != 0 {
+		p.vel = p.vel.Sub(groundVel)
+	}
+
 	p.force = pixel.ZV
 }
 
 // in: v - move vector, out - ground rate, new velocity, available move
-func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec) {
+func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec, Objecter) {
 	ground := 0.0
 	vel := p.vel
+	gObj := Objecter{}
 	broadbox := Broadbox(p.rect, v)
 	collisiontimes := []float64{}
 	if len(p.currObjs) == 0 {
-		return ground, vel, v
+		return ground, vel, v, gObj
 	}
 	// precise check for each object that can intersects
 	for _, obj := range p.currObjs {
@@ -168,6 +197,7 @@ func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec) {
 				l := math.Max(rect.Min.X, p.rect.Min.X)
 				r := math.Min(rect.Max.X, p.rect.Max.X)
 				ground = (r - l) / p.rect.W()
+				gObj = obj
 				continue
 			}
 			coltime, n := collide(p.rect, rect, v) // coltime in [0,1], where 1 means no collision
@@ -179,12 +209,14 @@ func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec) {
 				l := math.Max(rect.Min.X, p.rect.Min.X)
 				r := math.Min(rect.Max.X, p.rect.Max.X)
 				ground = (r - l) / p.rect.W()
+				gObj = obj
 			} else {
 				collisiontimes = append(collisiontimes, coltime)
 				if n.Y > 0 { // hit floor
 					l := math.Min(rect.Min.X, p.rect.Min.X)
 					r := math.Min(rect.Max.X, p.rect.Max.X)
 					ground = (r - l) / p.rect.W()
+					gObj = obj
 					//					vel.Y = 0
 					vel.Y = -vel.Y * p.rigidityBottom
 				} else if n.Y < 0 { // hit ceiling
@@ -218,7 +250,7 @@ func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec) {
 		v.Y *= mintime
 	}
 
-	return ground, vel, v
+	return ground, vel, v, gObj
 }
 
 func (p *Phys) Move(v pixel.Vec) {

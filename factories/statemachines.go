@@ -25,27 +25,24 @@ func newPlayer() *statemachine.Machine {
 	m.Set(state.MELEEMOVE, statemachine.Transition{})
 	m.Set(state.STAND, statemachine.Transition{
 		List: map[int]int{
-			events.CTRL:     state.MELEE,
-			events.INTERACT: state.INTERACT,
+			events.MELEE:     state.MELEE,
+			events.MELEEMOVE: state.MELEEMOVE,
+			events.INTERACT:  state.INTERACT,
 		},
 	})
 	m.Set(state.IDLE, statemachine.Transition{
 		List: map[int]int{
-			events.CTRL:     state.MELEE,
-			events.INTERACT: state.INTERACT,
+			events.MELEE:     state.MELEE,
+			events.MELEEMOVE: state.MELEEMOVE,
+			events.INTERACT:  state.INTERACT,
 		},
 	})
 	m.Set(state.WALK, statemachine.Transition{
 		List: map[int]int{
-			events.CTRL:     state.MELEEMOVE,
-			events.INTERACT: state.INTERACT,
+			events.MELEEMOVE: state.MELEEMOVE,
+			events.INTERACT:  state.INTERACT,
 		},
 	})
-	// m.Set(state.RUN, statemachine.Transition{
-	// 	List: map[int]int{
-	// 		events.CTRL: state.MELEEMOVE,
-	// 	},
-	// })
 
 	return &m
 }
@@ -57,17 +54,19 @@ func newEnemy() *statemachine.Machine {
 	m.Set(state.MELEEMOVE, statemachine.Transition{})
 	m.Set(state.STAND, statemachine.Transition{
 		List: map[int]int{
-			events.CTRL: state.MELEE,
+			events.MELEE:     state.MELEE,
+			events.MELEEMOVE: state.MELEEMOVE,
 		},
 	})
 	m.Set(state.IDLE, statemachine.Transition{
 		List: map[int]int{
-			events.CTRL: state.MELEE,
+			events.MELEE:     state.MELEE,
+			events.MELEEMOVE: state.MELEEMOVE,
 		},
 	})
 	m.Set(state.WALK, statemachine.Transition{
 		List: map[int]int{
-			events.CTRL: state.MELEEMOVE,
+			events.MELEEMOVE: state.MELEEMOVE,
 		},
 	})
 
@@ -84,20 +83,20 @@ func newDeceased() *statemachine.Machine {
 		List: map[int]int{
 			events.CAST:   state.CAST,
 			events.RANGED: state.RANGED,
-			events.CTRL:   state.MELEE,
+			events.MELEE:  state.MELEE,
 		},
 	})
 	m.Set(state.IDLE, statemachine.Transition{
 		List: map[int]int{
 			events.CAST:   state.CAST,
 			events.RANGED: state.RANGED,
-			events.CTRL:   state.MELEE,
+			events.MELEE:  state.MELEE,
 		},
 	})
 	m.Set(state.WALK, statemachine.Transition{
 		List: map[int]int{
-			events.CAST: state.CAST,
-			events.CTRL: state.MELEE,
+			events.CAST:  state.CAST,
+			events.MELEE: state.MELEE,
 		},
 	})
 

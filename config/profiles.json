@@ -19,7 +19,20 @@
             {
                 "type": "melee",
                 "name": "melee",
-                "hitbox": [10, -5, 20, 5]
+                "hitbox": [10, -5, 20, 5],
+                "keys": ["ctrl"]
+            },
+            {
+                "type": "melee",
+                "name": "meleemove",
+                "hitbox": [10, -5, 20, 5],
+                "keys": ["ctrl", "left"]
+            },
+            {
+                "type": "melee",
+                "name": "melee",
+                "hitbox": [10, -5, 20, 5],
+                "keys": ["ctrl", "right"]
             }
         ]
     },
@@ -45,7 +58,8 @@
                 "max": 19,
                 "min": 5,
                 "hitbox": [10, -5, 20, 5],
-                "weight": 1
+                "weight": 1,
+                "keys": ["ctrl"]
             }
         ]
     },
@@ -70,7 +84,8 @@
                 "name": "deathbolt",
                 "max": 250,
                 "min": 50,
-                "weight": 1
+                "weight": 1,
+                "keys": ["ctrl"]
             }
         ]
     },
@@ -96,7 +111,8 @@
                 "max": 35,
                 "min": 5,
                 "weight": 1,
-                "hitbox": [20, -5, 36, 10]
+                "hitbox": [20, -5, 36, 10],
+                "keys": ["ctrl"]
             },
             {
                 "type": "melee",
@@ -104,7 +120,8 @@
                 "max": 35,
                 "min": 5,
                 "weight": 1,
-                "hitbox": [10, -36, 36, -26]
+                "hitbox": [10, -36, 36, -26],
+                "keys": ["ctrl", "down"]
             }
         ]
     },
@@ -130,7 +147,8 @@
                 "max": 50,
                 "min": 20,
                 "weight": 1,
-                "hitbox": [20, -5, 36, 10]
+                "hitbox": [20, -5, 36, 10],
+                "keys": ["ctrl"]
             },
             {
                 "type": "melee",
@@ -139,7 +157,18 @@
                 "min": 50,
                 "weight": 1,
                 "ttl": 2.0,
-                "hitbox": [20, -5, 36, 10]
+                "hitbox": [20, -5, 36, 10],
+                "keys": ["ctrl", "left"]
+            },
+            {
+                "type": "melee",
+                "name": "meleemove",
+                "max": 200,
+                "min": 50,
+                "weight": 1,
+                "ttl": 2.0,
+                "hitbox": [20, -5, 36, 10],
+                "keys": ["ctrl", "right"]
             }
         ]
     },
@@ -164,7 +193,8 @@
                 "max": 19,
                 "min": 5,
                 "hitbox": [10, -5, 20, 5],
-                "weight": 1
+                "weight": 1,
+                "keys": ["ctrl"]
             }
         ],
         "phrases": "grandma",

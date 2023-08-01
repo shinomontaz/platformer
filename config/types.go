@@ -51,6 +51,7 @@ type Skill struct {
 	Weight int       `json:"weight"`
 	Ttl    float64   `json:"ttl"`
 	Hitbox []float64 `json:"hitbox"`
+	Keys   []string  `json:"keys"`
 }
 type Profile struct {
 	Type     string  `json:"type"`
@@ -96,4 +97,5 @@ type Options struct {
 	WindowWidth  float64            `json:"WindowWidth"`
 	CurrentMap   int                `json:"CurrentMap"`
 	Volumes      map[string]float64 `json:"Volumes"`
+	Bindings     map[string]int     `json:"Bindings"`
 }

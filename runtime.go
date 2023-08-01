@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"platformer/bindings"
 	"platformer/common"
 	"platformer/config"
 	"platformer/sound"
@@ -73,6 +74,7 @@ func initRuntime() {
 	currBounds = pixel.R(0, 0, winWidth, winHeight)
 
 	common.InitFont(assetloader)
+	bindings.Init()
 	//	magic.Init(assetloader)
 }
 

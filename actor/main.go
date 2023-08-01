@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"platformer/bindings"
 	"platformer/common"
 	"platformer/events"
 	"platformer/objects"
@@ -16,19 +17,7 @@ import (
 	"platformer/actor/statemachine"
 
 	"github.com/shinomontaz/pixel"
-)
-
-const (
-	WALKING = iota
-	RUNNING
-	JUMPING
-	FALLING
-	STANDING
-	IDLE
-	FIRING
-	HURT
-	DYING
-	DEAD
+	"github.com/shinomontaz/pixel/pixelgl"
 )
 
 const (
@@ -45,8 +34,11 @@ type Actor struct {
 	phys      common.Phys
 	groundObj common.Objecter
 
+	action int
 	state  Stater
 	states map[int]Stater
+
+	keycombo int // sum of all actionId ( from pressed keys )/ it is unique due to actionId const definition: powers of 2
 
 	rect pixel.Rect
 
@@ -77,6 +69,7 @@ type Actor struct {
 	sbrs []common.Subscriber
 
 	skills       []*Skill
+	skillmap     map[int]int // map of keyaction sum (as ints) to skills (indices in skills list). we can do sum as unique key duw to skill id definition: powers of 2
 	activeSkill  *Skill
 	currObjs     []common.Objecter
 	phrasesClass string
@@ -109,11 +102,21 @@ func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Acto
 		sounds:    make(map[string]soundeffect),
 		sbrs:      make([]common.Subscriber, 0),
 		skills:    make([]*Skill, 0),
+		skillmap:  make(map[int]int),
 		groundObj: common.Objecter{},
 	}
 
-	for _, opt := range opts {
+	for _, opt := range opts { // skills inited here as well
 		opt(a)
+	}
+
+	// we have skills list => we need a skillmap
+	for idx, sk := range a.skills {
+		sum := 0
+		for _, actionId := range sk.Keys {
+			sum += actionId
+		}
+		a.skillmap[sum] = idx
 	}
 
 	p := common.NewPhys(rect,
@@ -184,53 +187,45 @@ func (a *Actor) StepPrediction(e int, v pixel.Vec) float64 {
 	return groundrate
 }
 
-func (a *Actor) Listen(e int, v pixel.Vec) {
-	a.appliedForce = pixel.ZV
+func (a *Actor) KeyEvent(key pixelgl.Button) {
+	//	a.appliedForce = pixel.ZV
 
 	if a.state.Busy() {
 		return
 	}
 
-	if v.X != 0 {
-		if v.X > 0 {
-			a.dir = 1
-		} else {
-			a.dir = -1
-		}
-		if a.isShift || e == events.RUN {
-			if math.Abs(a.vel.X) < a.runspeed {
-				a.appliedForce.X = v.X * a.runspeed * 2
-			}
-		} else {
-			if math.Abs(a.vel.X) < a.walkspeed*19/20 {
-				a.appliedForce.X = v.X * a.walkspeed * 2
-			}
+	fmt.Println("actor key event", key.String())
+	action := bindings.Active.GetAction(key) // get action id for this key
+
+	a.keycombo += action
+
+	isWalk := false
+	if action == bindings.RIGHT {
+		a.dir = 1
+		isWalk = true
+	} else if action == bindings.LEFT {
+		a.dir = -1
+		isWalk = true
+	}
+
+	if isWalk {
+		a.appliedForce.X = a.dir * a.walkspeed * 2
+	}
+
+	if action == bindings.SHIFT {
+		a.isShift = true
+		if a.appliedForce.X != 0 {
+			a.appliedForce.X = a.dir * a.runspeed * 2
 		}
 	}
 
-	if v.Y > 0 && a.state.GetId() != state.JUMP {
+	if action == bindings.UP && a.state.GetId() != state.JUMP {
 		multiplier := 0.5
 		if math.Abs(a.vel.X) > a.walkspeed {
 			multiplier = 1
 		}
-		a.appliedForce.Y = v.Y * a.grav * (a.jumpforce + multiplier*float64(a.strength) - a.mass)
+		a.appliedForce.Y = a.grav * (a.jumpforce + multiplier*float64(a.strength) - a.mass)
 	}
-
-	if e == events.SHIFT {
-		a.isShift = !a.isShift
-	}
-
-	for _, sk := range a.skills {
-		if e == sk.Event {
-			if sk.Name == "melee" && a.appliedForce.X != 0 {
-				continue
-			}
-			a.SetSkill(sk)
-			break
-		}
-	}
-
-	a.state.Listen(e, &a.vel)
 }
 
 func (a *Actor) Move(v pixel.Vec) {
@@ -263,23 +258,25 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	}
 
 	newspeed := a.phys.GetVel()
-	var event int
 	if math.Abs(newspeed.X) <= a.runspeed && math.Abs(newspeed.X) > a.walkspeed {
-		event = events.RUN
+		a.action = events.RUN
 		//	} else if (math.Abs(a.vel.X) >= a.walkspeed && math.Abs(newspeed.X) <= a.walkspeed) || (a.vel.X == 0 && math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed) {
 	} else if math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed {
-		event = events.WALK
+		a.action = events.WALK
 	}
-	a.state.Listen(event, &newspeed)
 	a.vel = newspeed
 
-	if a.activeSkill != nil && a.activeSkill.Name == "meleemove" {
-		fmt.Println("meleemove a.vel", a.vel)
+	if idx, ok := a.skillmap[a.keycombo]; ok {
+		a.SetSkill(a.skills[idx])
+		a.action = a.activeSkill.Event
 	}
+
+	a.state.Listen(a.action, &a.vel)
 
 	a.rect = a.phys.GetRect()
 	a.state.Update(dt)
 	a.appliedForce = pixel.ZV
+	a.keycombo = 0
 }
 
 func (a *Actor) UpdateSpecial(dt float64, objs []common.Objecter) {

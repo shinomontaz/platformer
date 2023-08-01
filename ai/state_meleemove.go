@@ -54,9 +54,11 @@ func (s *StateMeleeMove) Update(dt float64) {
 
 	// we already check that we see target and all distances are ok
 	s.ai.obj.SetSkill(s.ai.attackskill)
-	s.ai.obj.Listen(events.WALK, s.vec)
+	//	s.ai.obj.Listen(events.WALK, s.vec)
 	//	fmt.Println("meleemove")
-	s.ai.obj.Listen(s.ai.attackskill.Event, pixel.ZV)
+	// for _, k := range s.ai.attackskill.Keys {
+	// 	s.ai.obj.KeyEvent(k)
+	// }
 }
 
 func (s *StateMeleeMove) Start(poi pixel.Vec) {

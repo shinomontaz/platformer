@@ -4,7 +4,6 @@ import (
 	"image/color"
 	"platformer/actor"
 	"platformer/controller"
-	"platformer/events"
 	"platformer/world"
 
 	"github.com/shinomontaz/pixel/pixelgl"
@@ -95,9 +94,9 @@ func (d *Dead) Start() {
 	d.lastPos = d.hero.GetPos()
 }
 
-func (d *Dead) Listen(e int, v pixel.Vec) {
-	switch e {
-	case events.ESCAPE: // from controller
+func (d *Dead) KeyEvent(key pixelgl.Button) {
+	switch key {
+	case pixelgl.KeyEscape: // from controller
 		d.game.SetState(MENU)
 	}
 }

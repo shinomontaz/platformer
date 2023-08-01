@@ -2,6 +2,7 @@ package stages
 
 import (
 	"fmt"
+	"platformer/bindings"
 	"platformer/common"
 	"platformer/config"
 	"platformer/controller"
@@ -15,11 +16,12 @@ import (
 
 type Menu struct {
 	Common
-	assetloader *common.Loader
-	mainmenu    *menu.Menu
-	displaymenu *menu.Menu
-	soundmenu   *menu.Menu
-	activemenu  *menu.Menu
+	assetloader  *common.Loader
+	mainmenu     *menu.Menu
+	displaymenu  *menu.Menu
+	controlsmenu *menu.Menu
+	soundmenu    *menu.Menu
+	activemenu   *menu.Menu
 
 	mainmenuback *menu.Back
 
@@ -101,6 +103,15 @@ func (m *Menu) Init() {
 	m.mainmenu.AddItem(it)
 
 	txt = text.New(pixel.V(0, 0), m.atlas)
+	it = menu.NewItem("Controls", txt, menu.WithAction(func() {
+		m.activemenu = m.controlsmenu
+		m.controlsmenu.SetActive(true)
+		m.mainmenu.SetActive(false)
+		m.controlsmenu.Select(0)
+	}))
+	m.mainmenu.AddItem(it)
+
+	txt = text.New(pixel.V(0, 0), m.atlas)
 	it = menu.NewItem("Quit", txt, menu.WithAction(func() {
 		m.Notify(events.STAGEVENT_QUIT)
 	}))
@@ -142,6 +153,8 @@ func (m *Menu) Init() {
 	}))
 	m.displaymenu.AddItem(it)
 
+	m.SetupControlsMenu()
+
 	// sound menu
 	soundmenurect := pixel.R(0, 0, 200, 240)
 	m.soundmenu = menu.NewSound(soundmenurect.Moved(m.currBounds.Center().Sub(soundmenurect.Center())), m.atlas, menu.WithQuit(soundMenuQuit(m)), menu.WithLogo(soundlogo))
@@ -150,8 +163,61 @@ func (m *Menu) Init() {
 	m.isReady = true
 }
 
-func (m *Menu) Listen(e int, v pixel.Vec) {
-	m.activemenu.Listen(e, v)
+func (m *Menu) SetupControlsMenu() {
+	controlsmenurect := pixel.R(0, 0, 400, 140)
+	m.controlsmenu = menu.New(controlsmenurect.Moved(m.currBounds.Center().Sub(controlsmenurect.Center())))
+	activated := ""
+	var settedButton pixelgl.Button
+	for i, ka := range bindings.KeyActions {
+		title := bindings.KeyActionNames[i]
+		kaId := bindings.KeyAction[ka]
+		txt := text.New(pixel.V(0, 0), m.atlas)
+		it := menu.NewItem(fmt.Sprintf("%v: %-10v", title, bindings.Active.GetBinding(kaId)), txt,
+			menu.WithAction(func() { // on Enter
+				if activated == "" {
+					activated = ka
+					settedButton = pixelgl.KeyUnknown
+					m.ctrl.SetListenAll(true)
+					m.controlsmenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", title, "?????"))
+					fmt.Println("activation! ", ka, settedButton.String())
+				} else {
+					settedButton = pixelgl.KeyEnter
+					bindings.Active.SetBind(settedButton, kaId)
+					activated = ""
+					settedButton = pixelgl.KeyUnknown
+					m.controlsmenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", title, bindings.Active.GetBinding(kaId)))
+					fmt.Println("setting key as Enter! ", ka)
+					m.ctrl.SetListenAll(false)
+				}
+			}),
+			menu.WithHandle(func(e int, v pixel.Vec) {
+				if activated == ka {
+					settedButton = m.ctrl.DetectPressedButton()
+					bindings.Active.SetBind(settedButton, kaId)
+					activated = ""
+					fmt.Println("setting key as Enter! ", ka, settedButton.String())
+					settedButton = pixelgl.KeyUnknown
+					m.controlsmenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", title, bindings.Active.GetBinding(kaId)))
+					m.ctrl.SetListenAll(false)
+				}
+			}),
+		)
+		m.controlsmenu.AddItem(it)
+	}
+
+	txt := text.New(pixel.V(0, 0), m.atlas)
+	it := menu.NewItem("Quit", txt, menu.WithAction(func() {
+		bindings.Active.Save()
+		m.saveOptions()
+		m.controlsmenu.SetActive(false)
+		m.mainmenu.SetActive(true)
+		m.activemenu = m.mainmenu
+	}))
+	m.controlsmenu.AddItem(it)
+}
+
+func (m *Menu) KeyEvent(key pixelgl.Button) {
+	m.activemenu.KeyEvent(key)
 }
 
 func (m *Menu) Start() {

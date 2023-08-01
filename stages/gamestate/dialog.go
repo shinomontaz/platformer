@@ -5,7 +5,6 @@ import (
 	"platformer/actor"
 	"platformer/controller"
 	"platformer/dialogs"
-	"platformer/events"
 	"platformer/ui"
 	"platformer/world"
 
@@ -113,18 +112,32 @@ func (d *Dialog) Start() {
 	// prepare options and dialog
 }
 
-func (d *Dialog) Listen(e int, v pixel.Vec) {
+func (d *Dialog) KeyEvent(key pixelgl.Button) {
 	// if up or down - handle just here, otherwise make item handle it
-	if v.Y > 0 {
+	switch key {
+	case pixelgl.KeyUp:
 		d.currDlg.UpdateAnswer(-1)
-	}
-	if v.Y < 0 {
+	case pixelgl.KeyDown:
 		d.currDlg.UpdateAnswer(+1)
-	}
-	if e == events.ENTER {
+	case pixelgl.KeyEnter:
 		d.currDlg.Action()
-	}
-	if e == events.ESCAPE {
+	case pixelgl.KeyEscape:
 		d.game.SetState(NORMAL)
 	}
 }
+
+// func (d *Dialog) Listen(e int, v pixel.Vec) {
+// 	// if up or down - handle just here, otherwise make item handle it
+// 	if v.Y > 0 {
+// 		d.currDlg.UpdateAnswer(-1)
+// 	}
+// 	if v.Y < 0 {
+// 		d.currDlg.UpdateAnswer(+1)
+// 	}
+// 	if e == events.INTERACT {
+// 		d.currDlg.Action()
+// 	}
+// 	if e == events.ESCAPE {
+// 		d.game.SetState(NORMAL)
+// 	}
+// }

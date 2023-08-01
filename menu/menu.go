@@ -1,12 +1,11 @@
 package menu
 
 import (
-	"platformer/events"
-
 	"golang.org/x/image/colornames"
 
 	"github.com/shinomontaz/pixel"
 	"github.com/shinomontaz/pixel/imdraw"
+	"github.com/shinomontaz/pixel/pixelgl"
 )
 
 type Menu struct {
@@ -45,9 +44,6 @@ func (m *Menu) GetRect() pixel.Rect {
 func (m *Menu) SetActive(a bool) {
 	m.isactive = a
 	m.updateImdraw()
-	// if m.isactive {
-	// 	m.Select(0)
-	// }
 }
 
 func (m *Menu) UpdateSelectedItemText(title string) {
@@ -60,32 +56,29 @@ func (m *Menu) Select(idx int) {
 	m.items[m.curr].Select(true)
 }
 
-func (m *Menu) Listen(e int, v pixel.Vec) {
+func (m *Menu) KeyEvent(key pixelgl.Button) {
 	if !m.isactive {
 		return
 	}
-
-	// if up or down - handle just here, otherwise make item handle it
 	curr := m.curr
 	ismoved := false
-	if v.Y > 0 {
+
+	switch key {
+	case pixelgl.KeyUp:
 		curr = (curr - 1 + len(m.items)) % len(m.items)
 		ismoved = true
-	}
-	if v.Y < 0 {
+	case pixelgl.KeyDown:
 		curr = (curr + 1) % len(m.items)
 		ismoved = true
-	}
-	if ismoved {
-		m.Select(curr)
-		return
-	}
-	if e == events.ENTER {
+	case pixelgl.KeyEnter:
 		m.items[m.curr].Action()
 		return
 	}
 
-	m.items[m.curr].Listen(e, v)
+	if ismoved {
+		m.Select(curr)
+		return
+	}
 }
 
 func (m *Menu) AddItem(it *Item) {

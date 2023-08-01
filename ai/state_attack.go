@@ -101,14 +101,18 @@ func (s *StateAttack) Update(dt float64) {
 		} else {
 			s.vec = pixel.Vec{1, 0}
 		}
-		s.ai.obj.Listen(events.WALK, s.vec)
+		//		s.ai.obj.Listen(events.WALK, s.vec)
+		//		s.ai.obj.KeyEvent(bindings.LEFT)
+
 		return
 	}
 
 	// we already check that we see target and all distances are ok
 	s.ai.obj.SetTarget(heropos)
 	s.ai.obj.SetSkill(s.ai.attackskill)
-	s.ai.obj.Listen(s.ai.attackskill.Event, pixel.ZV)
+	// for _, k := range s.ai.attackskill.Keys {
+	// 	s.ai.obj.KeyEvent(k)
+	// }
 	s.counter++
 }
 

@@ -27,7 +27,6 @@ type Loot struct {
 
 	sounds map[string]soundeffect
 
-	sbrs []common.Subscriber
 	grav float64
 
 	portrait string // path to image for invetory
@@ -43,7 +42,6 @@ func New(id int, anim common.Animater, rect pixel.Rect, opts ...Option) *Loot {
 		animdir: 1,
 		vel:     pixel.ZV,
 		sounds:  make(map[string]soundeffect),
-		sbrs:    make([]common.Subscriber, 0),
 		sprite:  pixel.NewSprite(nil, pixel.Rect{}),
 	}
 
@@ -121,16 +119,6 @@ func (l *Loot) AddSound(event string) {
 
 func (a *Loot) IsGround() bool {
 	return a.phys.IsGround()
-}
-
-func (a *Loot) Inform(e int, v pixel.Vec) {
-	for _, s := range a.sbrs {
-		s.Listen(e, v)
-	}
-}
-
-func (a *Loot) AddListener(s common.Subscriber) {
-	a.sbrs = append(a.sbrs, s)
 }
 
 func (a *Loot) GetId() int {

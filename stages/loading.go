@@ -33,7 +33,6 @@ func NewLoading(f Inform, l *common.Loader) *Loading {
 func (l *Loading) Init() {
 	fnt := common.GetFont("fancy32")
 	atlas := text.NewAtlas(fnt, text.ASCII)
-
 	l.txt = text.New(pixel.ZV, atlas)
 	l.txt.Color = colornames.Red
 	fmt.Fprintln(l.txt, "Loading...")

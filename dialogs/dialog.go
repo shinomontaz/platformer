@@ -7,7 +7,6 @@ import (
 	"unicode"
 
 	"platformer/actor"
-	"platformer/common"
 
 	"github.com/shinomontaz/pixel"
 	"github.com/shinomontaz/pixel/imdraw"
@@ -26,7 +25,6 @@ type Dialog struct {
 	imd           *imdraw.IMDraw
 	rect          pixel.Rect
 	a             *actor.Actor
-	sbrs          []common.Subscriber
 	maintxtstring string
 	maintxt       *text.Text
 }
@@ -56,7 +54,6 @@ func (d *Dialog) UnmarshalJSON(b []byte) error {
 	}
 
 	d.ID = jDlg.ID
-	d.sbrs = make([]common.Subscriber, 1)
 	d.Variants = make(map[int]DialogVariant)
 	for _, dv := range jDlg.Variants {
 		if d.currVariant == 0 {

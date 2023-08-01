@@ -80,9 +80,9 @@ func (s *StateRoaming) Update(dt float64) {
 		v := pixel.Vec{s.dir, 0}
 		groundrate := s.ai.obj.StepPrediction(events.WALK, v)
 		if groundrate > 0.8 || groundrate > s.groundrate {
-			s.ai.obj.Listen(events.WALK, v)
-		} else {
-			s.ai.obj.Listen(events.WALK, pixel.ZV)
+			//			s.ai.obj.Listen(events.WALK, v)
+			// } else {
+			// 	s.ai.obj.Listen(events.WALK, pixel.ZV)
 		}
 		s.groundrate = groundrate
 	}

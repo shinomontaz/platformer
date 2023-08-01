@@ -86,17 +86,22 @@ func (n *Normal) Start() {
 	fmt.Println("applying base shader")
 }
 
+func (n *Normal) KeyEvent(key pixelgl.Button) {
+	switch key {
+	case pixelgl.KeyEscape: // from controller
+		n.game.SetState(MENU)
+	}
+}
+
 func (n *Normal) Listen(e int, v pixel.Vec) {
 	switch e {
-	case events.ESCAPE: // from controller
-		n.game.SetState(MENU)
 	case events.GAMEVENT_DIE: // from hero
 		fmt.Println("handle event DIE")
 		n.game.SetState(DEAD)
-	case events.INTERACT: // from hero
-		fmt.Println("handle event INTERACT")
-	case events.DIALOG: // from hero
-		fmt.Println("handle event DIALOG")
-		n.game.SetState(DIALOG)
+		//	case events.INTERACT: // from hero
+		//		fmt.Println("handle event INTERACT")
+		// case events.DIALOG: // not a case
+		// 	fmt.Println("handle event DIALOG")
+		// 	n.game.SetState(DIALOG)
 	}
 }

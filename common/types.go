@@ -1,10 +1,17 @@
 package common
 
-import "github.com/shinomontaz/pixel"
+import (
+	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/pixelgl"
+)
 
 type Subscriber interface {
 	//	GetId() int
 	Listen(e int, v pixel.Vec)
+}
+
+type KeySubscriber interface {
+	KeyEvent(keys pixelgl.Button)
 }
 
 const (

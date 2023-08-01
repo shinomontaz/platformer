@@ -36,18 +36,6 @@ var (
 	volEffects *effects.Volume
 )
 
-var sbrs []common.Subscriber
-
-func AddSubscriber(sbr common.Subscriber) {
-	sbrs = append(sbrs, sbr)
-}
-
-func Notify(e int) {
-	for _, s := range sbrs {
-		s.Listen(e, pixel.ZV)
-	}
-}
-
 // main, music, actions in [-100, 100]
 func SetVolumes(main, music, actions float64) {
 	volBase = main/100 - 0.5
@@ -78,7 +66,6 @@ func Init(loader *common.Loader) {
 	music = make(map[string]Sound)
 	soundeffects = make(map[string]Sound)
 	currEffects = make([]PosEffect, 0)
-	sbrs = make([]common.Subscriber, 0)
 
 	// read effects
 	// read music

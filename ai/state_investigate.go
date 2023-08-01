@@ -64,18 +64,18 @@ func (s *StateInvestigate) Update(dt float64) {
 		}
 	}
 
-	vec := pixel.Vec{-1, 0}
-	if s.target.X > pos.X {
-		vec = pixel.Vec{1, 0}
-	}
+	//	vec := pixel.Vec{-1, 0}
+	// if s.target.X > pos.X {
+	// 	vec = pixel.Vec{1, 0}
+	// }
 
 	if s.target.X-pos.X < 5 {
 		s.timer += dt
 	}
 	if s.timer > s.timeout {
 		s.ai.SetState(IDLE, pixel.ZV)
-	} else {
-		s.ai.obj.Listen(events.WALK, vec)
+		//	} else {
+		//		s.ai.obj.Listen(events.WALK, vec)
 	}
 }
 

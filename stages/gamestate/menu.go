@@ -150,8 +150,8 @@ func (m *Menu) Start() {
 	m.activemenu.SetActive(true)
 }
 
-func (m *Menu) Listen(e int, v pixel.Vec) {
-	m.activemenu.Listen(e, v)
+func (m *Menu) KeyEvent(key pixelgl.Button) {
+	m.activemenu.KeyEvent(key)
 }
 
 func (m *Menu) saveOptions() {

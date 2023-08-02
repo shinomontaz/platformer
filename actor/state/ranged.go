@@ -33,7 +33,7 @@ func NewRanged(a Actor, an Animater) *Ranged {
 }
 
 func (s *Ranged) Start() {
-	s.a.Inform(events.BUSY, pixel.ZV)
+	s.a.Inform(events.BUSY)
 	s.time = 0.0
 	s.a.Cast()
 }

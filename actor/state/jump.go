@@ -29,7 +29,7 @@ func NewJump(a Actor, an Animater) *Jump {
 }
 
 func (s *Jump) Start() {
-	//	s.a.Inform(events.BUSY, pixel.ZV)
+	//		s.a.Inform(events.BUSY)
 	s.jumpLimit = 1.0
 	s.animSpriteNum = 0
 	s.counter = 0

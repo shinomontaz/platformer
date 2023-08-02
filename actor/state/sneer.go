@@ -32,7 +32,7 @@ func NewSneer(a Actor, an Animater) *Sneer {
 }
 
 func (s *Sneer) Start() {
-	s.a.Inform(events.RELEASED, pixel.ZV)
+	s.a.Inform(events.RELEASED)
 	s.counter = 0
 	s.animSpriteNum = 0
 	s.a.AddSound("sneer")

@@ -11,7 +11,11 @@ type Subscriber interface {
 }
 
 type KeySubscriber interface {
-	KeyEvent(keys pixelgl.Button)
+	KeyAction(keys pixelgl.Button)
+}
+
+type EventSubscriber interface {
+	EventAction(e int)
 }
 
 const (

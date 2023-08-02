@@ -67,7 +67,7 @@ func NewDialog(game Gamer, u *ui.Ui, w *world.World, hero *actor.Actor, win *pix
 	d.cnv.SetUniform("uTime", &d.uTime)
 	d.cnv.SetFragmentShader(fragSource2)
 
-	d.ctrl.AddListener(d) // to listen ESCAPE  keyborad event
+	d.ctrl.AddKeyListener(d) // to listen ESCAPE  keyborad event
 
 	return d
 }
@@ -112,7 +112,7 @@ func (d *Dialog) Start() {
 	// prepare options and dialog
 }
 
-func (d *Dialog) KeyEvent(key pixelgl.Button) {
+func (d *Dialog) KeyAction(key pixelgl.Button) {
 	// if up or down - handle just here, otherwise make item handle it
 	switch key {
 	case pixelgl.KeyUp:
@@ -125,19 +125,3 @@ func (d *Dialog) KeyEvent(key pixelgl.Button) {
 		d.game.SetState(NORMAL)
 	}
 }
-
-// func (d *Dialog) Listen(e int, v pixel.Vec) {
-// 	// if up or down - handle just here, otherwise make item handle it
-// 	if v.Y > 0 {
-// 		d.currDlg.UpdateAnswer(-1)
-// 	}
-// 	if v.Y < 0 {
-// 		d.currDlg.UpdateAnswer(+1)
-// 	}
-// 	if e == events.INTERACT {
-// 		d.currDlg.Action()
-// 	}
-// 	if e == events.ESCAPE {
-// 		d.game.SetState(NORMAL)
-// 	}
-// }

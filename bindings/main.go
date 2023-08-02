@@ -1,7 +1,6 @@
 package bindings
 
 import (
-	"fmt"
 	"log"
 	"platformer/config"
 
@@ -21,6 +20,7 @@ const (
 	RIGHT
 	UP
 	DOWN
+	ESCAPE
 )
 
 var Default, Active *Bindings
@@ -44,16 +44,6 @@ var ActionId = []int{
 	UP,
 	DOWN,
 }
-
-// var KeyAction = map[int]string{
-// 	CTRL:  "ctrl",
-// 	ENTER: "enter",
-// 	SHIFT: "shift",
-// 	LEFT:  "left",
-// 	RIGHT: "right",
-// 	UP:    "up",
-// 	DOWN:  "down",
-// }
 
 var KeyAction = map[string]int{
 	"ctrl":  CTRL,
@@ -81,7 +71,6 @@ func Init() { // setup default and active bindings
 	if len(config.Opts.Bindings) == 0 {
 		Active = NewDefaultBindings()
 	} else {
-		fmt.Println("config.Opts.Bindings not empty ", config.Opts.Bindings)
 		Active = &Bindings{
 			list: map[int]pixelgl.Button{
 				CTRL:  pixelgl.Button(config.Opts.Bindings["ctrl"]),
@@ -119,6 +108,9 @@ func (b *Bindings) GetBinding(event int) pixelgl.Button {
 
 // returns ActionId(int) for provided pressed button
 func (b *Bindings) GetAction(key pixelgl.Button) int {
+	if key == pixelgl.KeyEscape {
+		return ESCAPE
+	}
 	if action, ok := b.actions[key]; ok {
 		return action
 	}

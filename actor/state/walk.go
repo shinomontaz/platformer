@@ -29,7 +29,7 @@ func NewWalk(a Actor, an Animater) *Walk {
 }
 
 func (s *Walk) Start() {
-	s.a.Inform(events.RELEASED, pixel.ZV)
+	s.a.Inform(events.RELEASED)
 	s.counter = 0
 }
 

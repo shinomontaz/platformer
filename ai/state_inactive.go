@@ -28,7 +28,7 @@ func (s *StateInactive) Start(poi pixel.Vec) {
 	fmt.Println("state inactive")
 }
 
-func (s *StateInactive) Listen(e int, v pixel.Vec) {
+func (s *StateInactive) EventAction(e int) {
 
 }
 

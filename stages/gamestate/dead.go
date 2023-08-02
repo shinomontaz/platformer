@@ -63,7 +63,7 @@ func NewDead(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Window)
 	d.cnv.SetUniform("uTime", &d.uTime)
 	d.cnv.SetFragmentShader(fragSource)
 
-	d.ctrl.AddListener(d) // to listen ESCAPE  keyborad event
+	d.ctrl.AddKeyListener(d) // to listen ESCAPE  keyborad event
 
 	return d
 }
@@ -94,7 +94,7 @@ func (d *Dead) Start() {
 	d.lastPos = d.hero.GetPos()
 }
 
-func (d *Dead) KeyEvent(key pixelgl.Button) {
+func (d *Dead) KeyAction(key pixelgl.Button) {
 	switch key {
 	case pixelgl.KeyEscape: // from controller
 		d.game.SetState(MENU)

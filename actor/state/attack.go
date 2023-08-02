@@ -43,7 +43,7 @@ func (s *Attack) Start() {
 }
 
 func (s *Attack) Listen(e int, v *pixel.Vec) {
-	s.a.Inform(events.BUSY, pixel.ZV)
+	s.a.Inform(events.BUSY)
 	// here we don't care of any controller event
 	s.checkTransitions(e, v)
 }

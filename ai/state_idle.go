@@ -9,11 +9,12 @@ import (
 )
 
 type StateIdle struct {
-	id     int
-	w      Worlder
-	ai     *Ai
-	isbusy bool
-	isagro bool
+	id      int
+	w       Worlder
+	ai      *Ai
+	isbusy  bool
+	isagro  bool
+	heropos pixel.Vec
 }
 
 func NewIdle(ai *Ai, w Worlder, isagro bool) *StateIdle {
@@ -33,14 +34,14 @@ func (s *StateIdle) Update(dt float64) {
 	if s.isagro {
 		hero := creatures.GetHero()
 		herohp := hero.GetHp()
-		heropos := hero.GetPos()
+		s.heropos = hero.GetPos()
 		pos := s.ai.obj.GetPos()
 		dir := s.ai.obj.GetDir()
-		if (heropos.X < pos.X && dir < 0) || (heropos.X > pos.X && dir > 0) {
+		if (s.heropos.X < pos.X && dir < 0) || (s.heropos.X > pos.X && dir > 0) {
 			// check if we see target
-			if s.w.IsSee(pos, heropos) && herohp > 0 {
+			if s.w.IsSee(pos, s.heropos) && herohp > 0 {
 				talks.AddAlert(pos, 200)
-				s.ai.SetState(ATTACK, heropos)
+				s.ai.SetState(ATTACK, s.heropos)
 			}
 		}
 	}
@@ -50,9 +51,9 @@ func (s *StateIdle) Start(poi pixel.Vec) {
 
 }
 
-func (s *StateIdle) Listen(e int, v pixel.Vec) {
+func (s *StateIdle) EventAction(e int) {
 	if e == events.ALERT {
-		s.ai.SetState(INVESTIGATE, v)
+		s.ai.SetState(INVESTIGATE, s.heropos)
 	}
 	if e == events.BUSY {
 		s.isbusy = true

@@ -74,7 +74,7 @@ func (s *StateBustle) Update(dt float64) {
 	}
 }
 
-func (s *StateBustle) Listen(e int, v pixel.Vec) {
+func (s *StateBustle) EventAction(e int) {
 	if e == events.BUSY {
 		s.isbusy = true
 	}

@@ -35,7 +35,7 @@ func NewInteract(a Actor, an Animater) *Interact {
 }
 
 func (s *Interact) Start() {
-	s.a.Inform(events.BUSY, pixel.ZV)
+	s.a.Inform(events.BUSY)
 	s.time = 0.0
 	s.attackidx = 1
 	s.interacted = false

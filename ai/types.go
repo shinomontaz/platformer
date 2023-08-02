@@ -18,7 +18,7 @@ type Stater interface {
 	Update(dt float64)
 	Start(poi pixel.Vec)
 	IsAlerted() bool
-	Listen(e int, v pixel.Vec)
+	EventAction(e int)
 }
 
 type Worlder interface {

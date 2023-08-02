@@ -88,7 +88,7 @@ func (s *StateRoaming) Update(dt float64) {
 	}
 }
 
-func (s *StateRoaming) Listen(e int, v pixel.Vec) {
+func (s *StateRoaming) EventAction(e int) {
 	if e == events.BUSY {
 		s.isbusy = true
 	}

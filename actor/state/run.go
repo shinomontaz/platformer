@@ -29,7 +29,7 @@ func NewRun(a Actor, an Animater) *Run {
 }
 
 func (s *Run) Start() {
-	s.a.Inform(events.RELEASED, pixel.ZV)
+	s.a.Inform(events.RELEASED)
 	s.counter = 0
 }
 

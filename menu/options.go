@@ -1,6 +1,9 @@
 package menu
 
-import "github.com/shinomontaz/pixel"
+import (
+	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/pixelgl"
+)
 
 type MenuOption func(*Menu)
 type ItemOption func(*Item)
@@ -23,7 +26,7 @@ func WithTitle(title string) MenuOption {
 	}
 }
 
-func WithHandle(f func(int, pixel.Vec)) ItemOption {
+func WithHandle(f func(pixelgl.Button)) ItemOption {
 	return func(i *Item) {
 		i.handle = f
 	}

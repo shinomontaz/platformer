@@ -31,7 +31,7 @@ func NewHit(a Actor, an Animater) *Hit {
 }
 
 func (s *Hit) Start() {
-	s.a.Inform(events.BUSY, pixel.ZV)
+	s.a.Inform(events.BUSY)
 	s.counter = 0
 	// aa := s.a.GetAi()
 	// if aa != nil {

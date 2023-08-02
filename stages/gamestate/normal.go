@@ -38,9 +38,9 @@ func NewNormal(game Gamer, currBounds pixel.Rect, u *ui.Ui, w *world.World, hero
 		ctrl: controller.New(win, false),
 	}
 
-	n.ctrl.AddListener(n.hero) // make hero listen keyboard input
-	n.ctrl.AddListener(n)      // to listen ESCAPE  keyborad event
-	n.hero.AddListener(n)      // to listen DIE event
+	n.ctrl.AddKeyListener(n.hero) // make hero listen keyboard input
+	n.ctrl.AddKeyListener(n)      // to listen ESCAPE  keyborad event
+	n.hero.AddEventListener(n)    // to listen DIE event
 
 	return n
 }
@@ -86,14 +86,14 @@ func (n *Normal) Start() {
 	fmt.Println("applying base shader")
 }
 
-func (n *Normal) KeyEvent(key pixelgl.Button) {
+func (n *Normal) KeyAction(key pixelgl.Button) {
 	switch key {
 	case pixelgl.KeyEscape: // from controller
 		n.game.SetState(MENU)
 	}
 }
 
-func (n *Normal) Listen(e int, v pixel.Vec) {
+func (n *Normal) EventAction(e int) {
 	switch e {
 	case events.GAMEVENT_DIE: // from hero
 		fmt.Println("handle event DIE")

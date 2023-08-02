@@ -30,7 +30,7 @@ func NewStand(a Actor, an Animater) *Stand {
 }
 
 func (s *Stand) Start() {
-	s.a.Inform(events.RELEASED, pixel.ZV)
+	s.a.Inform(events.RELEASED)
 	s.counter = 0
 }
 

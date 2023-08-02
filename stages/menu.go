@@ -133,11 +133,13 @@ func (m *Menu) Init() {
 
 	txt = text.New(pixel.V(0, 0), m.atlas)
 	it = menu.NewItem(fmt.Sprintf("%v: %-10v", "Fullscreen", config.Opts.Fullscreen), txt,
-		menu.WithHandle(func(e int, v pixel.Vec) {
-			if v.X == 0 {
-				return
+		menu.WithHandle(func(b pixelgl.Button) {
+			switch b {
+			case pixelgl.KeyLeft:
+				fallthrough
+			case pixelgl.KeyRight:
+				config.Opts.Fullscreen = !config.Opts.Fullscreen
 			}
-			config.Opts.Fullscreen = !config.Opts.Fullscreen
 			m.displaymenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", "Fullscreen", config.Opts.Fullscreen))
 		}),
 	)
@@ -159,7 +161,7 @@ func (m *Menu) Init() {
 	soundmenurect := pixel.R(0, 0, 200, 240)
 	m.soundmenu = menu.NewSound(soundmenurect.Moved(m.currBounds.Center().Sub(soundmenurect.Center())), m.atlas, menu.WithQuit(soundMenuQuit(m)), menu.WithLogo(soundlogo))
 
-	m.ctrl.AddListener(m)
+	m.ctrl.AddKeyListener(m)
 	m.isReady = true
 }
 
@@ -167,39 +169,32 @@ func (m *Menu) SetupControlsMenu() {
 	controlsmenurect := pixel.R(0, 0, 400, 140)
 	m.controlsmenu = menu.New(controlsmenurect.Moved(m.currBounds.Center().Sub(controlsmenurect.Center())))
 	activated := ""
-	var settedButton pixelgl.Button
-	for i, ka := range bindings.KeyActions {
-		title := bindings.KeyActionNames[i]
+	for _, ka := range bindings.KeyActions {
+		ka := ka
+		title := bindings.KeyActionNames[bindings.KeyAction[ka]]
 		kaId := bindings.KeyAction[ka]
 		txt := text.New(pixel.V(0, 0), m.atlas)
 		it := menu.NewItem(fmt.Sprintf("%v: %-10v", title, bindings.Active.GetBinding(kaId)), txt,
 			menu.WithAction(func() { // on Enter
 				if activated == "" {
 					activated = ka
-					settedButton = pixelgl.KeyUnknown
 					m.ctrl.SetListenAll(true)
 					m.controlsmenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", title, "?????"))
-					fmt.Println("activation! ", ka, settedButton.String())
-				} else {
-					settedButton = pixelgl.KeyEnter
-					bindings.Active.SetBind(settedButton, kaId)
-					activated = ""
-					settedButton = pixelgl.KeyUnknown
-					m.controlsmenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", title, bindings.Active.GetBinding(kaId)))
-					fmt.Println("setting key as Enter! ", ka)
-					m.ctrl.SetListenAll(false)
+					m.controlsmenu.AcceptInput(true)
 				}
 			}),
-			menu.WithHandle(func(e int, v pixel.Vec) {
-				if activated == ka {
-					settedButton = m.ctrl.DetectPressedButton()
-					bindings.Active.SetBind(settedButton, kaId)
-					activated = ""
-					fmt.Println("setting key as Enter! ", ka, settedButton.String())
-					settedButton = pixelgl.KeyUnknown
-					m.controlsmenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", title, bindings.Active.GetBinding(kaId)))
-					m.ctrl.SetListenAll(false)
+			menu.WithHandle(func(b pixelgl.Button) {
+				m.ctrl.SetListenAll(false)
+				m.controlsmenu.AcceptInput(false)
+				if activated == "" {
+					return
 				}
+
+				bindings.Active.SetBind(b, kaId)
+				activated = ""
+				m.controlsmenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", title, bindings.Active.GetBinding(kaId)))
+				m.ctrl.SetListenAll(false)
+
 			}),
 		)
 		m.controlsmenu.AddItem(it)
@@ -216,8 +211,8 @@ func (m *Menu) SetupControlsMenu() {
 	m.controlsmenu.AddItem(it)
 }
 
-func (m *Menu) KeyEvent(key pixelgl.Button) {
-	m.activemenu.KeyEvent(key)
+func (m *Menu) KeyAction(key pixelgl.Button) {
+	m.activemenu.KeyAction(key)
 }
 
 func (m *Menu) Start() {

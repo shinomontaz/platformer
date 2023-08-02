@@ -30,7 +30,7 @@ func NewDeadSunk(a Actor, an Animater) *DeadSunk {
 }
 
 func (s *DeadSunk) Start() {
-	s.a.Inform(events.BUSY, pixel.ZV)
+	s.a.Inform(events.BUSY)
 	s.a.OnKill()
 	s.counter = 0
 }

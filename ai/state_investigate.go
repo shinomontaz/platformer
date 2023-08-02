@@ -79,7 +79,7 @@ func (s *StateInvestigate) Update(dt float64) {
 	}
 }
 
-func (s *StateInvestigate) Listen(e int, v pixel.Vec) {
+func (s *StateInvestigate) EventAction(e int) {
 	if e == events.BUSY {
 		s.isbusy = true
 	}

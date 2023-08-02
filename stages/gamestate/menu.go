@@ -112,7 +112,7 @@ func NewMenu(game Gamer, w *world.World, hero *actor.Actor, win *pixelgl.Window)
 	soundmenurect := pixel.R(0, 0, 200, 240)
 	m.soundmenu = menu.NewSound(soundmenurect.Moved(win.Bounds().Center().Sub(soundmenurect.Center())), m.atlas, menu.WithQuit(soundMenuQuit(m)))
 
-	m.ctrl.AddListener(m)
+	m.ctrl.AddKeyListener(m)
 
 	return m
 }
@@ -150,8 +150,8 @@ func (m *Menu) Start() {
 	m.activemenu.SetActive(true)
 }
 
-func (m *Menu) KeyEvent(key pixelgl.Button) {
-	m.activemenu.KeyEvent(key)
+func (m *Menu) KeyAction(key pixelgl.Button) {
+	m.activemenu.KeyAction(key)
 }
 
 func (m *Menu) saveOptions() {

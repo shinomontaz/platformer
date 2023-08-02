@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"platformer/bindings"
 	"platformer/common"
 
@@ -40,11 +39,12 @@ func New(win *pixelgl.Window, justReleased bool) *Controller {
 	for key, val := range df.List() {
 		ctrl.currBind[key] = val
 	}
+	ctrl.currBind[bindings.ESCAPE] = pixelgl.KeyEscape
 
 	return ctrl
 }
 
-func (pc *Controller) AddListener(s common.KeySubscriber) {
+func (pc *Controller) AddKeyListener(s common.KeySubscriber) {
 	pc.sbrs = append(pc.sbrs, s)
 }
 
@@ -52,25 +52,28 @@ func (pc *Controller) SetListenAll(listenall bool) {
 	pc.listenall = listenall
 }
 
-func (pc *Controller) Notify(b pixelgl.Button) {
+func (pc *Controller) NotifyKey(b pixelgl.Button) {
 	for _, s := range pc.sbrs {
-		s.KeyEvent(b)
+		s.KeyAction(b)
 	}
 }
 
 func (pc *Controller) Update() {
 	if pc.listenall { // notify for first key pressed
-		pc.Notify(pc.KeyAll())
+		b := pc.KeyFirst()
+		if b != pixelgl.KeyUnknown {
+			pc.NotifyKey(b)
+		}
 		return
 	}
 
 	binded := pc.KeysBinded()
 	for _, b := range binded {
-		pc.Notify(b)
+		pc.NotifyKey(b)
 	}
 }
 
-func (pc *Controller) KeyAll() pixelgl.Button {
+func (pc *Controller) KeyFirst() pixelgl.Button {
 	for _, b := range AllButtons {
 		if pc.win.Pressed(b) {
 			return b
@@ -81,6 +84,7 @@ func (pc *Controller) KeyAll() pixelgl.Button {
 
 func (pc *Controller) KeysBinded() []pixelgl.Button {
 	res := make([]pixelgl.Button, 0)
+
 	if pc.win.JustPressed(pixelgl.KeyEscape) {
 		res = append(res, pixelgl.KeyEscape)
 	}
@@ -106,13 +110,11 @@ func (pc *Controller) KeysBinded() []pixelgl.Button {
 				}
 			}
 		}
-
 	}
 	return res
 }
 
 func (pc *Controller) DetectPressedButton() pixelgl.Button {
-	fmt.Println("DetectPressedButton")
 	for _, b := range AllButtons {
 		if pc.win.Pressed(b) {
 			return b

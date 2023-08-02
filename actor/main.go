@@ -2,7 +2,6 @@ package actor
 
 import (
 	"errors"
-	"fmt"
 	"math"
 	"platformer/bindings"
 	"platformer/common"
@@ -66,7 +65,7 @@ type Actor struct {
 
 	target pixel.Vec
 
-	sbrs []common.Subscriber
+	esbrs []common.EventSubscriber
 
 	skills       []*Skill
 	skillmap     map[int]int // map of keyaction sum (as ints) to skills (indices in skills list). we can do sum as unique key duw to skill id definition: powers of 2
@@ -100,7 +99,7 @@ func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Acto
 		w:         w,
 		mass:      1,
 		sounds:    make(map[string]soundeffect),
-		sbrs:      make([]common.Subscriber, 0),
+		esbrs:     make([]common.EventSubscriber, 0),
 		skills:    make([]*Skill, 0),
 		skillmap:  make(map[int]int),
 		groundObj: common.Objecter{},
@@ -187,14 +186,11 @@ func (a *Actor) StepPrediction(e int, v pixel.Vec) float64 {
 	return groundrate
 }
 
-func (a *Actor) KeyEvent(key pixelgl.Button) {
-	//	a.appliedForce = pixel.ZV
-
+func (a *Actor) KeyAction(key pixelgl.Button) {
 	if a.state.Busy() {
 		return
 	}
 
-	fmt.Println("actor key event", key.String())
 	action := bindings.Active.GetAction(key) // get action id for this key
 
 	a.keycombo += action
@@ -249,6 +245,7 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 			a.appliedForce.X *= -1
 		}
 	}
+
 	a.phys.Apply(a.appliedForce)
 	a.phys.Update(dt, objs)
 	gdObj := a.phys.GetGroundObject()
@@ -424,14 +421,14 @@ func (a *Actor) IsGround() bool {
 	return a.phys.IsGround()
 }
 
-func (a *Actor) Inform(e int, v pixel.Vec) {
-	for _, s := range a.sbrs {
-		s.Listen(e, v)
+func (a *Actor) Inform(e int) {
+	for _, s := range a.esbrs {
+		s.EventAction(e)
 	}
 }
 
-func (a *Actor) AddListener(s common.Subscriber) {
-	a.sbrs = append(a.sbrs, s)
+func (a *Actor) AddEventListener(s common.EventSubscriber) {
+	a.esbrs = append(a.esbrs, s)
 }
 
 func (a *Actor) Hit(vec pixel.Vec, power int) {
@@ -448,7 +445,6 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 		return
 	}
 	a.SetState(state.HIT)
-	a.Inform(events.ALERT, pixel.Vec{-vec.X, vec.Y})
 	if a.onhit != nil {
 		a.onhit(a.rect.Center(), v)
 	}
@@ -464,7 +460,7 @@ func (a *Actor) Kill() {
 
 	// a.mass = 0
 	// a.phys.SetMass(a.mass)
-	a.Inform(events.GAMEVENT_DIE, pixel.ZV)
+	a.Inform(events.GAMEVENT_DIE)
 	a.onkill = nil
 	a.onhit = nil
 	a.oninteract = nil

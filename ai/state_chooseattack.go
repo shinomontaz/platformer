@@ -132,7 +132,7 @@ func (s *StateChooseAttack) Start(poi pixel.Vec) {
 	fmt.Println("state chooseattack start")
 }
 
-func (s *StateChooseAttack) Listen(e int, v pixel.Vec) {
+func (s *StateChooseAttack) EventAction(e int) {
 	if e == events.BUSY {
 		s.isbusy = true
 	}

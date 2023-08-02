@@ -41,7 +41,7 @@ type Actor interface {
 	Cast()
 	Interact()
 	AddSound(event string)
-	Inform(e int, v pixel.Vec)
+	Inform(e int)
 	GetSkillAttr(attr string) (interface{}, error)
 	OnKill()
 }

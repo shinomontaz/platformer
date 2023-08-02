@@ -32,7 +32,7 @@ func NewIdle(a Actor, an Animater) *Idle {
 }
 
 func (s *Idle) Start() {
-	s.a.Inform(events.RELEASED, pixel.ZV)
+	s.a.Inform(events.RELEASED)
 	s.counter = 0
 	s.animSpriteNum = 0
 	s.a.AddSound("idle")

@@ -5,6 +5,7 @@ import (
 	"image/color"
 
 	"github.com/shinomontaz/pixel"
+	"github.com/shinomontaz/pixel/pixelgl"
 	"github.com/shinomontaz/pixel/text"
 	"golang.org/x/image/colornames"
 )
@@ -15,7 +16,7 @@ type Item struct {
 	defaultColor color.Color
 	selectColor  color.Color
 
-	handle func(int, pixel.Vec)
+	handle func(pixelgl.Button)
 	action func()
 	rect   pixel.Rect
 
@@ -28,7 +29,7 @@ func NewItem(title string, txt *text.Text, opts ...ItemOption) *Item {
 		txt:          txt,
 		defaultColor: colornames.Whitesmoke,
 		selectColor:  colornames.Red,
-		handle:       func(e int, v pixel.Vec) {},
+		handle:       func(b pixelgl.Button) {},
 		action:       func() {},
 	}
 
@@ -66,8 +67,8 @@ func (i *Item) GetPlace() pixel.Vec {
 	return i.rect.Center()
 }
 
-func (i *Item) Listen(e int, v pixel.Vec) {
-	i.handle(e, v)
+func (i *Item) KeyAction(b pixelgl.Button) { // for left and right volume change
+	i.handle(b)
 }
 
 func (i *Item) Draw(t pixel.Target) {

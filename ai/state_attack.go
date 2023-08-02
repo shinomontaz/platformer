@@ -123,7 +123,7 @@ func (s *StateAttack) Start(poi pixel.Vec) {
 	s.counter = 0
 }
 
-func (s *StateAttack) Listen(e int, v pixel.Vec) {
+func (s *StateAttack) EventAction(e int) {
 	if e == events.BUSY {
 		s.isbusy = true
 	}

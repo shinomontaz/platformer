@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"platformer/config"
 
+	"github.com/shinomontaz/pixel/pixelgl"
+
 	"github.com/shinomontaz/pixel"
 	"github.com/shinomontaz/pixel/text"
 )
@@ -26,14 +28,16 @@ func NewSound(r pixel.Rect, atlas *text.Atlas, opts ...MenuOption) *Menu {
 	txt := text.New(pixel.V(0, 0), atlas)
 
 	it := NewItem(fmt.Sprintf("%v: %-10v", "Master", config.Opts.Volumes["main"]), txt,
-		WithHandle(func(e int, v pixel.Vec) {
-			if v.X == 0 {
-				return
-			}
-			if v.X < 0 && config.Opts.Volumes["main"] > 0 {
-				config.Opts.Volumes["main"] -= 10
-			} else if v.X > 0 && config.Opts.Volumes["main"] < 100 {
-				config.Opts.Volumes["main"] += 10
+		WithHandle(func(b pixelgl.Button) {
+			switch b {
+			case pixelgl.KeyLeft:
+				if config.Opts.Volumes["main"] > 0 {
+					config.Opts.Volumes["main"] -= 10
+				}
+			case pixelgl.KeyRight:
+				if config.Opts.Volumes["main"] < 100 {
+					config.Opts.Volumes["main"] += 10
+				}
 			}
 			soundmenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", "Master", config.Opts.Volumes["main"]))
 		}),
@@ -43,14 +47,16 @@ func NewSound(r pixel.Rect, atlas *text.Atlas, opts ...MenuOption) *Menu {
 
 	txt = text.New(pixel.V(0, 0), atlas)
 	it = NewItem(fmt.Sprintf("%v: %-10v", "Music", config.Opts.Volumes["music"]), txt,
-		WithHandle(func(e int, v pixel.Vec) {
-			if v.X == 0 {
-				return
-			}
-			if v.X < 0 && config.Opts.Volumes["music"] > 0 {
-				config.Opts.Volumes["music"] -= 10
-			} else if v.X > 0 && config.Opts.Volumes["music"] < 100 {
-				config.Opts.Volumes["music"] += 10
+		WithHandle(func(b pixelgl.Button) {
+			switch b {
+			case pixelgl.KeyLeft:
+				if config.Opts.Volumes["music"] > 0 {
+					config.Opts.Volumes["music"] -= 10
+				}
+			case pixelgl.KeyRight:
+				if config.Opts.Volumes["music"] < 100 {
+					config.Opts.Volumes["music"] += 10
+				}
 			}
 			soundmenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", "Music", config.Opts.Volumes["music"]))
 		}),
@@ -59,14 +65,16 @@ func NewSound(r pixel.Rect, atlas *text.Atlas, opts ...MenuOption) *Menu {
 
 	txt = text.New(pixel.V(0, 0), atlas)
 	it = NewItem(fmt.Sprintf("%v: %-10v", "Actions", config.Opts.Volumes["actions"]), txt,
-		WithHandle(func(e int, v pixel.Vec) {
-			if v.X == 0 {
-				return
-			}
-			if v.X < 0 && config.Opts.Volumes["actions"] > 0 {
-				config.Opts.Volumes["actions"] -= 10
-			} else if v.X > 0 && config.Opts.Volumes["actions"] < 100 {
-				config.Opts.Volumes["actions"] += 10
+		WithHandle(func(b pixelgl.Button) {
+			switch b {
+			case pixelgl.KeyLeft:
+				if config.Opts.Volumes["actions"] > 0 {
+					config.Opts.Volumes["actions"] -= 10
+				}
+			case pixelgl.KeyRight:
+				if config.Opts.Volumes["actions"] < 100 {
+					config.Opts.Volumes["actions"] += 10
+				}
 			}
 			soundmenu.UpdateSelectedItemText(fmt.Sprintf("%v: %-10v", "Actions", config.Opts.Volumes["actions"]))
 		}),

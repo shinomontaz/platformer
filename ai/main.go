@@ -51,7 +51,7 @@ func NewCalmEnemy(obj *actor.Actor, w Worlder) *Ai {
 	a.SetState(IDLE, pixel.ZV)
 
 	list[obj] = a
-	obj.AddListener(a)
+	obj.AddEventListener(a)
 
 	counter++
 	return a
@@ -89,7 +89,7 @@ func NewActiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	a.SetState(ROAMING, pixel.ZV)
 
 	list[obj] = a
-	obj.AddListener(a)
+	obj.AddEventListener(a)
 
 	counter++
 	return a
@@ -109,7 +109,7 @@ func NewCalmNpc(obj *actor.Actor, w Worlder) *Ai {
 	a.SetState(IDLE, pixel.ZV)
 
 	list[obj] = a
-	obj.AddListener(a)
+	obj.AddEventListener(a)
 
 	counter++
 	return a
@@ -132,7 +132,7 @@ func NewActiveNpc(obj *actor.Actor, w Worlder) *Ai {
 	a.SetState(ROAMING, pixel.ZV)
 
 	list[obj] = a
-	obj.AddListener(a)
+	obj.AddEventListener(a)
 
 	counter++
 	return a
@@ -172,6 +172,6 @@ func (a *Ai) GetPos() pixel.Vec {
 	return a.obj.GetPos()
 }
 
-func (a *Ai) Listen(e int, v pixel.Vec) {
-	a.state.Listen(e, v)
+func (a *Ai) EventAction(e int) {
+	a.state.EventAction(e)
 }

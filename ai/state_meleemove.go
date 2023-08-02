@@ -74,7 +74,7 @@ func (s *StateMeleeMove) Start(poi pixel.Vec) {
 	}
 }
 
-func (s *StateMeleeMove) Listen(e int, v pixel.Vec) {
+func (s *StateMeleeMove) EventAction(e int) {
 	if e == events.BUSY {
 		s.isbusy = true
 	}

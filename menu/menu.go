@@ -9,16 +9,17 @@ import (
 )
 
 type Menu struct {
-	items    []*Item
-	curr     int
-	rect     pixel.Rect
-	isactive bool
-	onquit   func()
-	title    string
-	logo     *pixel.Sprite
-	marginY  float64
-	marginX  float64
-	imd      *imdraw.IMDraw
+	items       []*Item
+	curr        int
+	rect        pixel.Rect
+	isactive    bool
+	onquit      func()
+	title       string
+	logo        *pixel.Sprite
+	marginY     float64
+	marginX     float64
+	imd         *imdraw.IMDraw
+	acceptinput bool
 }
 
 func New(r pixel.Rect, opts ...MenuOption) *Menu {
@@ -50,35 +51,43 @@ func (m *Menu) UpdateSelectedItemText(title string) {
 	m.items[m.curr].title = title
 }
 
+func (m *Menu) AcceptInput(a bool) {
+	m.acceptinput = a
+}
+
 func (m *Menu) Select(idx int) {
 	m.items[m.curr].Select(false)
 	m.curr = idx
 	m.items[m.curr].Select(true)
 }
 
-func (m *Menu) KeyEvent(key pixelgl.Button) {
+func (m *Menu) KeyAction(b pixelgl.Button) {
 	if !m.isactive {
 		return
 	}
-	curr := m.curr
-	ismoved := false
+	if !m.acceptinput {
+		curr := m.curr
+		ismoved := false
 
-	switch key {
-	case pixelgl.KeyUp:
-		curr = (curr - 1 + len(m.items)) % len(m.items)
-		ismoved = true
-	case pixelgl.KeyDown:
-		curr = (curr + 1) % len(m.items)
-		ismoved = true
-	case pixelgl.KeyEnter:
-		m.items[m.curr].Action()
-		return
+		switch b {
+		case pixelgl.KeyUp:
+			curr = (curr - 1 + len(m.items)) % len(m.items)
+			ismoved = true
+		case pixelgl.KeyDown:
+			curr = (curr + 1) % len(m.items)
+			ismoved = true
+		case pixelgl.KeyEnter:
+			m.items[m.curr].Action()
+			return
+		}
+
+		if ismoved {
+			m.Select(curr)
+			return
+		}
 	}
 
-	if ismoved {
-		m.Select(curr)
-		return
-	}
+	m.items[m.curr].KeyAction(b)
 }
 
 func (m *Menu) AddItem(it *Item) {

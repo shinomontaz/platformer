@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"platformer/actor"
 	"platformer/ai"
+	"platformer/bindings"
 	"platformer/controller"
 	"platformer/events"
 	"platformer/sound"
@@ -35,7 +36,7 @@ func NewNormal(game Gamer, currBounds pixel.Rect, u *ui.Ui, w *world.World, hero
 			lastPos:    pixel.ZV,
 		},
 		win:  win,
-		ctrl: controller.New(win, false),
+		ctrl: controller.New(win, false, controller.WithBinding(bindings.Active)),
 	}
 
 	n.ctrl.AddKeyListener(n.hero) // make hero listen keyboard input

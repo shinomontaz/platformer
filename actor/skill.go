@@ -39,7 +39,7 @@ func NewSkill(pr config.Skill) *Skill {
 		Keys:   make([]int, 0),
 	}
 
-	s.Id = ActionSkillMap[pr.Name]
+	s.Event = ActionSkillMap[pr.Name]
 
 	for _, ev := range pr.Keys {
 		if eventId, ok := bindings.KeyAction[ev]; ok {

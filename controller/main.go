@@ -7,6 +7,8 @@ import (
 	"github.com/shinomontaz/pixel/pixelgl"
 )
 
+type Option func(*Controller)
+
 type Controller struct {
 	win       *pixelgl.Window
 	sbrs      []common.KeySubscriber
@@ -25,7 +27,7 @@ var typesBinds = map[int]string{
 	bindings.DOWN:  "default",
 }
 
-func New(win *pixelgl.Window, justReleased bool) *Controller {
+func New(win *pixelgl.Window, justReleased bool, opts ...Option) *Controller {
 	ctrl := &Controller{
 		win:      win,
 		sbrs:     make([]common.KeySubscriber, 0),
@@ -39,6 +41,11 @@ func New(win *pixelgl.Window, justReleased bool) *Controller {
 	for key, val := range df.List() {
 		ctrl.currBind[key] = val
 	}
+
+	for _, o := range opts {
+		o(ctrl)
+	}
+
 	ctrl.currBind[bindings.ESCAPE] = pixelgl.KeyEscape
 
 	return ctrl

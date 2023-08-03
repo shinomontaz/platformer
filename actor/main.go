@@ -2,6 +2,7 @@ package actor
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"platformer/bindings"
 	"platformer/common"
@@ -257,8 +258,8 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	newspeed := a.phys.GetVel()
 	if math.Abs(newspeed.X) <= a.runspeed && math.Abs(newspeed.X) > a.walkspeed {
 		a.action = events.RUN
-		//	} else if (math.Abs(a.vel.X) >= a.walkspeed && math.Abs(newspeed.X) <= a.walkspeed) || (a.vel.X == 0 && math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed) {
-	} else if math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed {
+	} else if (math.Abs(a.vel.X) >= a.walkspeed && math.Abs(newspeed.X) <= a.walkspeed) || (a.vel.X == 0 && math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed) {
+		//	} else if math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed {
 		a.action = events.WALK
 	}
 	a.vel = newspeed
@@ -266,6 +267,7 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	if idx, ok := a.skillmap[a.keycombo]; ok {
 		a.SetSkill(a.skills[idx])
 		a.action = a.activeSkill.Event
+		fmt.Println("a.keycombo!", a.keycombo, a.action, a.activeSkill)
 	}
 
 	a.state.Listen(a.action, &a.vel)
@@ -274,6 +276,7 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	a.state.Update(dt)
 	a.appliedForce = pixel.ZV
 	a.keycombo = 0
+	a.action = 0
 }
 
 func (a *Actor) UpdateSpecial(dt float64, objs []common.Objecter) {

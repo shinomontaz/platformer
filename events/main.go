@@ -1,8 +1,7 @@
 package events
 
 const (
-	MOVE = iota
-	MELEE
+	MELEE = 1 + iota
 	MELEEMOVE
 	CAST
 	RANGED

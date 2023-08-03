@@ -8,7 +8,6 @@ import (
 	"platformer/background"
 	"platformer/common"
 	"platformer/config"
-	"platformer/controller"
 	"platformer/creatures"
 	"platformer/dialogs"
 	"platformer/events"
@@ -38,7 +37,6 @@ type Game struct {
 	u             *ui.Ui
 	w             *world.World
 	hero          *actor.Actor
-	ctrl          *controller.Controller
 	initialCenter pixel.Vec
 	lastPos       pixel.Vec
 
@@ -63,7 +61,6 @@ func NewGame(f Inform, l *common.Loader, win *pixelgl.Window, currBounds pixel.R
 			eventMap: map[int]int{events.STAGEVENT_QUIT: MENU},
 		},
 		assetloader:   l,
-		ctrl:          controller.New(win, false),
 		initialBounds: currBounds,
 		win:           win,
 	}

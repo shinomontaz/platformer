@@ -430,13 +430,13 @@ func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel
 
 	w.cnv.Clear(color.RGBA{0, 0, 0, 1})
 	//	w.cnv2.Clear(color.RGBA{240, 248, 255, 1})
-	w.cnv2.Clear(color.RGBA{101, 186, 227, 1})
+	w.cnv2.Clear(color.RGBA{0, 0, 0, 1})
 
 	w.cnv2.SetMatrix(pixel.IM.Moved(w.cnv2.Bounds().Center().Sub(cam)))
 
 	w.b.Draw(w.cnv2)
 
-	w.imdrawrect.Draw(w.cnv2)
+	w.imdrawrect.Draw(w.cnv2) // filled rectangles
 
 	for _, batch := range w.batches {
 		batch.Clear()

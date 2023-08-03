@@ -85,7 +85,8 @@ func (b *Back) Update(dt float64, pos pixel.Vec) {
 		b.steps = steps
 	}
 
-	b.pos = pixel.V(x-float64(steps)*b.width, 0)
+	y := (pos.Y - b.start.Y)
+	b.pos = pixel.V(x-float64(steps)*b.width, y)
 
 	b.currCenter = pos.Sub(pixel.Vec{b.width / 2, 150})
 }

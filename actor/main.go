@@ -2,7 +2,6 @@ package actor
 
 import (
 	"errors"
-	"fmt"
 	"math"
 	"platformer/bindings"
 	"platformer/common"
@@ -269,14 +268,8 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	newspeed := a.phys.GetVel()
 	if math.Abs(newspeed.X) <= a.runspeed && math.Abs(newspeed.X) > a.walkspeed {
 		a.action = events.RUN
-		if a.id == 1 {
-			fmt.Println("run")
-		}
 	} else if math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed {
 		a.action = events.WALK
-		if a.id == 1 {
-			fmt.Println("walk")
-		}
 	}
 	a.vel = newspeed
 

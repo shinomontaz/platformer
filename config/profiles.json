@@ -13,7 +13,7 @@
         "mass": 10,
         "jump": 42,
         "walk": 80,
-        "run": 200,
+        "run": 300,
         "body": "human",
         "skills": [
             {

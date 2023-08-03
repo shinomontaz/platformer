@@ -206,14 +206,14 @@ func (a *Actor) KeyAction(key pixelgl.Button) {
 	}
 
 	if isWalk {
-		a.appliedForce.X = a.dir * a.walkspeed * 2
+		a.appliedForce.X = a.dir * a.walkspeed
+		if a.isShift {
+			a.appliedForce.X = a.dir * a.runspeed
+		}
 	}
 
 	if action == bindings.SHIFT {
 		a.isShift = true
-		if a.appliedForce.X != 0 {
-			a.appliedForce.X = a.dir * a.runspeed * 2
-		}
 	}
 
 	if action == bindings.UP && a.state.GetId() != state.JUMP {
@@ -247,6 +247,17 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 		}
 	}
 
+	if math.Signbit(a.appliedForce.X) != math.Signbit(a.vel.X) { // to brake (тормозить) harder
+		a.appliedForce.X *= 3
+	} else {
+		if math.Abs(a.appliedForce.X) == a.walkspeed && math.Abs(a.vel.X) >= a.walkspeed*0.9 {
+			a.appliedForce.X = 0
+		}
+		if math.Abs(a.appliedForce.X) == a.runspeed && math.Abs(a.vel.X) >= a.runspeed*0.9 {
+			a.appliedForce.X = 0
+		}
+	}
+
 	a.phys.Apply(a.appliedForce)
 	a.phys.Update(dt, objs)
 	gdObj := a.phys.GetGroundObject()
@@ -258,16 +269,20 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	newspeed := a.phys.GetVel()
 	if math.Abs(newspeed.X) <= a.runspeed && math.Abs(newspeed.X) > a.walkspeed {
 		a.action = events.RUN
-	} else if (math.Abs(a.vel.X) >= a.walkspeed && math.Abs(newspeed.X) <= a.walkspeed) || (a.vel.X == 0 && math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed) {
-		//	} else if math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed {
+		if a.id == 1 {
+			fmt.Println("run")
+		}
+	} else if math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed {
 		a.action = events.WALK
+		if a.id == 1 {
+			fmt.Println("walk")
+		}
 	}
 	a.vel = newspeed
 
 	if idx, ok := a.skillmap[a.keycombo]; ok {
 		a.SetSkill(a.skills[idx])
 		a.action = a.activeSkill.Event
-		fmt.Println("a.keycombo!", a.keycombo, a.action, a.activeSkill)
 	}
 
 	a.state.Listen(a.action, &a.vel)
@@ -277,6 +292,7 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	a.appliedForce = pixel.ZV
 	a.keycombo = 0
 	a.action = 0
+	a.isShift = false
 }
 
 func (a *Actor) UpdateSpecial(dt float64, objs []common.Objecter) {

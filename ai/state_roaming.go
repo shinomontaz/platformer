@@ -2,10 +2,13 @@ package ai
 
 import (
 	"fmt"
+	"platformer/bindings"
 	"platformer/common"
 	"platformer/creatures"
 	"platformer/events"
 	"platformer/talks"
+
+	"github.com/shinomontaz/pixel/pixelgl"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -79,7 +82,15 @@ func (s *StateRoaming) Update(dt float64) {
 	if s.dir != 0 {
 		v := pixel.Vec{s.dir, 0}
 		groundrate := s.ai.obj.StepPrediction(events.WALK, v)
+		b := pixelgl.KeyUnknown
+
 		if groundrate > 0.8 || groundrate > s.groundrate {
+			if s.dir < 0 {
+				b = bindings.Active.GetBinding(bindings.KeyAction["left"])
+			} else {
+				b = bindings.Active.GetBinding(bindings.KeyAction["right"])
+			}
+			s.ai.obj.KeyAction(b)
 			//			s.ai.obj.Listen(events.WALK, v)
 			// } else {
 			// 	s.ai.obj.Listen(events.WALK, pixel.ZV)

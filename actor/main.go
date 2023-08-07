@@ -237,9 +237,18 @@ func (a *Actor) GetRect() pixel.Rect {
 	return a.rect
 }
 
+func (a *Actor) GetVel() pixel.Vec {
+	return a.vel
+}
+
+func (a *Actor) SetVel(v pixel.Vec) {
+	a.vel = v
+	a.phys.SetSpeed(a.vel)
+}
+
 func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	a.currObjs = objs
-	if a.appliedForce.X == 0 && math.Abs(a.vel.X) > a.walkspeed*0.1 { // active slowing in case of no active force applied
+	if a.appliedForce.X == 0 && math.Abs(a.vel.X) > a.walkspeed*0.1 && a.state.GetId() != state.MELEEMOVE { // active slowing in case of no active force applied
 		a.appliedForce.X = -a.walkspeed
 		if a.vel.X < 0 {
 			a.appliedForce.X *= -1
@@ -279,9 +288,9 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	}
 
 	a.state.Listen(a.action, &a.vel)
+	a.state.Update(dt)
 
 	a.rect = a.phys.GetRect()
-	a.state.Update(dt)
 	a.appliedForce = pixel.ZV
 	a.keycombo = 0
 	a.action = 0
@@ -363,6 +372,8 @@ func (a *Actor) GetSkillAttr(attr string) (interface{}, error) {
 		return a.activeSkill.Min, nil
 	case "max":
 		return a.activeSkill.Max, nil
+	case "speed":
+		return a.activeSkill.Speed, nil
 	default:
 		return "", errors.New("unknown attribute")
 	}

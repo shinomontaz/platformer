@@ -2,6 +2,7 @@ package ai
 
 import (
 	"fmt"
+	"platformer/bindings"
 	"platformer/common"
 	"platformer/creatures"
 	"platformer/events"
@@ -63,7 +64,7 @@ func (s *StateAttack) Update(dt float64) {
 		return
 	}
 	heropos := hero.GetPos()
-
+	s.lastpos = heropos
 	pos := s.ai.obj.GetPos()
 	dir := s.ai.obj.GetDir()
 	var isSee bool
@@ -77,7 +78,7 @@ func (s *StateAttack) Update(dt float64) {
 			}
 			return
 		} else {
-			s.lastpos = heropos
+			//			s.lastpos = heropos
 			s.timer = 0
 		}
 	}
@@ -95,24 +96,17 @@ func (s *StateAttack) Update(dt float64) {
 			s.ai.SetState(CHOOSEATTACK, s.lastpos)
 			return
 		}
-
-		if heropos.X < pos.X {
-			s.vec = pixel.Vec{-1, 0}
-		} else {
-			s.vec = pixel.Vec{1, 0}
-		}
-		//		s.ai.obj.Listen(events.WALK, s.vec)
-		//		s.ai.obj.KeyEvent(bindings.LEFT)
-
+		s.ai.SetState(INVESTIGATE, s.lastpos)
 		return
 	}
 
 	// we already check that we see target and all distances are ok
-	s.ai.obj.SetTarget(heropos)
+	s.ai.obj.SetTarget(s.lastpos)
 	s.ai.obj.SetSkill(s.ai.attackskill)
-	// for _, k := range s.ai.attackskill.Keys {
-	// 	s.ai.obj.KeyEvent(k)
-	// }
+	for _, k := range s.ai.attackskill.Keys {
+		b := bindings.Active.GetBinding(k)
+		s.ai.obj.KeyAction(b)
+	}
 	s.counter++
 }
 

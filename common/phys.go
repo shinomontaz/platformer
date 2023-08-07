@@ -150,7 +150,6 @@ func (p *Phys) Update(dt float64, objs []Objecter) {
 	groundVel := pixel.ZV
 	if p.groundPhys != nil {
 		groundVel = p.groundPhys.GetVel()
-		//		fmt.Println("apply ground phys vel: ", groundVel)
 		p.vel = p.vel.Add(groundVel)
 	}
 	p.vel = p.vel.Add(p.force.Scaled(dt))

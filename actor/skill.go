@@ -25,6 +25,7 @@ type Skill struct {
 	Keys   []int
 	Event  int
 	Ttl    float64
+	Speed  float64
 	Hitbox pixel.Rect
 }
 
@@ -36,6 +37,7 @@ func NewSkill(pr config.Skill) *Skill {
 		Type:   pr.Type,
 		Name:   pr.Name,
 		Ttl:    0.5,
+		Speed:  pr.Speed,
 		Keys:   make([]int, 0),
 	}
 

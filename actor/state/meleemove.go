@@ -16,7 +16,7 @@ type Meleemove struct {
 	attackidx     int
 	animSpriteNum int
 	sprite        *pixel.Sprite
-	vel           float64
+	vel           pixel.Vec
 	striked       bool
 }
 
@@ -29,7 +29,6 @@ func NewMeleemove(a Actor, an Animater) *Meleemove {
 			trs:   a.GetTransition(MELEEMOVE),
 			busy:  true,
 		},
-		idleLimit: 0.5, // seconds before idle
 	}
 
 	return fs
@@ -53,22 +52,25 @@ func (s *Meleemove) Start() {
 
 	s.striked = false
 	s.a.AddSound("melee")
+	s.vel = s.a.GetVel()
+
+	res2, err := s.a.GetSkillAttr("speed")
+	if err != nil {
+		panic(err)
+	}
+
+	s.vel.X *= res2.(float64) / math.Abs(s.vel.X)
 }
 
 func (s *Meleemove) Listen(e int, v *pixel.Vec) {
 	// here we don't care of any controller event
-	s.vel = v.Len()
-	s.checkTransitions(e, v)
+	// s.vel = v.Len()
+	// s.checkTransitions(e, v)
 }
 
 func (s *Meleemove) Update(dt float64) {
 	if s.time > s.idleLimit {
-		// TODO: return to specific "free" where actual state will be detected
-		if s.vel > 0 {
-			s.a.SetState(WALK)
-		} else {
-			s.a.SetState(STAND)
-		}
+		s.a.SetState(STAND)
 		return
 	}
 
@@ -80,6 +82,7 @@ func (s *Meleemove) Update(dt float64) {
 		s.a.Strike()
 		s.striked = true
 	}
+	s.a.SetVel(s.vel)
 }
 
 func (s *Meleemove) GetSprite() *pixel.Sprite {

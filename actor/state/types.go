@@ -44,6 +44,8 @@ type Actor interface {
 	Inform(e int)
 	GetSkillAttr(attr string) (interface{}, error)
 	OnKill()
+	GetVel() pixel.Vec
+	SetVel(v pixel.Vec)
 }
 
 type Animater interface {

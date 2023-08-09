@@ -1,7 +1,6 @@
 package ai
 
 import (
-	"fmt"
 	"platformer/actor"
 	"platformer/bindings"
 	"platformer/creatures"
@@ -95,7 +94,6 @@ func (s *StateInvestigate) EventAction(e int) {
 func (s *StateInvestigate) Start(poi pixel.Vec) {
 	s.target = poi
 	s.timer = 0
-	fmt.Println("state investigate")
 }
 
 func (s *StateInvestigate) IsAlerted() bool {

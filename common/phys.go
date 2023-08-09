@@ -225,6 +225,7 @@ func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec, Objec
 					if (ground >= 0 || n.Y > 0) && (vel.X != 0) && (rect.Max.Y < p.rect.Max.Y) && (rect.Max.Y-p.rect.Min.Y <= p.rect.H()/4) { // step on stair
 						vel.X *= 0.8
 						v = pixel.Vec{v.X, v.Y + rect.Max.Y - p.rect.Min.Y + p.rect.H()/4}
+						fmt.Println("horisontal step")
 					} else {
 						vel.X = -vel.X * p.rigidity // horisontal bouncing
 						if ground != 0 {

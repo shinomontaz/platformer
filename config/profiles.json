@@ -155,22 +155,24 @@
             {
                 "type": "melee",
                 "name": "meleemove",
-                "max": 200,
+                "max": 300,
                 "min": 50,
                 "weight": 1,
-                "speed": 200,
-                "ttl": 2.5,
+                "speed": 150,
+                "dir": -1,
+                "ttl": 2,
                 "hitbox": [20, -5, 36, 10],
                 "keys": ["ctrl", "left"]
             },
             {
                 "type": "melee",
                 "name": "meleemove",
-                "max": 200,
+                "max": 300,
                 "min": 50,
                 "weight": 1,
-                "speed": 200,
-                "ttl": 2.5,
+                "speed": 150,
+                "dir": 1,
+                "ttl": 2,
                 "hitbox": [20, -5, 36, 10],
                 "keys": ["ctrl", "right"]
             }

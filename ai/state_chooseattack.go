@@ -2,6 +2,7 @@ package ai
 
 import (
 	"fmt"
+	"math"
 	"platformer/actor"
 	"platformer/common"
 	"platformer/creatures"
@@ -60,7 +61,7 @@ func (s *StateChooseAttack) Update(dt float64) {
 		return
 	}
 
-	heropos := hero.GetPos()
+	heropos := s.lastpos //hero.GetPos()
 	pos := s.ai.obj.GetPos()
 	dir := s.ai.obj.GetDir()
 	var isSee bool
@@ -78,18 +79,22 @@ func (s *StateChooseAttack) Update(dt float64) {
 		}
 	}
 
-	l := pixel.L(pos, heropos)
-	currDist := l.Len()
+	//	l := pixel.L(pos, heropos)
+	l := pos.X - heropos.X
+	currDist := math.Abs(l) //l.Len()
 	var choosed *actor.Skill
 
 	if currDist > s.skills[len(s.skills)-1].Max {
-		//		choosed = s.skills[len(s.skills)-1]
 		s.ai.SetState(INVESTIGATE, heropos)
 		return
 	} else if currDist < s.skills2[0].Min {
 		choosed = s.skills2[0]
 	} else {
 		for _, skill := range s.skills {
+			dir := float64(skill.GetDir())
+			if dir*l > 0 {
+				continue
+			}
 			if currDist < skill.Max && currDist > skill.Min {
 				if choosed != nil { // we already choosed some appropriate skill
 					var minWeightSkill *actor.Skill
@@ -120,11 +125,7 @@ func (s *StateChooseAttack) Update(dt float64) {
 	}
 
 	s.ai.attackskill = choosed
-	if s.ai.attackskill.Name == "meleemove" {
-		s.ai.SetState(MELEEMOVE, heropos)
-	} else {
-		s.ai.SetState(ATTACK, heropos)
-	}
+	s.ai.SetState(ATTACK, heropos)
 }
 
 func (s *StateChooseAttack) Start(poi pixel.Vec) {

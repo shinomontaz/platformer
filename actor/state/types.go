@@ -37,14 +37,14 @@ type Stater interface {
 type Actor interface {
 	SetState(int)
 	GetTransition(int) statemachine.Transition
-	Strike()
+	Strike(ttl float64)
 	Cast()
 	Interact()
 	AddSound(event string)
 	Inform(e int)
 	GetSkillAttr(attr string) (interface{}, error)
 	OnKill()
-	GetVel() pixel.Vec
+	GetDir() int
 	SetVel(v pixel.Vec)
 }
 

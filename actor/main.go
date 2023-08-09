@@ -220,7 +220,7 @@ func (a *Actor) KeyAction(key pixelgl.Button) {
 		if math.Abs(a.vel.X) > a.walkspeed {
 			multiplier = 1
 		}
-		a.appliedForce.Y = a.grav * (a.jumpforce + multiplier*float64(a.strength) - a.mass)
+		a.appliedForce.Y = a.grav * (a.jumpforce + float64(a.strength) - a.mass) * multiplier
 	}
 }
 
@@ -285,6 +285,8 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	if idx, ok := a.skillmap[a.keycombo]; ok {
 		a.SetSkill(a.skills[idx])
 		a.action = a.activeSkill.Event
+	} else if a.keycombo == bindings.ENTER {
+		a.action = events.INTERACT
 	}
 
 	a.state.Listen(a.action, &a.vel)
@@ -366,6 +368,8 @@ func (a *Actor) GetSkillAttr(attr string) (interface{}, error) {
 		return a.activeSkill.Name, nil
 	case "ttl":
 		return a.activeSkill.Ttl, nil
+	case "dir":
+		return a.activeSkill.Dir, nil
 	case "type":
 		return a.activeSkill.Type, nil
 	case "min":
@@ -379,7 +383,7 @@ func (a *Actor) GetSkillAttr(attr string) (interface{}, error) {
 	}
 }
 
-func (a *Actor) Strike() {
+func (a *Actor) Strike(ttl float64) {
 	if a.activeSkill == nil || a.activeSkill.Type != "melee" {
 		// select one skill of type melee
 		for _, s := range a.skills {
@@ -400,7 +404,7 @@ func (a *Actor) Strike() {
 		}
 		rect := pixel.R(minx, miny, minx+w, miny+h)
 
-		activities.AddStrike(a, rect, power, pixel.ZV)
+		activities.AddStrike(a, rect, power, a.vel, activities.WithTTL(ttl))
 	}
 }
 

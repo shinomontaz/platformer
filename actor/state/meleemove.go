@@ -52,14 +52,14 @@ func (s *Meleemove) Start() {
 
 	s.striked = false
 	s.a.AddSound("melee")
-	s.vel = s.a.GetVel()
+	dir := s.a.GetDir()
 
 	res2, err := s.a.GetSkillAttr("speed")
 	if err != nil {
 		panic(err)
 	}
 
-	s.vel.X *= res2.(float64) / math.Abs(s.vel.X)
+	s.vel = pixel.Vec{res2.(float64) * float64(dir), 0}
 }
 
 func (s *Meleemove) Listen(e int, v *pixel.Vec) {
@@ -79,7 +79,7 @@ func (s *Meleemove) Update(dt float64) {
 	s.time += dt
 	s.animSpriteNum = int(math.Floor(s.time / 0.1))
 	if s.animSpriteNum == 3 && !s.striked {
-		s.a.Strike()
+		s.a.Strike(s.idleLimit - s.time)
 		s.striked = true
 	}
 	s.a.SetVel(s.vel)

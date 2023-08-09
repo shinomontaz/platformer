@@ -49,6 +49,7 @@ type Skill struct {
 	Min    float64   `json:"min"`
 	Max    float64   `json:"max"`
 	Weight int       `json:"weight"`
+	Dir    int       `json:"dir"`
 	Ttl    float64   `json:"ttl"`
 	Hitbox []float64 `json:"hitbox"`
 	Speed  float64   `json:"speed"`

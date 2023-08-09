@@ -79,7 +79,7 @@ func (s *Melee) Update(dt float64) {
 	s.time += dt
 	s.animSpriteNum = int(math.Floor(s.time / 0.1))
 	if s.animSpriteNum == 3 && !s.striked {
-		s.a.Strike()
+		s.a.Strike(0)
 		s.striked = true
 	}
 }

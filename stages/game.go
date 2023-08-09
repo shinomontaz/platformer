@@ -89,6 +89,8 @@ func (g *Game) Init() {
 	}
 
 	w, err := world.New("ep2.tmx", currBounds, world.WithLoader(g.assetloader))
+	//	w, err := world.New("test.tmx", currBounds, world.WithLoader(g.assetloader))
+
 	if err != nil {
 		panic(err)
 	}

@@ -67,6 +67,7 @@ func UpdateStrikes(dt float64, enemies []common.Actorer, player common.Actorer) 
 func updatePlStrikes(dt float64, hittable []common.Actorer) {
 	i := 0
 	for _, b := range plboxes {
+		b.rect = b.rect.Moved(b.speed.Scaled(dt))
 		for _, hh := range hittable {
 			if hh == b.owner {
 				continue
@@ -98,6 +99,7 @@ func updatePlStrikes(dt float64, hittable []common.Actorer) {
 func updateEnStrikes(dt float64, hittable []common.Actorer) {
 	i := 0
 	for _, b := range enboxes {
+		b.rect = b.rect.Moved(b.speed.Scaled(dt))
 		for _, hh := range hittable {
 			if hh == b.owner {
 				continue

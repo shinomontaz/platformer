@@ -41,6 +41,15 @@ func (s *StateAttack) Update(dt float64) {
 		return
 	}
 
+	hero := creatures.GetHero()
+	herohp := hero.GetHp()
+	if herohp <= 0 {
+		s.ai.SetState(IDLE, s.lastpos)
+		return
+	}
+	heropos := hero.GetPos()
+	s.lastpos = heropos
+
 	if s.counter > 0 { // here we made decision to switch to state BUSTLE with some probability - after strike
 		coeff := 0.25
 		if s.ai.attackskill.Type == "melee" {
@@ -57,14 +66,6 @@ func (s *StateAttack) Update(dt float64) {
 		}
 	}
 
-	hero := creatures.GetHero()
-	herohp := hero.GetHp()
-	if herohp <= 0 {
-		s.ai.SetState(IDLE, s.lastpos)
-		return
-	}
-	heropos := hero.GetPos()
-	s.lastpos = heropos
 	pos := s.ai.obj.GetPos()
 	dir := s.ai.obj.GetDir()
 	var isSee bool
@@ -111,7 +112,6 @@ func (s *StateAttack) Update(dt float64) {
 }
 
 func (s *StateAttack) Start(poi pixel.Vec) {
-	fmt.Println("state attack start")
 	s.lastpos = poi
 	s.timer = 0
 	s.counter = 0

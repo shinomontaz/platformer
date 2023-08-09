@@ -22,6 +22,7 @@ type Skill struct {
 	Weight int
 	Type   string
 	Name   string
+	Dir    int
 	Keys   []int
 	Event  int
 	Ttl    float64
@@ -36,6 +37,7 @@ func NewSkill(pr config.Skill) *Skill {
 		Weight: pr.Weight,
 		Type:   pr.Type,
 		Name:   pr.Name,
+		Dir:    pr.Dir,
 		Ttl:    0.5,
 		Speed:  pr.Speed,
 		Keys:   make([]int, 0),
@@ -58,4 +60,8 @@ func NewSkill(pr config.Skill) *Skill {
 	}
 
 	return s
+}
+
+func (s *Skill) GetDir() int {
+	return s.Dir
 }

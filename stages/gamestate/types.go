@@ -5,6 +5,7 @@ const (
 	DEAD
 	MENU
 	DIALOG
+	VICTORY
 )
 
 type Gamer interface {

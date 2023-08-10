@@ -3,6 +3,7 @@ package dialogs
 import (
 	"encoding/json"
 	"fmt"
+	"platformer/common"
 	"strings"
 	"unicode"
 
@@ -27,6 +28,7 @@ type Dialog struct {
 	a             *actor.Actor
 	maintxtstring string
 	maintxt       *text.Text
+	sbrs          []common.EventSubscriber
 }
 
 type DialogVariant struct {
@@ -36,10 +38,12 @@ type DialogVariant struct {
 }
 
 type DialogAnswer struct {
-	Text string `json:"text"`
-	Goto int    `json:"goto,omitempty"`
-	Code int    `json:"code,omitempty"`
-	Exit bool   `json:"exit,omitempty"`
+	Text      string `json:"text"`
+	Goto      int    `json:"goto,omitempty"`
+	Code      int    `json:"code,omitempty"`
+	Condition int    `json:"condition,omitempty"`
+	Exit      bool   `json:"exit,omitempty"`
+	hidden    bool
 }
 
 func (d *Dialog) UnmarshalJSON(b []byte) error {
@@ -62,7 +66,6 @@ func (d *Dialog) UnmarshalJSON(b []byte) error {
 		}
 		d.Variants[dv.Idx] = dv
 	}
-
 	return nil
 }
 
@@ -72,6 +75,13 @@ func (d *Dialog) SetVariant(id int) {
 		d.currAnswer = 0
 	}
 	d.prepareText()
+
+	for id, ans := range d.Variants[d.currVariant].Answers {
+		d.Variants[d.currVariant].Answers[id].hidden = false
+		if ans.Condition > 0 && !checkCondition(ans.Condition, d.a) {
+			d.Variants[d.currVariant].Answers[id].hidden = true
+		}
+	}
 }
 
 func (d *Dialog) Start(bounds pixel.Rect) {
@@ -82,6 +92,8 @@ func (d *Dialog) Start(bounds pixel.Rect) {
 	d.maintxt = text.New(pixel.V(0, 0), atlas)
 
 	d.prepareText()
+	d.SetVariant(d.currVariant)
+	d.sbrs = make([]common.EventSubscriber, 0) // nullify subscribers
 }
 
 func (d *Dialog) Draw(t pixel.Target) {
@@ -96,15 +108,6 @@ func (d *Dialog) Draw(t pixel.Target) {
 
 	d.maintxt.Draw(t, pixel.IM.Moved(maintxtrect.Min))
 
-	// imd := imdraw.New(nil)
-	// vertices := maintxtrect.Vertices()
-	// imd.Color = colornames.Red
-	// for _, v := range vertices {
-	// 	imd.Push(v)
-	// }
-	// imd.Rectangle(1)
-	// imd.Draw(t)
-
 	pointertxt := text.New(pixel.V(0, 0), atlasbig)
 	pointertxt.Color = colornames.Aliceblue
 	fmt.Fprintln(pointertxt, "->")
@@ -112,6 +115,9 @@ func (d *Dialog) Draw(t pixel.Target) {
 	anstxt := text.New(pixel.V(0, 0), atlasbig)
 	h := 0.0
 	for i, ans := range d.Variants[d.currVariant].Answers {
+		if ans.hidden {
+			continue
+		}
 		anstxt.Clear()
 		anstxt.Color = colornames.Whitesmoke
 		if i == d.currAnswer {
@@ -126,11 +132,10 @@ func (d *Dialog) Draw(t pixel.Target) {
 
 func (d *Dialog) Action() {
 	go_to := d.Variants[d.currVariant].Answers[d.currAnswer].Goto
-	fmt.Println("dialog action:", go_to)
 
 	code := d.Variants[d.currVariant].Answers[d.currAnswer].Code
 	if code > 0 {
-		runAction(code, d.a)
+		runAction(code, d, d.a)
 	}
 
 	exit := d.Variants[d.currVariant].Answers[d.currAnswer].Exit
@@ -150,7 +155,6 @@ func (d *Dialog) UpdateAnswer(i int) {
 		d.currAnswer = len(d.Variants[d.currVariant].Answers) - 1
 	}
 	d.currAnswer %= len(d.Variants[d.currVariant].Answers)
-	fmt.Println("d.currAnswer: ", d.currAnswer)
 }
 
 func (d *Dialog) setImdr() {
@@ -176,6 +180,16 @@ func (d *Dialog) prepareText() {
 		d.maintxt.Clear()
 		fmt.Fprintln(d.maintxt, d.maintxtstring)
 	}
+}
+
+func (d *Dialog) Notify(event int) {
+	for _, s := range d.sbrs {
+		s.EventAction(event)
+	}
+}
+
+func (d *Dialog) AddEventSubscriber(sbr common.EventSubscriber) {
+	d.sbrs = append(d.sbrs, sbr)
 }
 
 func splitToChunks(s string) string {

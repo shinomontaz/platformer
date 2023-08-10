@@ -14,6 +14,12 @@
                         "text": "I'm running, grandpa!",
                         "code": 1,
                         "exit": true
+                    },
+                    {
+                        "text": "Thanks!",
+                        "code": 4,
+                        "comment": "Victory screen! ( code 4 )",
+                        "exit": true
                     }
                 ]
             },
@@ -24,6 +30,87 @@
                     {
                         "text": "I'm on my way, grandpa",
                         "code": 1,
+                        "exit": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "variants": [
+            {
+                "idx": 1,
+                "text": "I did not touch you, but you are asking me! And you do it without a bit of a respect. My time is money, so you'd better give me a coin in sign of a respect.",
+                "answers": [
+                    {
+                        "text": "Sure!",
+                        "comment": "give him a coin ( code 3 ), condition: have coins in inventory",
+                        "code": 3,
+                        "condition": 1,
+                        "exit": true
+                    },
+                    {
+                        "text": "Sorry, I have no coins for you. Step a side.",
+                        "comment": "make hostile - BigBloated",
+                        "code": 2,
+                        "exit": true
+                    }
+                ]
+            }
+        ]
+    },{
+        "id": 3,
+        "variants": [
+            {
+                "idx": 1,
+                "text": "How can I help you?",
+                "answers": [
+                    {
+                        "text": "It's a fishing shop?",
+                        "goto": 2
+                    },
+                    {
+                        "text": "Sorry, nothing.",
+                        "exit": true
+                    }
+                ]
+            },
+            {
+                "idx": 2,
+                "text": "Yes, it is. You saw a signboard outside, did't you?",
+                "answers": [
+                    {
+                        "text": "Sure! Nice place. Unfortunately I have no money to buy anything.",
+                        "goto": 3
+                    },
+                    {
+                        "text": "Perfect! I need a enchanced fishing hook for my grandpa.",
+                        "code": 3,
+                        "comment": "give him a coin ( code 3 ), condition: have coins in inventory",
+                        "condition": 1,
+                        "goto": 4
+                    }
+                ]
+            },
+            {
+                "idx": 3,
+                "text": "Have a nice day!",
+                "answers": [
+                    {
+                        "text": "Bye!",
+                        "exit": true
+                    }
+                ]
+            },
+            {
+                "idx": 4,
+                "text": "I had one here. Where is it... Ah, here. Take it, fair price. Stronger than whiskey, cheaper than dust.",
+                "answers": [
+                    {
+                        "text": "Thanks!",
+                        "code": 4,
+                        "comment": "Victory screen! ( code 4 )",
                         "exit": true
                     }
                 ]

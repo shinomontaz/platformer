@@ -4,5 +4,5 @@ const (
 	LOADING = iota
 	MENU
 	GAME
-	RECORDS
+	VICTORY
 )

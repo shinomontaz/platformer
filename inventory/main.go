@@ -28,6 +28,22 @@ func Init(l *common.Loader) {
 	atlasbig = text.NewAtlas(common.GetFont("regular32"), text.ASCII)
 }
 
+func HaveCoins() bool {
+	_, ok := list[loot.COIN]
+	return ok
+}
+
+func PayCoins(n int) {
+	if _, ok := list[loot.COIN]; ok {
+		for i := 0; i < n; i++ {
+			if list[loot.COIN] == 0 {
+				break
+			}
+			list[loot.COIN]--
+		}
+	}
+}
+
 func Add(loots []*loot.Loot) {
 	if len(loots) == 0 {
 		return

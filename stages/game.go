@@ -58,7 +58,7 @@ func NewGame(f Inform, l *common.Loader, win *pixelgl.Window, currBounds pixel.R
 			id:       GAME,
 			done:     make(chan struct{}),
 			inform:   f,
-			eventMap: map[int]int{events.STAGEVENT_QUIT: MENU},
+			eventMap: map[int]int{events.STAGEVENT_QUIT: MENU, events.STAGEVENT_DONE: VICTORY},
 		},
 		assetloader:   l,
 		initialBounds: currBounds,
@@ -216,12 +216,14 @@ func (g *Game) initStates(currBounds pixel.Rect) {
 	sDead := gamestate.NewDead(g, g.w, g.hero, g.win)
 	sMenu := gamestate.NewMenu(g, g.w, g.hero, g.win)
 	sDialog := gamestate.NewDialog(g, g.u, g.w, g.hero, g.win)
+	sVictory := gamestate.NewVictory(g, g.win)
 
 	g.states = map[int]Gamestater{
-		gamestate.NORMAL: sNormal,
-		gamestate.DEAD:   sDead,
-		gamestate.MENU:   sMenu,
-		gamestate.DIALOG: sDialog,
+		gamestate.NORMAL:  sNormal,
+		gamestate.DEAD:    sDead,
+		gamestate.MENU:    sMenu,
+		gamestate.DIALOG:  sDialog,
+		gamestate.VICTORY: sVictory,
 	}
 
 	g.SetState(gamestate.NORMAL)
@@ -259,13 +261,4 @@ func (g *Game) Notify(e int) {
 		g.isReady = false
 	}
 	g.inform(e)
-}
-
-func (g *Game) Listen(e int, v pixel.Vec) {
-	if !g.isActive {
-		return
-	}
-	if e == events.ESCAPE {
-		g.Notify(events.STAGEVENT_QUIT)
-	}
 }

@@ -19,9 +19,8 @@ import (
 
 type Normal struct {
 	Common
-	shader string
-	ctrl   *controller.Controller
-	win    *pixelgl.Window
+	ctrl *controller.Controller
+	win  *pixelgl.Window
 }
 
 func NewNormal(game Gamer, currBounds pixel.Rect, u *ui.Ui, w *world.World, hero *actor.Actor, win *pixelgl.Window) *Normal {
@@ -84,7 +83,6 @@ func (n *Normal) GetId() int {
 func (n *Normal) Start() {
 	n.lastPos = n.hero.GetPos()
 	//	n.win.Canvas().ResetFragmentShader()
-	fmt.Println("applying base shader")
 }
 
 func (n *Normal) KeyAction(key pixelgl.Button) {

@@ -5,6 +5,7 @@ import (
 	"platformer/actor"
 	"platformer/controller"
 	"platformer/dialogs"
+	"platformer/events"
 	"platformer/ui"
 	"platformer/world"
 
@@ -108,6 +109,7 @@ func (d *Dialog) Start() {
 
 	d.currDlg = dialogs.GetActive()
 	d.currDlg.Start(d.win.Bounds())
+	d.currDlg.AddEventSubscriber(d)
 	// hero => get active dialog
 	// prepare options and dialog
 }
@@ -123,5 +125,11 @@ func (d *Dialog) KeyAction(key pixelgl.Button) {
 		d.currDlg.Action()
 	case pixelgl.KeyEscape:
 		d.game.SetState(NORMAL)
+	}
+}
+
+func (d *Dialog) EventAction(event int) {
+	if event == events.GAMEVENT_VICTORY {
+		d.game.SetState(VICTORY)
 	}
 }

@@ -48,8 +48,7 @@ type Menu struct {
 	uTime      float32
 	ingamemenu *menu.Menu
 
-	displaymenu *menu.Menu
-	soundmenu   *menu.Menu
+	soundmenu *menu.Menu
 
 	activemenu *menu.Menu
 	atlas      *text.Atlas

@@ -51,14 +51,17 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] blood [9e8bc765](https://github.com/shinomontaz/platformer/commit/9e8bc76527ff207a01f64dfc2af13244a14d126e)
 - [x] projectile attacks [cbbcae63](https://github.com/shinomontaz/platformer/commit/cbbcae6350ff0c17d79ffd28b58b21ba9ef2317e)
 - [x] RELEASE v0.9 [v0.9](https://github.com/shinomontaz/platformer/releases/tag/v0.9)
-- [x] more menu functions: sound volumes
+- [x] more menu functions: sound volumes [6446d6ae](https://github.com/shinomontaz/platformer/commit/6446d6ae0b205dd757e0df6d272bf9c11dfbcf2a)
+- [x] npc dialogs [ba8162f3](https://github.com/shinomontaz/platformer/commit/ba8162f3e69667014860156914c46f1e47352e20)
 - [x] inventory, inventory usage
-- [x] npc dialogs
-- [x] victory screen, score
+- [x] keyboard controls menu [5b3a520a](https://github.com/shinomontaz/platformer/commit/5b3a520a88545edaa24ade8796fedeb80c6ed76b)
+- [x] parallax background [9a6bf7cc](https://github.com/shinomontaz/platformer/commit/9a6bf7ccf151a9810ac18731126af628f86f6f58)
+- [x] victory screen [31b7ed5a](https://github.com/shinomontaz/platformer/commit/31b7ed5a18176a07e8f216c029c405f2c52dc323)
 - [x] RELEASE v0.95 [v0.95](https://github.com/shinomontaz/platformer/releases/tag/v0.95)
-- [ ] level design
-- [ ] stats system, exp
-- [ ] victory screen, score
+- [ ] portals, stairs, special moves
+- [ ] level design polishing
+- [ ] stats system, exp, score
+- [ ] records storing, endings
 - [ ] RELEASE v.99
 
 ---

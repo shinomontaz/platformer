@@ -486,7 +486,7 @@
   <object id="178" name="bigplant" class="enemy" x="1244.84" y="904.333" width="73" height="82">
    <properties>
     <property name="ai" value="enemy_idle"/>
-    <property name="dir" type="int" value="1"/>
+    <property name="dir" type="int" value="-1"/>
    </properties>
   </object>
   <object id="181" name="octopus" class="enemy" x="633.833" y="1021" width="32.3333" height="40.6667">

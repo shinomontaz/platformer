@@ -130,6 +130,7 @@ func (g *Game) Init() {
 
 			dir := o.Properties.GetFloat("dir")
 			if dir != 0 {
+				fmt.Println("set dir for enemy", dir)
 				enemy.SetDir(dir)
 			}
 
@@ -216,7 +217,7 @@ func (g *Game) initStates(currBounds pixel.Rect) {
 	sDead := gamestate.NewDead(g, g.w, g.hero, g.win)
 	sMenu := gamestate.NewMenu(g, g.w, g.hero, g.win)
 	sDialog := gamestate.NewDialog(g, g.u, g.w, g.hero, g.win)
-	sVictory := gamestate.NewVictory(g, g.win)
+	sVictory := gamestate.NewVictory(g, g.win, g.assetloader)
 
 	g.states = map[int]Gamestater{
 		gamestate.NORMAL:  sNormal,

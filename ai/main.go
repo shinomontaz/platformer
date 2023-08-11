@@ -2,6 +2,7 @@ package ai
 
 import (
 	"platformer/actor"
+	"platformer/creatures"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -46,6 +47,43 @@ func NewCalmEnemy(obj *actor.Actor, w Worlder) *Ai {
 	a.states[INVESTIGATE] = sInvestigate
 
 	a.SetState(IDLE, pixel.ZV)
+
+	list[obj] = a
+	obj.AddEventListener(a)
+
+	counter++
+	return a
+}
+
+func NewAgressiveEnemy(obj *actor.Actor, w Worlder) *Ai {
+	a := &Ai{
+		obj:    obj,
+		w:      w,
+		states: make(map[int]Stater),
+		id:     counter,
+	}
+
+	sRoaming := NewRoaming(a, a.w, true)
+	a.states[ROAMING] = sRoaming
+
+	sChooseAttack := NewChooseAttack(a, a.w)
+	a.states[CHOOSEATTACK] = sChooseAttack
+
+	sAttack := NewAttack(a, a.w)
+	a.states[ATTACK] = sAttack
+
+	sBustle := NewBustle(a, a.w)
+	a.states[BUSTLE] = sBustle
+
+	sIdle := NewIdle(a, a.w, true)
+	a.states[IDLE] = sIdle
+
+	sInvestigate := NewInvestigate(a, a.w)
+	a.states[INVESTIGATE] = sInvestigate
+
+	hero := creatures.GetHero()
+
+	a.SetState(INVESTIGATE, hero.GetPos())
 
 	list[obj] = a
 	obj.AddEventListener(a)

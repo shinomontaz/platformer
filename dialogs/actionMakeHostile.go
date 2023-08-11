@@ -15,8 +15,10 @@ func actionMakeHostile(a *actor.Actor) {
 	enemy := factories.NewActor(config.Profiles["bigbloated"], w)
 	enemy.Move(a.GetPos())
 	enemy.SetOnKill(loot.AddKey)
+	//	enemy.SetState(actor.) resurrect!
 
-	ai_type := "enemy_roaming"
+	ai_type := "enemy_agressive"
+	//	ai_type := "enemy_resurrected"
 	factories.NewAi(ai_type, enemy, w)
 
 	dir := float64(a.GetDir())

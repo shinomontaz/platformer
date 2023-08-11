@@ -14,12 +14,6 @@
                         "text": "I'm running, grandpa!",
                         "code": 1,
                         "exit": true
-                    },
-                    {
-                        "text": "Thanks!",
-                        "code": 4,
-                        "comment": "Victory screen! ( code 4 )",
-                        "exit": true
                     }
                 ]
             },

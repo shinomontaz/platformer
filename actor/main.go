@@ -139,17 +139,19 @@ func (a *Actor) initStates() {
 	sDead := state.New(state.DEAD, a, a.anim)
 	sHit := state.New(state.HIT, a, a.anim)
 	sInteract := state.New(state.INTERACT, a, a.anim)
+	sResurrect := state.New(state.RESURRECT, a, a.anim)
 
 	a.states = map[int]Stater{
-		state.STAND:    sStand,
-		state.IDLE:     sIdle,
-		state.WALK:     sWalk,
-		state.RUN:      sRun,
-		state.FALL:     sFall,
-		state.JUMP:     sJump,
-		state.HIT:      sHit,
-		state.DEAD:     sDead,
-		state.INTERACT: sInteract,
+		state.STAND:     sStand,
+		state.IDLE:      sIdle,
+		state.WALK:      sWalk,
+		state.RUN:       sRun,
+		state.FALL:      sFall,
+		state.JUMP:      sJump,
+		state.HIT:       sHit,
+		state.DEAD:      sDead,
+		state.INTERACT:  sInteract,
+		state.RESURRECT: sResurrect,
 	}
 
 	// apply state machine
@@ -348,7 +350,7 @@ func (a *Actor) Draw(t pixel.Target) {
 			drawrect.W()/a.sprite.Frame().W(),
 			drawrect.H()/a.sprite.Frame().H(),
 		)).
-		ScaledXY(pixel.ZV, pixel.V(a.animdir*a.dir, 1)).
+		ScaledXY(pixel.ZV, pixel.V(a.animdir*a.dir, 1)). //
 		Moved(drawrect.Center()),
 	)
 	//	a.phys.Draw(t)

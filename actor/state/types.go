@@ -23,6 +23,7 @@ const (
 	RANGED
 	CAST
 	INTERACT
+	RESURRECT
 )
 
 type Stater interface {

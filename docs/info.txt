@@ -1,0 +1,7 @@
+Build relese:
+1. create folder RELEASE to gather all neded files
+1. zip ( by winRar, set ZIP ) assets and config folder ( from config folder *.go files could be deleted ). Put arch to RELEASE folder.
+2. create start.cfg from template and set Zip param to the name of created archive. Put to RELEASE folder, so start.cfg in the same dir as arch.
+3. build bin file for desired OS. Copy to RELEASE folder.
+4. copy runtime.cfg to RELEASe folder.
+5. thats all

@@ -52,8 +52,10 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] projectile attacks [cbbcae63](https://github.com/shinomontaz/platformer/commit/cbbcae6350ff0c17d79ffd28b58b21ba9ef2317e)
 - [x] RELEASE v0.9 [v0.9](https://github.com/shinomontaz/platformer/releases/tag/v0.9)
 - [x] more menu functions: sound volumes
-- [ ] inventory, inventory usage
+- [x] inventory, inventory usage
 - [x] npc dialogs
+- [x] victory screen, score
+- [x] RELEASE v0.95
 - [ ] level design
 - [ ] stats system, exp
 - [ ] victory screen, score

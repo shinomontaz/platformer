@@ -540,12 +540,12 @@
         },
         {
             "name": "die",
-            "file":"animals/octopus/death.png",
+            "file":"animals/octopus/Death.png",
             "frames": [6, 0, 6]
         },
         {
             "name": "dead",
-            "file":"animals/octopus/death.png",
+            "file":"animals/octopus/Death.png",
             "frames": [6, 5, 6]
         }
         ],

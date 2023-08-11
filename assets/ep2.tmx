@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="left-down" width="500" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="179">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="left-down" width="500" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="182">
  <properties>
   <property name="gravity" type="float" value="400"/>
  </properties>
@@ -382,7 +382,7 @@
     <property name="reward" value="key"/>
    </properties>
   </object>
-  <object id="54" name="oldman" class="npc" x="3867.17" y="662.667" width="32.3333" height="40.6667">
+  <object id="54" name="man" class="npc" x="3867.17" y="662.667" width="32.3333" height="40.6667">
    <properties>
     <property name="ai" value="npc_roaming"/>
     <property name="dialog" type="int" value="2"/>
@@ -471,7 +471,7 @@
     <property name="dir" type="float" value="-1"/>
    </properties>
   </object>
-  <object id="83" name="oldman" class="npc" x="8068.5" y="627.667" width="32.3333" height="40.6667">
+  <object id="83" name="fisherman" class="npc" x="8068.5" y="627.667" width="32.3333" height="40.6667">
    <properties>
     <property name="ai" value="npc_calm"/>
     <property name="dialog" type="int" value="3"/>
@@ -487,6 +487,11 @@
    <properties>
     <property name="ai" value="enemy_idle"/>
     <property name="dir" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="181" name="octopus" class="enemy" x="633.833" y="1021" width="32.3333" height="40.6667">
+   <properties>
+    <property name="ai" value="npc_roaming"/>
    </properties>
   </object>
  </objectgroup>
@@ -623,5 +628,6 @@
   <object id="174" x="5989.13" y="525.292" width="5.75" height="5.4167"/>
   <object id="175" x="6044.5" y="516.292" width="3" height="3.4167"/>
   <object id="176" x="5980.5" y="539.625" width="3" height="3.4167"/>
+  <object id="180" class="barier" x="209.75" y="1000.42" width="13.5" height="93.1667"/>
  </objectgroup>
 </map>

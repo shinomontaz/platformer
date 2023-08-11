@@ -328,6 +328,116 @@
         ]
     },
     {
+        "type": "man",
+        "width": 40,
+        "height": 34,
+        "margin": [0, 0, 8, 0],
+        "list":  [
+        {
+            "name": "stand",
+            "file":"npc/man/Man.png",
+            "frames": [1, 0, 1]
+        },
+        {
+            "name": "walk",
+            "file":"npc/man/Man_walk.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "idle",
+            "file":"npc/man/Man_idle.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "hurt",
+            "file":"npc/man/Man_hurt.png",
+            "frames": [2, 0, 2]
+        },
+        {
+            "name": "die",
+            "file":"npc/man/Man_death.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "dead",
+            "file":"npc/man/Man_death.png",
+            "frames": [4, 3, 4]
+        }
+        ],
+        "groups": [
+            {
+            "name": "melee",
+            "group": [
+                {
+                    "name": "attack1",
+                    "file":"npc/man/Man_attack.png",
+                    "frames": [6, 0, 6]
+                }        
+            ]
+            }
+        ]
+    },
+    {
+        "type": "fisherman",
+        "width": 40,
+        "height": 34,
+        "margin": [0, 0, 8, 0],
+        "list":  [
+        {
+            "name": "stand",
+            "file":"npc/fisherman/Fisherman.png",
+            "frames": [1, 0, 1]
+        },
+        {
+            "name": "walk",
+            "file":"npc/fisherman/Fisherman_walk.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "idle",
+            "file":"npc/fisherman/Fisherman_idle.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "hurt",
+            "file":"npc/fisherman/Fisherman_hurt.png",
+            "frames": [2, 0, 2]
+        },
+        {
+            "name": "die",
+            "file":"npc/fisherman/Fisherman_death.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "dead",
+            "file":"npc/fisherman/Fisherman_death.png",
+            "frames": [4, 3, 4]
+        },
+        {
+            "name": "hook",
+            "file":"npc/fisherman/Fisherman_hook.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "fish",
+            "file":"npc/fisherman/Fisherman_fish.png",
+            "frames": [4, 0, 4]
+        }
+        ],
+        "groups": [
+            {
+            "name": "melee",
+            "group": [
+                {
+                    "name": "attack1",
+                    "file":"npc/fisherman/Fisherman_attack.png",
+                    "frames": [6, 0, 6]
+                }        
+            ]
+            }
+        ]
+    },
+    {
         "type": "bigplant",
         "width": 96,
         "height": 45,
@@ -396,6 +506,56 @@
                 {
                     "name": "attack2",
                     "file":"bosses/bigplant/Attack4.png",
+                    "frames": [6, 0, 6]
+                }
+            ]
+            }
+        ]
+    },
+    {
+        "type": "octopus",
+        "width": 48,
+        "height": 48,
+        "margin": [0, 0, 0, 0],
+        "list":  [
+        {
+            "name": "stand",
+            "file":"animals/octopus/Idle.png",
+            "frames": [6, 0, 1]
+        },
+        {
+            "name": "walk",
+            "file":"animals/octopus/Walk.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "idle",
+            "file":"animals/octopus/Idle.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "hurt",
+            "file":"animals/octopus/Hurt.png",
+            "frames": [2, 0, 2]
+        },
+        {
+            "name": "die",
+            "file":"animals/octopus/death.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "dead",
+            "file":"animals/octopus/death.png",
+            "frames": [6, 5, 6]
+        }
+        ],
+        "groups": [
+            {
+            "name": "melee",
+            "group": [
+                {
+                    "name": "attack1",
+                    "file":"animals/octopus/Attack.png",
                     "frames": [6, 0, 6]
                 }
             ]

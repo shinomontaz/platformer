@@ -21,7 +21,7 @@ func NewVictory(game Gamer, win *pixelgl.Window) *Victory {
 			id:   VICTORY,
 		},
 		win:  win,
-		ctrl: controller.New(win, false),
+		ctrl: controller.New(win, true),
 	}
 
 	v.ctrl.AddKeyListener(v) // to listen ESCAPE  keyborad event

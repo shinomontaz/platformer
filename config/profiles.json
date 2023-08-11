@@ -191,20 +191,50 @@
         "jump": 0,
         "walk": 30,
         "run": 30,
-        "portrait": "tiles/fishing-assets/4 Icons/Icons_02.png",
-        "skills": [
-            {
-                "type": "melee",
-                "name": "melee",
-                "max": 19,
-                "min": 5,
-                "hitbox": [10, -5, 20, 5],
-                "weight": 1,
-                "keys": ["ctrl"]
-            }
-        ],
-        "phrases": "grandma",
-        "dialog": 1
+        "portrait": "portraits/Icons_13.png"
+    },
+    {
+        "type": "fisherman",
+        "anim": "fisherman",
+        "dir": 1,
+        "hp": 1,
+        "strength": 1,
+        "width": 40,
+        "height": 34,
+        "margin": 8,
+        "mass": 25,
+        "jump": 0,
+        "walk": 30,
+        "run": 30,
+        "portrait": "tiles/fishing-assets/4 Icons/Icons_02.png"
+    },
+    {
+        "type": "man",
+        "anim": "man",
+        "dir": 1,
+        "hp": 1,
+        "strength": 1,
+        "width": 40,
+        "height": 34,
+        "margin": 8,
+        "mass": 25,
+        "jump": 0,
+        "walk": 30,
+        "run": 30,
+        "portrait": "portraits/Icons_15.png"
+    },
+    {
+        "type": "octopus",
+        "anim": "octopus",
+        "dir": 1,
+        "hp": 1,
+        "strength": 1,
+        "width": 48,
+        "height": 48,
+        "mass": 1,
+        "jump": 0,
+        "walk": 30,
+        "run": 30
     },
     {
         "type": "chest",

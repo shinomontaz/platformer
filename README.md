@@ -55,7 +55,7 @@ Features ( suppose it can be used as an example due to code simplicity ):
 - [x] inventory, inventory usage
 - [x] npc dialogs
 - [x] victory screen, score
-- [x] RELEASE v0.95
+- [x] RELEASE v0.95 [v0.95](https://github.com/shinomontaz/platformer/releases/tag/v0.95)
 - [ ] level design
 - [ ] stats system, exp
 - [ ] victory screen, score

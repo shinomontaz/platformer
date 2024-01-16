@@ -2,7 +2,6 @@ package ai
 
 import (
 	"platformer/actor"
-	"platformer/creatures"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -81,9 +80,12 @@ func NewAgressiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	sInvestigate := NewInvestigate(a, a.w)
 	a.states[INVESTIGATE] = sInvestigate
 
-	hero := creatures.GetHero()
-
-	a.SetState(INVESTIGATE, hero.GetPos())
+	hero := obj.GetEnemy()
+	if hero != nil {
+		a.SetState(INVESTIGATE, hero.GetPos())
+	} else {
+		a.SetState(IDLE, pixel.ZV)
+	}
 
 	list[obj] = a
 	obj.AddEventListener(a)
@@ -147,6 +149,26 @@ func NewCalmNpc(obj *actor.Actor, w Worlder) *Ai {
 	return a
 }
 
+func NewFishingNpc(obj *actor.Actor, w Worlder) *Ai {
+	a := &Ai{
+		obj:    obj,
+		w:      w,
+		states: make(map[int]Stater),
+		id:     counter,
+	}
+
+	sFishing := NewFishing(a, a.w, false)
+	a.states[FISHING] = sFishing
+
+	a.SetState(FISHING, pixel.ZV)
+
+	list[obj] = a
+	obj.AddEventListener(a)
+
+	counter++
+	return a
+}
+
 func NewActiveNpc(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:    obj,
@@ -162,6 +184,26 @@ func NewActiveNpc(obj *actor.Actor, w Worlder) *Ai {
 	a.states[INVESTIGATE] = sInvestigate
 
 	a.SetState(ROAMING, pixel.ZV)
+
+	list[obj] = a
+	obj.AddEventListener(a)
+
+	counter++
+	return a
+}
+
+func NewSwimmingNpc(obj *actor.Actor, w Worlder) *Ai {
+	a := &Ai{
+		obj:    obj,
+		w:      w,
+		states: make(map[int]Stater),
+		id:     counter,
+	}
+
+	sSwimming := NewSwimming(a, a.w, false)
+	a.states[SWIMMING] = sSwimming
+
+	a.SetState(SWIMMING, pixel.ZV)
 
 	list[obj] = a
 	obj.AddEventListener(a)

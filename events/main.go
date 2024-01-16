@@ -3,6 +3,7 @@ package events
 const (
 	MELEE = 1 + iota
 	MELEEMOVE
+	MELEEJUMP
 	CAST
 	RANGED
 	SHIFT
@@ -15,6 +16,7 @@ const (
 	ENTER
 	INTERACT
 	DIALOG
+	ROLL
 
 	SOMEKEYPRESSED
 

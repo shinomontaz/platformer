@@ -18,11 +18,27 @@ func Init(g float64) {
 	grav = g
 }
 
-func AddProjectile(t string, pos, f pixel.Vec, strength float64, dir float64, owner common.Actorer) {
+// AddProjectile adds a projectile of kind t, attached to owner and
+// in position of owner.GetRect().Center()
+func AddProjectile(t string, strength float64, dir float64, owner common.Actorer) {
+	var f pixel.Vec
+	g := grav
+	switch t {
+	case "sling":
+		f = pixel.V(10000*dir, 5000+common.GetRandFloat()*7500)
+	case "crossbow":
+		f = pixel.V(9000*dir, 500+common.GetRandFloat()*750)
+		g = grav / 9
+	case "deathbolt":
+		f = pixel.V(8000*dir, 0)
+		g = grav / 1000
+	}
+
+	pos := owner.GetRect().Center()
 	p := projectile{
 		pos:      pos,
 		force:    f,
-		mass:     0.1,
+		mass:     0.001,
 		rigidity: 0,
 		friction: 1,
 		dir:      dir,
@@ -31,7 +47,7 @@ func AddProjectile(t string, pos, f pixel.Vec, strength float64, dir float64, ow
 		owner:    owner,
 		size:     8,
 	}
-	p.Init()
+	p.Init(g)
 	hb := activities.AddStrike(
 		owner,
 		p.rect,
@@ -39,6 +55,7 @@ func AddProjectile(t string, pos, f pixel.Vec, strength float64, dir float64, ow
 		pixel.ZV,
 		activities.WithTTL(-1),
 	)
+
 	p.hb = hb
 	projectiles = append(projectiles, p)
 }

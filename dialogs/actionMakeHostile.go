@@ -3,14 +3,14 @@ package dialogs
 import (
 	"platformer/actor"
 	"platformer/config"
-	"platformer/creatures"
 	"platformer/factories"
 	"platformer/loot"
 )
 
 func actionMakeHostile(a *actor.Actor) {
 	// delete from npcs
-	creatures.DeleteNpc(a)
+	crtrs := w.GetCreatures()
+	crtrs.DeleteNpc(a)
 	//we need: profile to switch (string), world reference
 	enemy := factories.NewActor(config.Profiles["bigbloated"], w)
 	enemy.Move(a.GetPos())
@@ -26,5 +26,5 @@ func actionMakeHostile(a *actor.Actor) {
 		enemy.SetDir(dir)
 	}
 
-	creatures.AddEnemy(enemy)
+	crtrs.AddEnemy(enemy)
 }

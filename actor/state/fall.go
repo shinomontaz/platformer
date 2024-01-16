@@ -1,6 +1,7 @@
 package state
 
 import (
+	"fmt"
 	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
@@ -29,7 +30,8 @@ func NewFall(a Actor, an Animater) *Fall {
 }
 
 func (s *Fall) Start() {
-	s.a.Inform(events.BUSY)
+	//	s.a.Inform(events.BUSY)
+	fmt.Println("state fall")
 	s.fallLimit = 1.0
 	s.busy = true
 	s.animSpriteNum = 3
@@ -43,7 +45,7 @@ func (s *Fall) Update(dt float64) {
 }
 
 func (s *Fall) Listen(e int, v *pixel.Vec) {
-	if v.Y == 0 {
+	if v.Y == 0 || s.iswater {
 		switch e {
 		case events.WALK:
 			s.a.SetState(WALK)

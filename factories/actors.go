@@ -34,5 +34,7 @@ func NewActor(prof config.Profile, w Worlder) *actor.Actor {
 		actor.WithSkills(prof.Skills),
 		actor.WithPhrases(prof.Phrases),
 		actor.WithBody(prof.Body),
+		actor.WithScore(prof.Hp), // for now!
+		actor.WithWaterResistance(prof.WaterResistance),
 	)
 }

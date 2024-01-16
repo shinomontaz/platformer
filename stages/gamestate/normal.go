@@ -19,8 +19,9 @@ import (
 
 type Normal struct {
 	Common
-	ctrl *controller.Controller
-	win  *pixelgl.Window
+	ctrl   *controller.Controller
+	win    *pixelgl.Window
+	ailist []*ai.Ai
 }
 
 func NewNormal(game Gamer, currBounds pixel.Rect, u *ui.Ui, w *world.World, hero *actor.Actor, win *pixelgl.Window) *Normal {
@@ -34,8 +35,9 @@ func NewNormal(game Gamer, currBounds pixel.Rect, u *ui.Ui, w *world.World, hero
 			hero:       hero,
 			lastPos:    pixel.ZV,
 		},
-		win:  win,
-		ctrl: controller.New(win, false, controller.WithBinding(bindings.Active)),
+		win:    win,
+		ctrl:   controller.New(win, false, controller.WithBinding(bindings.Active)),
+		ailist: game.GetAiList(),
 	}
 
 	n.ctrl.AddKeyListener(n.hero) // make hero listen keyboard input
@@ -55,11 +57,10 @@ func (n *Normal) Update(dt float64) {
 		n.currBounds = n.currBounds.Moved(deltaVec)
 
 		n.w.Update(n.currBounds, pos, dt)
-		//		creatures.Update(dt, w.GetVisiblePhys())
 		talks.Update(dt)
-		ai.Update(dt)
-
-		//		n.w.SetCreatures(creatures.List()) // we need shaders on creatures ( npc and enemies ), creatures will be drawn on world draw
+		for _, a := range n.ailist {
+			a.Update(dt)
+		}
 	}
 
 	n.lastPos = pos
@@ -103,4 +104,5 @@ func (n *Normal) EventAction(e int) {
 		// 	fmt.Println("handle event DIALOG")
 		// 	n.game.SetState(DIALOG)
 	}
+
 }

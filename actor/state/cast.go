@@ -35,7 +35,7 @@ func NewCast(a Actor, an Animater) *Cast {
 func (s *Cast) Start() {
 	s.a.Inform(events.BUSY)
 	s.time = 0.0
-	s.a.Cast()
+	s.a.UseSkill()
 }
 
 func (s *Cast) Listen(e int, v *pixel.Vec) {

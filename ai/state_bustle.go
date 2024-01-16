@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"platformer/bindings"
 	"platformer/common"
-	"platformer/creatures"
 	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
@@ -37,11 +36,15 @@ func (s *StateBustle) Update(dt float64) {
 	if s.isbusy {
 		return
 	}
+
+	hero := s.ai.obj.GetEnemy()
+	if hero == nil {
+		return
+	}
 	s.timer += dt
 	if s.timer > s.timeout {
 		//go to previos state
 		pos := s.ai.obj.GetPos()
-		hero := creatures.GetHero()
 		herohp := hero.GetHp()
 		heropos := hero.GetPos()
 		dir := s.ai.obj.GetDir()

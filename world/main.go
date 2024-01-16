@@ -38,10 +38,12 @@ type World struct {
 
 	gravity float64
 
-	tm           *tmx.Map
-	geom         *tmx.ObjectGroup
-	scenery      *tmx.ObjectGroup
-	meta         *tmx.Object
+	tm      *tmx.Map
+	geom    *tmx.ObjectGroup
+	scenery *tmx.ObjectGroup
+	//	meta         *tmx.Object
+	meta pixel.Vec // here is a center of the map
+
 	batches      []*pixel.Batch
 	batchIndices map[string]int
 	sprites      map[string]*pixel.Sprite
@@ -64,6 +66,7 @@ type World struct {
 	uNumObjects int32
 	uLight      mgl32.Vec2
 
+	c       *creatures.List
 	IsDebug bool
 }
 
@@ -76,6 +79,12 @@ func WithLoader(l *common.Loader) Option {
 		w.loader = l
 	}
 }
+
+// func WithShader(l *common.Loader) Option {
+// 	return func(w *World) {
+// 		w.loader = l
+// 	}
+// }
 
 func New(source string, rect pixel.Rect, opts ...Option) (*World, error) {
 	w := World{
@@ -124,15 +133,17 @@ func (w *World) init() {
 	w.qtObjs = common.New(1, 10, r)
 	w.qtSpec = common.New(1, 10, r)
 
+	w.meta = pixel.Vec{w.tm.Properties.GetFloat("centerX"), w.tm.Properties.GetFloat("centerY")}
+
 	for _, og := range w.tm.ObjectGroups {
 		if og.Name == "geom" {
 			w.geom = og
 		}
 		if og.Name == "meta" {
 			for _, o := range og.Objects {
-				if o.Class == "hero" {
-					w.meta = o
-				}
+				// if o.Class == "hero" {
+				// 	w.meta = o
+				// }
 
 				if o.Class == "enemy" || o.Class == "npc" || o.Class == "coin" || o.Class == "object" { // TODO: refactor!
 					o.Y = w.Height - o.Y
@@ -168,49 +179,39 @@ func (w *World) init() {
 	rect := pixel.Rect{
 		Min: pixel.V(
 			float64(w.meta.X),
-			w.Height-float64(w.meta.Y)-float64(w.meta.Height),
+			w.Height-float64(w.meta.Y),
 		),
 		Max: pixel.V(
-			float64(w.meta.X)+float64(w.meta.Width),
+			float64(w.meta.X),
 			w.Height-float64(w.meta.Y),
 		),
 	}
 
 	w.viewport = w.viewport.Moved(rect.Center().Sub(pixel.V(w.viewport.W()/2, w.viewport.H()/2)))
 
-	var wg sync.WaitGroup
 	w.initProps()
+	var wg sync.WaitGroup
+	wg.Add(5)
 	go func() {
 		w.initSets()
-		wg.Add(1)
 		defer wg.Done()
 	}()
 	go func() {
 		w.initTiles()
-		wg.Add(1)
 		defer wg.Done()
 	}()
 	go func() {
 		w.initPhys()
-		wg.Add(1)
 		defer wg.Done()
 	}()
 	go func() {
 		w.initObjs()
-		wg.Add(1)
 		defer wg.Done()
 	}()
 	go func() {
 		w.initShader("shader/world.glsl")
-		wg.Add(1)
 		defer wg.Done()
 	}()
-	// go func() {
-	// 	w.initEnemies()
-	// 	w.initNpcs()
-	// 	wg.Add(1)
-	// 	defer wg.Done()
-	// }()
 	wg.Wait()
 }
 
@@ -224,16 +225,16 @@ func (w *World) initShader(shadername string) {
 	w.uObjects = make([]mgl32.Vec4, 0)
 	w.uLight = [2]float32{float32(-w.viewport.W()/2 + 100.0), float32(w.viewport.H()/2 - 100.0)}
 
-	w.cnv.SetUniform("uLight", &w.uLight)
-	w.cnv.SetUniform("uObjects", &w.uObjects)
-	w.cnv.SetUniform("uNumObjects", &w.uNumObjects)
+	// w.cnv.SetUniform("uLight", &w.uLight)
+	// w.cnv.SetUniform("uObjects", &w.uObjects)
+	// w.cnv.SetUniform("uNumObjects", &w.uNumObjects)
 
-	fragSource, err := w.loader.LoadFileToString(shadername)
-	if err != nil {
-		panic(err)
-	}
+	//	fragSource, err := w.loader.LoadFileToString(shadername)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	w.cnv.SetFragmentShader(fragSource)
+	//	w.cnv.SetFragmentShader(fragSource)
 }
 
 func (w *World) initProps() {
@@ -362,7 +363,7 @@ func (w *World) Update(rect pixel.Rect, hpos pixel.Vec, dt float64) {
 	w.viewport = rect
 
 	w.visibleTiles = w.qtTile.Retrieve(w.viewport)
-	w.visibleObjs = w.qtObjs.Retrieve(w.viewport)
+	w.visibleObjs = w.qtObjs.Retrieve(w.viewport) // scenery and objects
 	w.visibleSpec = w.qtSpec.Retrieve(w.viewport)
 
 	w.visiblePhys = w.qtPhys.Retrieve(w.viewport)
@@ -378,9 +379,9 @@ func (w *World) Update(rect pixel.Rect, hpos pixel.Vec, dt float64) {
 	w.uNumObjects = int32(len(w.uObjects))
 
 	w.visiblePhys = append(w.visiblePhys, objects.List(w.viewport)...)
-	creatures.Update(dt, w.visiblePhys, w.visibleSpec)
+	w.c.Update(dt, w.visiblePhys, w.visibleSpec)
 	loot.Update(dt, w.visiblePhys)
-	collectedloot := loot.Collect(creatures.GetHero())
+	collectedloot := loot.Collect(w.c.GetHero())
 	inventory.Add(collectedloot)
 	particles.Update(dt, w.visiblePhys)
 	projectiles.Update(dt, w.visiblePhys, w.visibleSpec)
@@ -390,6 +391,18 @@ func (w *World) Update(rect pixel.Rect, hpos pixel.Vec, dt float64) {
 
 func (w *World) GetGravity() float64 {
 	return w.gravity
+}
+
+func (w *World) SetCreatures(crtrs *creatures.List) {
+	w.c = crtrs
+}
+
+// func (w *World) SetObjects(objs *creatures.List) {
+// 	w.objs = objs
+// }
+
+func (w *World) GetCreatures() *creatures.List {
+	return w.c
 }
 
 func (w *World) IsSee(from, to pixel.Vec) bool {
@@ -500,7 +513,7 @@ func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel
 
 	drawSpells(w.cnv2)
 
-	creatures.Draw(w.cnv2)
+	w.c.Draw(w.cnv2)
 	loot.Draw(w.cnv2)
 	particles.Draw(w.cnv2)
 	projectiles.Draw(w.cnv2)

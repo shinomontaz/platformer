@@ -11,7 +11,12 @@ import (
 var ActionSkillMap = map[string]int{
 	"melee":     events.MELEE,
 	"meleemove": events.MELEEMOVE,
+	"meleejump": events.MELEEJUMP,
+	"deathbolt": events.RANGED,
+	"crossbow":  events.RANGED,
+	"sling":     events.RANGED,
 	"ranged":    events.RANGED,
+	"roll":      events.ROLL,
 	"cast":      events.CAST,
 }
 

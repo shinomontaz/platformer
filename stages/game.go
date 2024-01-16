@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image/color"
 	"platformer/actor"
+	"platformer/ai"
 	"platformer/animation"
 	"platformer/background"
 	"platformer/common"
@@ -18,6 +19,7 @@ import (
 	"platformer/objects"
 	"platformer/particles"
 	"platformer/projectiles"
+	"platformer/score"
 	"platformer/sound"
 	"platformer/talks"
 	"platformer/ui"
@@ -43,6 +45,8 @@ type Game struct {
 	state  Gamestater
 	states map[int]Gamestater
 	win    *pixelgl.Window
+	score  int
+	ailist []*ai.Ai
 }
 
 var (
@@ -60,6 +64,7 @@ func NewGame(f Inform, l *common.Loader, win *pixelgl.Window, currBounds pixel.R
 			inform:   f,
 			eventMap: map[int]int{events.STAGEVENT_QUIT: MENU, events.STAGEVENT_DONE: VICTORY},
 		},
+		ailist:        make([]*ai.Ai, 0),
 		assetloader:   l,
 		initialBounds: currBounds,
 		win:           win,
@@ -75,6 +80,7 @@ func (g *Game) Start() {
 }
 
 func (g *Game) Init() {
+	g.ailist = make([]*ai.Ai, 0)
 	currBounds := g.initialBounds
 	animation.Init(g.assetloader)
 	actor.Init(g.assetloader) // to load portrait only
@@ -111,11 +117,12 @@ func (g *Game) Init() {
 	dialogs.Init(g.assetloader)
 	dialogs.SetWorld(g.w)
 
-	creatures.Init()
+	crtrs := creatures.New()
 	list := g.w.GetMetas()
 	for _, o := range list {
 		if o.Class == "enemy" {
 			enemy := factories.NewActor(config.Profiles[o.Name], g.w)
+			enemy.SetEnemy(g.hero)
 			enemy.Move(pixel.V(o.X, o.Y))
 			rew := o.Properties.GetString("reward")
 			if rew == "coin" { // make OnKill handler
@@ -125,16 +132,16 @@ func (g *Game) Init() {
 			}
 			ai_type := o.Properties.GetString("ai")
 			if ai_type != "" {
-				factories.NewAi(ai_type, enemy, w)
+				g.ailist = append(g.ailist, factories.NewAi(ai_type, enemy, w))
 			}
 
 			dir := o.Properties.GetFloat("dir")
 			if dir != 0 {
-				fmt.Println("set dir for enemy", dir)
 				enemy.SetDir(dir)
 			}
 
-			creatures.AddEnemy(enemy)
+			enemy.SetOnKill(func(pos, vel pixel.Vec) { score.Add(config.Profiles[o.Name].Hp) })
+			crtrs.AddEnemy(enemy)
 		}
 		if o.Class == "npc" {
 			npc := factories.NewActor(config.Profiles[o.Name], g.w)
@@ -167,7 +174,7 @@ func (g *Game) Init() {
 			}
 			ai_type := o.Properties.GetString("ai")
 			if ai_type != "" {
-				factories.NewAi(ai_type, npc, w)
+				g.ailist = append(g.ailist, factories.NewAi(ai_type, npc, w))
 			}
 
 			dir := o.Properties.GetFloat("dir")
@@ -175,7 +182,7 @@ func (g *Game) Init() {
 				npc.SetDir(dir)
 			}
 
-			creatures.AddNpc(npc)
+			crtrs.AddNpc(npc)
 		}
 		if o.Class == "coin" {
 			loot.AddCoin(pixel.V(o.X, o.Y), pixel.ZV)
@@ -185,11 +192,10 @@ func (g *Game) Init() {
 			objects.Add(o.Name, pixel.R(o.X, o.Y-o.Height, o.X+o.Width, o.Y), ai_type)
 		}
 	}
-	creatures.SetHero(g.hero)
-
-	//	activities.Init(creatures.List()) // new
+	crtrs.SetHero(g.hero)
 
 	//	w.IsDebug = isdebug
+	w.SetCreatures(crtrs)
 
 	magic.SetWorld(g.w)
 
@@ -228,6 +234,10 @@ func (g *Game) initStates(currBounds pixel.Rect) {
 	}
 
 	g.SetState(gamestate.NORMAL)
+}
+
+func (g *Game) GetAiList() []*ai.Ai {
+	return g.ailist
 }
 
 func (g *Game) SetState(id int) {

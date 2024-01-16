@@ -57,7 +57,7 @@ func (s *Stand) Listen(e int, v *pixel.Vec) {
 	switch {
 	case v.Y > 0:
 		s.a.SetState(JUMP)
-	case v.Y < 0:
+	case v.Y < 0 && (!s.iswater || (s.iswater && !s.iswaterresistant)):
 		s.a.SetState(FALL)
 	case v.X != 0:
 		s.a.SetState(WALK)

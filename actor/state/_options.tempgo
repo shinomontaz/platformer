@@ -1,0 +1,9 @@
+package state
+
+type Option func(Stater)
+
+func WithWaterResistant(wr bool) Option {
+	return func(s *Common) {
+		s.iswaterresistant = wr
+	}
+}

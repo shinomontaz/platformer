@@ -19,6 +19,8 @@ type Stater interface {
 	Listen(e int, v *pixel.Vec)
 	GetSprite() *pixel.Sprite
 	Busy() bool
+	SetWater(bool)
+	SetWaterResistant(bool)
 }
 
 type soundeffect struct {

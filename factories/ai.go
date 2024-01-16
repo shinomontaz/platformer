@@ -5,17 +5,21 @@ import (
 	"platformer/ai"
 )
 
-func NewAi(t string, obj *actor.Actor, w Worlder) {
+func NewAi(t string, obj *actor.Actor, w Worlder) *ai.Ai {
 	switch t {
 	case "npc_roaming":
-		ai.NewActiveNpc(obj, w)
+		return ai.NewActiveNpc(obj, w)
 	case "enemy_roaming":
-		ai.NewActiveEnemy(obj, w)
+		return ai.NewActiveEnemy(obj, w)
 	case "enemy_resurrected":
-		ai.NewActiveEnemy(obj, w)
+		return ai.NewActiveEnemy(obj, w)
 	case "enemy_agressive":
-		ai.NewAgressiveEnemy(obj, w)
+		return ai.NewAgressiveEnemy(obj, w)
+	case "npc_fishing":
+		return ai.NewFishingNpc(obj, w)
+	case "npc_swimming":
+		return ai.NewSwimmingNpc(obj, w)
 	default:
-		ai.NewCalmEnemy(obj, w)
+		return ai.NewCalmEnemy(obj, w)
 	}
 }

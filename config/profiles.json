@@ -7,9 +7,11 @@
         "dir": 1,
         "hp": 3,
         "strength": 1,
-        "width": 36,
+        "oldweight": 36,
+        "width": 48,
         "height": 34,
-        "margin": 8,
+        "oldmargin": 8,
+        "margin": 0,
         "mass": 10,
         "jump": 42,
         "walk": 80,
@@ -33,6 +35,30 @@
                 "type": "melee",
                 "name": "meleemove",
                 "speed": 100,
+                "hitbox": [10, -5, 20, 5],
+                "keys": ["ctrl", "right"]
+            },
+            {
+                "type": "move",
+                "name": "roll",
+                "keys": ["down", "right"]
+            },
+            {
+                "type": "move",
+                "name": "roll",
+                "keys": ["down", "left"]
+            },
+            {
+                "type": "melee",
+                "name": "meleejump",
+                "speed": 250,
+                "hitbox": [10, -5, 20, 5],
+                "keys": ["ctrl", "left"]
+            },
+            {
+                "type": "melee",
+                "name": "meleejump",
+                "speed": 250,
                 "hitbox": [10, -5, 20, 5],
                 "keys": ["ctrl", "right"]
             }
@@ -85,6 +111,133 @@
                 "type": "ranged",
                 "name": "deathbolt",
                 "max": 250,
+                "min": 50,
+                "weight": 1,
+                "keys": ["ctrl"]
+            }
+        ]
+    },
+    {
+        "type": "goblin_melee",
+        "anim": "goblin_melee",
+        "dir": -1,
+        "hp": 1,
+        "strength": 1,
+        "width": 32,
+        "height": 32,
+        "margin": 16,
+        "mass": 4,
+        "jump": 0,
+        "walk": 60,
+        "run": 60,
+        "body": "human",
+        "skills": [
+            {
+                "type": "melee",
+                "name": "melee",
+                "max": 19,
+                "min": 5,
+                "hitbox": [10, -5, 20, 5],
+                "weight": 1,
+                "keys": ["ctrl"]
+            }
+        ]
+    },
+    {
+        "type": "goblin_range",
+        "anim": "goblin_range",
+        "dir": -1,
+        "hp": 1,
+        "strength": 1,
+        "width": 32,
+        "height": 32,
+        "margin": 8,
+        "mass": 4,
+        "jump": 0,
+        "walk": 60,
+        "run": 60,
+        "body": "human",
+        "skills": [
+            {
+                "type": "ranged",
+                "name": "crossbow",
+                "max": 200,
+                "min": 30,
+                "weight": 1,
+                "keys": ["ctrl"]
+            }
+        ]
+    },
+    {
+        "type": "goblin_melee2",
+        "anim": "goblin_melee2",
+        "dir": -1,
+        "hp": 1,
+        "strength": 1,
+        "width": 42,
+        "height": 42,
+        "margin": 0,
+        "mass": 4,
+        "jump": 0,
+        "walk": 70,
+        "run": 70,
+        "body": "human",
+        "skills": [
+            {
+                "type": "melee",
+                "name": "melee",
+                "max": 19,
+                "min": 5,
+                "hitbox": [10, -5, 20, 5],
+                "weight": 1,
+                "keys": ["ctrl"]
+            }
+        ]
+    },
+    {
+        "type": "goblin_range2",
+        "anim": "goblin_range2",
+        "dir": -1,
+        "hp": 1,
+        "strength": 1,
+        "width": 42,
+        "height": 42,
+        "margin": 0,
+        "mass": 4,
+        "jump": 0,
+        "walk": 70,
+        "run": 70,
+        "body": "human",
+        "skills": [
+            {
+                "type": "ranged",
+                "name": "sling",
+                "max": 200,
+                "min": 25,
+                "weight": 1,
+                "keys": ["ctrl"]
+            }
+        ]
+    },
+    {
+        "type": "goblin_mage",
+        "anim": "goblin_mage",
+        "dir": -1,
+        "hp": 1,
+        "strength": 1,
+        "width": 42,
+        "height": 42,
+        "margin": 0,
+        "mass": 4,
+        "jump": 0,
+        "walk": 30,
+        "run": 30,
+        "body": "human",
+        "skills": [
+            {
+                "type": "ranged",
+                "name": "deathbolt",
+                "max": 300,
                 "min": 50,
                 "weight": 1,
                 "keys": ["ctrl"]
@@ -234,7 +387,36 @@
         "mass": 1,
         "jump": 0,
         "walk": 30,
-        "run": 30
+        "run": 30,
+        "waterresistance": true
+    },
+    {
+        "type": "fish1",
+        "anim": "fish1",
+        "dir": 1,
+        "hp": 1,
+        "strength": 1,
+        "width": 48,
+        "height": 48,
+        "mass": 1,
+        "jump": 0,
+        "walk": 400,
+        "run": 400,
+        "waterresistance": true
+    },
+    {
+        "type": "fish2",
+        "anim": "fish2",
+        "dir": 1,
+        "hp": 1,
+        "strength": 1,
+        "width": 48,
+        "height": 48,
+        "mass": 1,
+        "jump": 0,
+        "walk": 200,
+        "run": 200,
+        "waterresistance": true
     },
     {
         "type": "chest",

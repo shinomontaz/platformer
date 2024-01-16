@@ -2,6 +2,7 @@ package actor
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"platformer/bindings"
 	"platformer/common"
@@ -30,6 +31,7 @@ var counter int
 
 type Actor struct {
 	id        int
+	enemy     *Actor // enemy
 	phys      common.Phys
 	groundObj common.Objecter
 
@@ -72,11 +74,15 @@ type Actor struct {
 	activeSkill  *Skill
 	currObjs     []common.Objecter
 	phrasesClass string
+	score        int
 
-	onkill     OnKillHandler
-	onhit      OnKillHandler
-	oninteract OnInteractHandler
-	iswater    bool
+	//	onkill     OnKillHandler
+	onkill []OnKillHandler
+
+	onhit            OnKillHandler
+	oninteract       OnInteractHandler
+	iswater          bool
+	iswaterresistant bool
 }
 
 var loader *common.Loader
@@ -103,6 +109,7 @@ func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Acto
 		skills:    make([]*Skill, 0),
 		skillmap:  make(map[int]int),
 		groundObj: common.Objecter{},
+		onkill:    make([]OnKillHandler, 0),
 	}
 
 	for _, opt := range opts { // skills inited here as well
@@ -140,6 +147,8 @@ func (a *Actor) initStates() {
 	sHit := state.New(state.HIT, a, a.anim)
 	sInteract := state.New(state.INTERACT, a, a.anim)
 	sResurrect := state.New(state.RESURRECT, a, a.anim)
+	sFishing := state.New(state.FISHING, a, a.anim)
+	sSwim := state.New(state.SWIM, a, a.anim)
 
 	a.states = map[int]Stater{
 		state.STAND:     sStand,
@@ -152,6 +161,8 @@ func (a *Actor) initStates() {
 		state.DEAD:      sDead,
 		state.INTERACT:  sInteract,
 		state.RESURRECT: sResurrect,
+		state.FISHING:   sFishing,
+		state.SWIM:      sSwim,
 	}
 
 	// apply state machine
@@ -178,6 +189,10 @@ func (a *Actor) GetTransition(state int) statemachine.Transition {
 }
 
 func (a *Actor) StepPrediction(e int, v pixel.Vec) float64 {
+	if a.iswater {
+		return 1
+	}
+
 	if e == events.WALK {
 		v.X *= a.walkspeed / 20
 	} else {
@@ -192,9 +207,7 @@ func (a *Actor) KeyAction(key pixelgl.Button) {
 	if a.state.Busy() {
 		return
 	}
-
 	action := bindings.Active.GetAction(key) // get action id for this key
-
 	a.keycombo += action
 
 	isWalk := false
@@ -219,10 +232,15 @@ func (a *Actor) KeyAction(key pixelgl.Button) {
 
 	if action == bindings.UP && a.state.GetId() != state.JUMP {
 		multiplier := 0.5
-		if math.Abs(a.vel.X) > a.walkspeed {
+		if math.Abs(a.vel.X) > a.walkspeed || a.iswater {
 			multiplier = 1
 		}
 		a.appliedForce.Y = a.grav * (a.jumpforce + float64(a.strength) - a.mass) * multiplier
+	}
+
+	if action == bindings.DOWN {
+		fmt.Println("key down")
+		a.appliedForce.Y = -a.grav * a.jumpforce * 10
 	}
 }
 
@@ -302,7 +320,7 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 }
 
 func (a *Actor) UpdateSpecial(dt float64, objs []common.Objecter) {
-	force := pixel.ZV
+	force := a.appliedForce
 
 	for _, o := range objs {
 		isIntercects := a.rect.Intersects(o.R)
@@ -314,16 +332,18 @@ func (a *Actor) UpdateSpecial(dt float64, objs []common.Objecter) {
 
 		if o.Type == common.WATER {
 			ratio := part.H() / a.rect.H()
-			if ratio == 1 {
-				if a.hp > 0 {
-					a.iswater = true
+			if ratio == 1 && !a.iswater {
+				a.iswater = true
+				a.state.SetWater(true)
+				if !a.iswaterresistant && a.hp > 0 {
 					a.Kill()
+				} else {
+					a.SetState(state.SWIM)
 				}
-				ratio += 0.5
 			}
 
-			force.Y += a.grav * ratio // archimedus
-			a.phys.SetSpeed(a.vel.Scaled(0.9))
+			force.Y += a.grav * (ratio + 0.1) // archimedus
+			a.phys.SetSpeed(a.vel.Scaled(0.92))
 		}
 	}
 	a.phys.Apply(force)
@@ -331,6 +351,7 @@ func (a *Actor) UpdateSpecial(dt float64, objs []common.Objecter) {
 
 func (a *Actor) SetState(id int) {
 	a.state = a.states[id]
+	a.state.SetWaterResistant(a.iswaterresistant)
 	a.state.Start()
 }
 
@@ -410,16 +431,17 @@ func (a *Actor) Strike(ttl float64) {
 	}
 }
 
-func (a *Actor) Cast() {
+func (a *Actor) UseSkill() {
+	if a.activeSkill == nil {
+		return
+	}
 	if a.activeSkill.Type == "spell" {
-		//		activities.AddSpell(a, a.target, a.activeSkill.Name, a.currObjs)
 		a.w.AddSpell(a, a.target, a.activeSkill.Name, a.currObjs)
 	}
 	if a.activeSkill.Type == "ranged" {
-		//t string, pos, f pixel.Vec, strength float64, owner common.Actorer
-		projectiles.AddProjectile(a.activeSkill.Name, a.GetRect().Center(), pixel.V(10000*a.dir, 0), 1, a.dir, a)
+		//t string, strength float64, owner common.Actorer
+		projectiles.AddProjectile(a.activeSkill.Name, 1, a.dir, a)
 	}
-
 }
 
 func (a *Actor) SetSkill(s *Skill) {
@@ -428,6 +450,14 @@ func (a *Actor) SetSkill(s *Skill) {
 
 func (a *Actor) SetTarget(t pixel.Vec) {
 	a.target = t
+}
+
+func (a *Actor) SetEnemy(en *Actor) {
+	a.enemy = en
+}
+
+func (a *Actor) GetEnemy() *Actor {
+	return a.enemy
 }
 
 func (a *Actor) AddSound(event string) {
@@ -462,6 +492,10 @@ func (a *Actor) AddEventListener(s common.EventSubscriber) {
 
 func (a *Actor) Hit(vec pixel.Vec, power int) {
 	if _, ok := a.states[state.HIT]; !ok { // cannot hit unhittable
+		return
+	}
+
+	if a.state.GetId() == state.ROLL { // cannot hit in rolling state
 		return
 	}
 
@@ -500,17 +534,20 @@ func (a *Actor) Kill() {
 // }
 
 func (a *Actor) OnKill() {
-	if a.onkill == nil {
+	if len(a.onkill) == 0 { // == nil {
 		return
 	}
 	// create random velocity vec
 	rnd := float64(common.GetRandInt() - 5)
 	y := 100.0 * rnd
-	a.onkill(a.rect.Center(), pixel.V(30*float64(common.GetRandInt()-5), y))
+	for _, okh := range a.onkill {
+		okh(a.rect.Center(), pixel.V(30*float64(common.GetRandInt()-5), y))
+	}
 }
 
 func (a *Actor) SetOnKill(okh OnKillHandler) {
-	a.onkill = okh
+	//	a.onkill = okh
+	a.onkill = append(a.onkill, okh)
 }
 
 func (a *Actor) Interact() {

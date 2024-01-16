@@ -35,6 +35,7 @@ func NewMeleemove(a Actor, an Animater) *Meleemove {
 }
 
 func (s *Meleemove) Start() {
+	fmt.Println("melee move start")
 	s.a.Inform(events.BUSY)
 	s.time = 0.0
 	s.attackidx = 1

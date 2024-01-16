@@ -56,24 +56,25 @@ type Skill struct {
 	Keys   []string  `json:"keys"`
 }
 type Profile struct {
-	Type     string  `json:"type"`
-	Anim     string  `json:"anim"`
-	Portrait string  `json:"portrait"`
-	Body     string  `json:"body"`
-	Dir      float64 `json:"dir"`
-	Hp       int     `json:"hp"`
-	Strength int     `json:"strength"`
-	Width    float64 `json:"width"`
-	Height   float64 `json:"height"`
-	Margin   float64 `json:"margin"`
-	Jump     float64 `json:"jump"`
-	Mass     float64 `json:"mass"`
-	Walk     float64 `json:"walk"`
-	Run      float64 `json:"run"`
-	Skills   []Skill `json:"skills"`
-	Phrases  string  `json:"phrases"`
-	Dialog   int     `json:"dialog"`
-	Only     int     `json:"only"`
+	Type            string  `json:"type"`
+	Anim            string  `json:"anim"`
+	Portrait        string  `json:"portrait"`
+	Body            string  `json:"body"`
+	Dir             float64 `json:"dir"`
+	Hp              int     `json:"hp"`
+	Strength        int     `json:"strength"`
+	Width           float64 `json:"width"`
+	Height          float64 `json:"height"`
+	Margin          float64 `json:"margin"`
+	Jump            float64 `json:"jump"`
+	Mass            float64 `json:"mass"`
+	Walk            float64 `json:"walk"`
+	Run             float64 `json:"run"`
+	Skills          []Skill `json:"skills"`
+	Phrases         string  `json:"phrases"`
+	Dialog          int     `json:"dialog"`
+	Only            int     `json:"only"`
+	WaterResistance bool    `json:"waterresistance"`
 }
 
 type Soundeffect struct {

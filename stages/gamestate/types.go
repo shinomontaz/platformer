@@ -1,5 +1,7 @@
 package gamestate
 
+import "platformer/ai"
+
 const (
 	NORMAL = iota
 	DEAD
@@ -10,5 +12,6 @@ const (
 
 type Gamer interface {
 	SetState(int)
+	GetAiList() []*ai.Ai
 	Notify(e int)
 }

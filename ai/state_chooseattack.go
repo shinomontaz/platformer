@@ -1,11 +1,9 @@
 package ai
 
 import (
-	"fmt"
 	"math"
 	"platformer/actor"
 	"platformer/common"
-	"platformer/creatures"
 	"platformer/events"
 	"sort"
 
@@ -55,7 +53,10 @@ func (s *StateChooseAttack) Update(dt float64) {
 		return
 	}
 
-	hero := creatures.GetHero()
+	hero := s.ai.obj.GetEnemy()
+	if hero == nil {
+		return
+	}
 
 	if !hero.IsGround() {
 		return
@@ -125,12 +126,14 @@ func (s *StateChooseAttack) Update(dt float64) {
 	}
 
 	s.ai.attackskill = choosed
+	s.ai.obj.SetSkill(s.ai.attackskill)
+	//	fmt.Println("choosed attack skill", s.ai.attackskill, s.ai.obj.GetSkills())
 	s.ai.SetState(ATTACK, heropos)
 }
 
 func (s *StateChooseAttack) Start(poi pixel.Vec) {
 	s.lastpos = poi
-	fmt.Println("state chooseattack start")
+	// fmt.Println("state chooseattack start")
 }
 
 func (s *StateChooseAttack) EventAction(e int) {

@@ -40,9 +40,22 @@ func WithAnimDir(animdir float64) Option {
 		a.animdir = animdir
 	}
 }
+
 func WithHP(hp int) Option {
 	return func(a *Actor) {
 		a.hp = hp
+	}
+}
+
+func WithScore(v int) Option {
+	return func(a *Actor) {
+		a.score = v
+	}
+}
+
+func WithWaterResistance(r bool) Option {
+	return func(a *Actor) {
+		a.iswaterresistant = r
 	}
 }
 

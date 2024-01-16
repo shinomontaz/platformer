@@ -33,6 +33,15 @@ func HaveCoins() bool {
 	return ok
 }
 
+func GetCoins() int {
+	coins, ok := list[loot.COIN]
+	if !ok {
+		return 0
+	}
+
+	return coins
+}
+
 func PayCoins(n int) {
 	if _, ok := list[loot.COIN]; ok {
 		for i := 0; i < n; i++ {

@@ -3,7 +3,6 @@ package ai
 import (
 	"platformer/actor"
 	"platformer/bindings"
-	"platformer/creatures"
 	"platformer/events"
 	"sort"
 
@@ -49,7 +48,10 @@ func (s *StateInvestigate) Update(dt float64) {
 	}
 	pos := s.ai.obj.GetPos()
 
-	hero := creatures.GetHero()
+	hero := s.ai.obj.GetEnemy()
+	if hero == nil {
+		return
+	}
 	// look for hero
 	herohp := hero.GetHp()
 	heropos := hero.GetPos()

@@ -1,10 +1,8 @@
 package ai
 
 import (
-	"fmt"
 	"platformer/bindings"
 	"platformer/common"
-	"platformer/creatures"
 	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
@@ -41,7 +39,11 @@ func (s *StateAttack) Update(dt float64) {
 		return
 	}
 
-	hero := creatures.GetHero()
+	hero := s.ai.obj.GetEnemy()
+	if hero == nil {
+		return
+	}
+
 	herohp := hero.GetHp()
 	if herohp <= 0 {
 		s.ai.SetState(IDLE, s.lastpos)
@@ -54,11 +56,10 @@ func (s *StateAttack) Update(dt float64) {
 		coeff := 0.25
 		if s.ai.attackskill.Type == "melee" {
 			coeff = 0.5
-		} else if s.ai.attackskill.Type == "spell" {
+		} else {
 			coeff = 0
 		}
 		dice := float64(s.counter) * common.GetRandFloat()
-		fmt.Println(dice, coeff)
 		if dice > coeff {
 			s.ai.SetState(BUSTLE, s.lastpos)
 			s.counter = 0
@@ -107,7 +108,9 @@ func (s *StateAttack) Update(dt float64) {
 	for _, k := range s.ai.attackskill.Keys {
 		b := bindings.Active.GetBinding(k)
 		s.ai.obj.KeyAction(b)
+		//		fmt.Println("s.ai.obj.KeyAction(b)", b)
 	}
+
 	s.counter++
 }
 

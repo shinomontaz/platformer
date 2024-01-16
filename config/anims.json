@@ -1,9 +1,10 @@
 [
     {
         "type": "player",
-        "width": 36,
+        "width": 48,
         "height": 34,
-        "margin": [0, 0, 12, 0],
+        "margin": [0, 0, 0, 0],
+        "oldmargin": [0, 0, 12, 0],
         "list":  [
         {
             "name": "stand",
@@ -69,6 +70,31 @@
             "name": "dead2",
             "file":"characters/graverobber/GraveRobber_death2.png",
             "frames": [6, 5, 6]
+        },
+        {
+            "name": "fishing",
+            "file":"characters/graverobber/GraveRobber_fish.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "hooking",
+            "file":"characters/graverobber/GraveRobber_hook.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "swim",
+            "file":"characters/graverobber/GraveRobber_swim.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "idlewater",
+            "file":"characters/graverobber/GraveRobber_idlewater.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "roll",
+            "file":"characters/graverobber/GraveRobber_roll.png",
+            "frames": [6, 0, 6]
         }
         ],
         "groups": [
@@ -147,6 +173,235 @@
                 }        
             ]
             }
+        ]
+    },
+    {
+        "type": "goblin_melee",
+        "width": 34,
+        "height": 32,
+        "margin": [14, 0, 0, 0],
+        "list":  [
+        {
+            "name": "stand",
+            "file":"enemies/goblin_melee/Goblin_melee.png",
+            "frames": [1, 0, 1]
+        },
+        {
+            "name": "walk",
+            "file":"enemies/goblin_melee/Goblin_melee_walk.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "idle",
+            "file":"enemies/goblin_melee/Goblin_melee_idle.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "hurt",
+            "file":"enemies/goblin_melee/Goblin_melee_hurt.png",
+            "frames": [2, 0, 2]
+        },
+        {
+            "name": "die",
+            "file":"enemies/goblin_melee/Goblin_melee_death.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "dead",
+            "file":"enemies/goblin_melee/Goblin_melee_death.png",
+            "frames": [4, 3, 4]
+        }
+        ],
+        "groups": [
+            {
+            "name": "melee",
+            "group": [
+                {
+                    "name": "attack1",
+                    "file":"enemies/goblin_melee/Goblin_melee_attack.png",
+                    "frames": [4, 0, 4]
+                }        
+            ]
+            }
+        ]
+    },
+    {
+        "type": "goblin_range",
+        "width": 34,
+        "height": 32,
+        "margin": [14, 0, 0, 0],
+        "list":  [
+        {
+            "name": "stand",
+            "file":"enemies/goblin_range/Goblin_range.png",
+            "frames": [1, 0, 1]
+        },
+        {
+            "name": "walk",
+            "file":"enemies/goblin_range/Goblin_range_walk.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "idle",
+            "file":"enemies/goblin_range/Goblin_range_idle.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "hurt",
+            "file":"enemies/goblin_range/Goblin_range_hurt.png",
+            "frames": [2, 0, 2]
+        },
+        {
+            "name": "die",
+            "file":"enemies/goblin_range/Goblin_range_death.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "dead",
+            "file":"enemies/goblin_range/Goblin_range_death.png",
+            "frames": [4, 3, 4]
+        },
+        {
+            "name": "ranged",
+            "file":"enemies/goblin_range/Goblin_range_attack.png",
+            "frames": [4, 0, 4]
+        }
+        ]
+    },
+    {
+        "type": "goblin_melee2",
+        "width": 42,
+        "height": 42,
+        "margin": [0, 0, 0, 0],
+        "list":  [
+        {
+            "name": "stand",
+            "file":"enemies/th_goblin_melee/Goblin_melee.png",
+            "frames": [1, 0, 1]
+        },
+        {
+            "name": "walk",
+            "file":"enemies/th_goblin_melee/Goblin_melee_walk.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "idle",
+            "file":"enemies/th_goblin_melee/Goblin_melee_idle.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "hurt",
+            "file":"enemies/th_goblin_melee/Goblin_melee_hurt.png",
+            "frames": [2, 0, 2]
+        },
+        {
+            "name": "die",
+            "file":"enemies/th_goblin_melee/Goblin_melee_death.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "dead",
+            "file":"enemies/th_goblin_melee/Goblin_melee_death.png",
+            "frames": [4, 3, 4]
+        }
+        ],
+        "groups": [
+            {
+            "name": "melee",
+            "group": [
+                {
+                    "name": "attack1",
+                    "file":"enemies/th_goblin_melee/Goblin_melee_attack.png",
+                    "frames": [4, 0, 4]
+                }        
+            ]
+            }
+        ]
+    },
+    {
+        "type": "goblin_range2",
+        "width": 42,
+        "height": 42,
+        "margin": [0, 0, 0, 0],
+        "list":  [
+        {
+            "name": "stand",
+            "file":"enemies/th_goblin_range/Goblin_range.png",
+            "frames": [1, 0, 1]
+        },
+        {
+            "name": "walk",
+            "file":"enemies/th_goblin_range/Goblin_range_walk.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "idle",
+            "file":"enemies/th_goblin_range/Goblin_range_idle.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "hurt",
+            "file":"enemies/th_goblin_range/Goblin_range_hurt.png",
+            "frames": [2, 0, 2]
+        },
+        {
+            "name": "die",
+            "file":"enemies/th_goblin_range/Goblin_range_death.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "dead",
+            "file":"enemies/th_goblin_range/Goblin_range_death.png",
+            "frames": [4, 3, 4]
+        },
+        {
+            "name": "ranged",
+            "file":"enemies/th_goblin_range/Goblin_range_attack.png",
+            "frames": [4, 0, 4]
+        }
+        ]
+    },
+    {
+        "type": "goblin_mage",
+        "width": 42,
+        "height": 42,
+        "margin": [0, 0, 0, 0],
+        "list":  [
+        {
+            "name": "stand",
+            "file":"enemies/th_goblin_mage/Goblin_Mage.png",
+            "frames": [1, 0, 1]
+        },
+        {
+            "name": "walk",
+            "file":"enemies/th_goblin_mage/Goblin_Mage_walk.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "idle",
+            "file":"enemies/th_goblin_mage/Goblin_Mage_idle.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "hurt",
+            "file":"enemies/th_goblin_mage/Goblin_Mage_hurt.png",
+            "frames": [2, 0, 2]
+        },
+        {
+            "name": "die",
+            "file":"enemies/th_goblin_mage/Goblin_Mage_death.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "dead",
+            "file":"enemies/th_goblin_mage/Goblin_Mage_death.png",
+            "frames": [4, 3, 4]
+        },
+        {
+            "name": "cast",
+            "file":"enemies/th_goblin_mage/Goblin_Mage_attack.png",
+            "frames": [4, 0, 4]
+        }
         ]
     },
     {
@@ -529,6 +784,11 @@
             "frames": [6, 0, 6]
         },
         {
+            "name": "swim",
+            "file":"animals/octopus/Walk.png",
+            "frames": [6, 0, 6]
+        },
+        {
             "name": "idle",
             "file":"animals/octopus/Idle.png",
             "frames": [6, 0, 6]
@@ -563,6 +823,116 @@
         ]
     },
     {
+        "type": "fish1",
+        "width": 48,
+        "height": 48,
+        "margin": [0, 0, 0, 0],
+        "list":  [
+        {
+            "name": "stand",
+            "file":"animals/fish/Idle.png",
+            "frames": [4, 0, 1]
+        },
+        {
+            "name": "swim",
+            "file":"animals/fish/Walk.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "walk",
+            "file":"animals/fish/Walk.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "idle",
+            "file":"animals/fish/Idle.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "hurt",
+            "file":"animals/fish/Hurt.png",
+            "frames": [2, 0, 2]
+        },
+        {
+            "name": "die",
+            "file":"animals/fish/Death.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "dead",
+            "file":"animals/fish/Death.png",
+            "frames": [6, 5, 6]
+        }
+        ],
+        "groups": [
+            {
+            "name": "melee",
+            "group": [
+                {
+                    "name": "attack1",
+                    "file":"animals/fish/Attack.png",
+                    "frames": [6, 0, 6]
+                }
+            ]
+            }
+        ]
+    },
+    {
+        "type": "fish2",
+        "width": 48,
+        "height": 48,
+        "margin": [0, 0, 0, 0],
+        "list":  [
+        {
+            "name": "stand",
+            "file":"animals/fish2/Idle.png",
+            "frames": [4, 0, 1]
+        },
+        {
+            "name": "swim",
+            "file":"animals/fish2/Walk.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "walk",
+            "file":"animals/fish2/Walk.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "idle",
+            "file":"animals/fish2/Idle.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "hurt",
+            "file":"animals/fish2/Hurt.png",
+            "frames": [2, 0, 2]
+        },
+        {
+            "name": "die",
+            "file":"animals/fish2/Death.png",
+            "frames": [6, 0, 6]
+        },
+        {
+            "name": "dead",
+            "file":"animals/fish2/Death.png",
+            "frames": [6, 5, 6]
+        }
+        ],
+        "groups": [
+            {
+            "name": "melee",
+            "group": [
+                {
+                    "name": "attack1",
+                    "file":"animals/fish2/Attack.png",
+                    "frames": [6, 0, 6]
+                }
+            ]
+            }
+        ]
+    },
+    {
         "type": "deathstrike",
         "width": 48,
         "height": 64,
@@ -580,8 +950,32 @@
         "height": 6,
         "list":  [
             {
-                "name": "spell",
+                "name": "projectile",
                 "file":"projectiles/deceased_ball.png",
+                "frames": [1, 0, 1]
+            }
+        ]
+    },
+    {
+        "type": "crossbow",
+        "width": 16,
+        "height": 10,
+        "list":  [
+            {
+                "name": "projectile",
+                "file":"projectiles/Arrow.png",
+                "frames": [2, 0, 2]
+            }
+        ]
+    },
+    {
+        "type": "sling",
+        "width": 6,
+        "height": 6,
+        "list":  [
+            {
+                "name": "projectile",
+                "file":"projectiles/Rock.png",
                 "frames": [1, 0, 1]
             }
         ]

@@ -14,6 +14,12 @@
                         "text": "I'm running, grandpa!",
                         "code": 1,
                         "exit": true
+                    },
+                    {
+                        "text": "Thanks!",
+                        "code": 4,
+                        "comment": "Victory screen! ( code 4 )",
+                        "exit": true
                     }
                 ]
             },
@@ -48,6 +54,22 @@
                         "text": "Sorry, I have no coins for you. Step a side.",
                         "comment": "make hostile - BigBloated",
                         "code": 2,
+                        "exit": true
+                    },
+                    {
+                        "text": "OK!.",
+                        "goto": 4
+                    }
+                ]
+            },
+            {
+                "idx": 4,
+                "text": "I had one here. Where is it... Ah, here. Take it, fair price. Stronger than whiskey, cheaper than dust.",
+                "answers": [
+                    {
+                        "text": "Thanks!",
+                        "code": 4,
+                        "comment": "Victory screen! ( code 4 )",
                         "exit": true
                     }
                 ]

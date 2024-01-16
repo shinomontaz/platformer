@@ -19,6 +19,10 @@ type object struct {
 	dir           float64
 }
 
+// type List struct {
+// 	objs []*object
+// }
+
 var objs []*object
 
 func Init(g float64) {

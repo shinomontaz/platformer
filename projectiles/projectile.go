@@ -35,10 +35,10 @@ type projectile struct {
 	onkill OnKillHandler
 }
 
-func (p *projectile) Init() {
+func (p *projectile) Init(g float64) {
 	p.rect = pixel.R(p.pos.X-p.size/2, p.pos.Y-p.size/2, p.pos.X+p.size/2, p.pos.Y+p.size/2)
 	p.phys = common.NewPhys(p.rect,
-		//		common.WithGravity(grav),
+		common.WithGravity(g),
 		common.WithMass(p.mass),
 		common.WithRigidity(p.rigidity),
 		common.WithFriction(p.friction),
@@ -56,8 +56,7 @@ func (p *projectile) update(dt float64, objs, spec []common.Objecter) {
 	p.vel = p.phys.GetVel()
 
 	p.hb.Move(p.vel.Scaled(dt))
-
-	if (p.vel.X <= 1 && p.vel.X >= -1) && p.vel.Y < 1 {
+	if ((p.vel.X <= 1 && p.vel.X >= -1) && p.vel.Y < 1) || p.phys.IsGround() {
 		p.active = false
 		if p.onkill == nil {
 			return
@@ -72,7 +71,7 @@ func (p *projectile) update(dt float64, objs, spec []common.Objecter) {
 }
 
 func (p *projectile) draw(t pixel.Target) {
-	pic, sprect := p.anim.GetSprite("spell", p.animSpriteNum)
+	pic, sprect := p.anim.GetSprite("projectile", p.animSpriteNum)
 	p.sprite.Set(pic, sprect)
 
 	rect := p.phys.GetRect()

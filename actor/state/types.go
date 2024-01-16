@@ -24,6 +24,9 @@ const (
 	CAST
 	INTERACT
 	RESURRECT
+	FISHING
+	SWIM
+	ROLL
 )
 
 type Stater interface {
@@ -33,13 +36,15 @@ type Stater interface {
 	Listen(e int, v *pixel.Vec)
 	GetSprite() *pixel.Sprite
 	Busy() bool
+	SetWater(bool)
+	SetWaterResistant(bool)
 }
 
 type Actor interface {
 	SetState(int)
 	GetTransition(int) statemachine.Transition
 	Strike(ttl float64)
-	Cast()
+	UseSkill()
 	Interact()
 	AddSound(event string)
 	Inform(e int)

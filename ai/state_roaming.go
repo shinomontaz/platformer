@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"platformer/bindings"
 	"platformer/common"
-	"platformer/creatures"
 	"platformer/events"
 	"platformer/talks"
 
@@ -43,7 +42,10 @@ func (s *StateRoaming) Update(dt float64) {
 	if s.isagro {
 		pos := s.ai.obj.GetPos()
 
-		hero := creatures.GetHero()
+		hero := s.ai.obj.GetEnemy()
+		if hero == nil {
+			return
+		}
 		// look for hero
 		herohp := hero.GetHp()
 		heropos := hero.GetPos()
@@ -91,15 +93,13 @@ func (s *StateRoaming) Update(dt float64) {
 				b = bindings.Active.GetBinding(bindings.KeyAction["right"])
 			}
 			s.ai.obj.KeyAction(b)
-			//			s.ai.obj.Listen(events.WALK, v)
-			// } else {
-			// 	s.ai.obj.Listen(events.WALK, pixel.ZV)
 		}
 		s.groundrate = groundrate
 	}
 }
 
 func (s *StateRoaming) EventAction(e int) {
+	//	fmt.Println("StateRoaming event action", e)
 	if e == events.BUSY {
 		s.isbusy = true
 	}

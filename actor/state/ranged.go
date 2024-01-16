@@ -15,6 +15,8 @@ type Ranged struct {
 	sprite        *pixel.Sprite
 	variants      int
 	vel           float64
+	skillname     string
+	striked       bool
 }
 
 func NewRanged(a Actor, an Animater) *Ranged {
@@ -26,16 +28,25 @@ func NewRanged(a Actor, an Animater) *Ranged {
 			trs:   a.GetTransition(RANGED),
 		},
 		idleLimit: 3, // seconds before state transition
-		variants:  an.GetLen("cast"),
+		variants:  an.GetLen("ranged"),
 	}
-
 	return fs
 }
 
 func (s *Ranged) Start() {
+	s.striked = false
+	s.animSpriteNum = 0
 	s.a.Inform(events.BUSY)
 	s.time = 0.0
-	s.a.Cast()
+
+	skillname, err := s.a.GetSkillAttr("name")
+	if err != nil {
+		panic(err)
+	}
+	s.skillname = skillname.(string)
+	if s.skillname == "" {
+		s.skillname = "ranged"
+	}
 }
 
 func (s *Ranged) Listen(e int, v *pixel.Vec) {
@@ -45,7 +56,7 @@ func (s *Ranged) Listen(e int, v *pixel.Vec) {
 }
 
 func (s *Ranged) Update(dt float64) {
-	if s.time > s.idleLimit {
+	if (s.time > s.idleLimit) || (s.animSpriteNum > s.variants) {
 		if s.vel > 0 {
 			s.a.SetState(WALK)
 		} else {
@@ -55,14 +66,19 @@ func (s *Ranged) Update(dt float64) {
 	}
 
 	s.time += dt
-	s.animSpriteNum = int(math.Floor(s.time / 0.1))
+	s.animSpriteNum = int(math.Floor(s.time / 0.3))
+
+	if s.animSpriteNum == 3 && !s.striked {
+		s.a.UseSkill()
+		s.striked = true
+	}
 }
 
 func (s *Ranged) GetSprite() *pixel.Sprite {
 	if s.sprite == nil {
 		s.sprite = pixel.NewSprite(nil, pixel.Rect{})
 	}
-	pic, rect := s.anims.GetSprite("cast", s.animSpriteNum)
+	pic, rect := s.anims.GetSprite("ranged", s.animSpriteNum)
 	s.sprite.Set(pic, rect)
 
 	return s.sprite

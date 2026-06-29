@@ -45,7 +45,13 @@ func (s *Fall) Update(dt float64) {
 }
 
 func (s *Fall) Listen(e int, v *pixel.Vec) {
+	switch e {
+	case events.DOUBLEJUMP:
+		s.a.SetState(DOUBLEJUMP)
+	}
+
 	if v.Y == 0 || s.iswater {
+		s.a.Landed()
 		switch e {
 		case events.WALK:
 			s.a.SetState(WALK)
@@ -59,9 +65,6 @@ func (s *Fall) Listen(e int, v *pixel.Vec) {
 	}
 
 	switch {
-	case v.Y > 0:
-		s.a.SetState(JUMP)
-		return
 	case v.Len() == 0:
 		s.a.SetState(STAND)
 		return

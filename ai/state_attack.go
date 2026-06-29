@@ -2,7 +2,8 @@ package ai
 
 import (
 	"platformer/bindings"
-	"platformer/common"
+	"platformer/common/rand"
+
 	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
@@ -59,7 +60,7 @@ func (s *StateAttack) Update(dt float64) {
 		} else {
 			coeff = 0
 		}
-		dice := float64(s.counter) * common.GetRandFloat()
+		dice := float64(s.counter) * rand.Float64()
 		if dice > coeff {
 			s.ai.SetState(BUSTLE, s.lastpos)
 			s.counter = 0
@@ -93,7 +94,7 @@ func (s *StateAttack) Update(dt float64) {
 	currDist := l.Len()
 	if currDist < s.ai.attackskill.Min || currDist > s.ai.attackskill.Max {
 		// make decision - to step out or choose another attack skill
-		dice := common.GetRandFloat()
+		dice := rand.Float64()
 		if dice > 0.5 {
 			s.ai.SetState(CHOOSEATTACK, s.lastpos)
 			return

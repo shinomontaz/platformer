@@ -39,6 +39,10 @@ func New(code int, a Actor, an Animater) Stater {
 		st = NewFishing(a, an)
 	case ROLL:
 		st = NewRoll(a, an)
+	case SIT:
+		st = NewSit(a, an)
+	case DOUBLEJUMP:
+		st = NewDoubleJump(a, an)
 	}
 
 	return st

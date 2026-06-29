@@ -31,12 +31,15 @@ func newPlayer() *statemachine.Machine {
 	m.Set(state.MELEEMOVE, statemachine.Transition{})
 	m.Set(state.FISHING, statemachine.Transition{})
 	m.Set(state.ROLL, statemachine.Transition{})
+	m.Set(state.SIT, statemachine.Transition{})
+	m.Set(state.DOUBLEJUMP, statemachine.Transition{})
 
 	m.Set(state.STAND, statemachine.Transition{
 		List: map[int]int{
 			events.MELEE:     state.MELEE,
 			events.MELEEMOVE: state.MELEEMOVE,
 			events.INTERACT:  state.INTERACT,
+			events.SIT:       state.SIT,
 		},
 	})
 	m.Set(state.IDLE, statemachine.Transition{
@@ -44,6 +47,7 @@ func newPlayer() *statemachine.Machine {
 			events.MELEE:     state.MELEE,
 			events.MELEEMOVE: state.MELEEMOVE,
 			events.INTERACT:  state.INTERACT,
+			events.SIT:       state.SIT,
 		},
 	})
 	m.Set(state.WALK, statemachine.Transition{
@@ -134,6 +138,7 @@ func newMage() *statemachine.Machine {
 
 func newRanged() *statemachine.Machine {
 	m := statemachine.New()
+
 	m.Set(state.RANGED, statemachine.Transition{})
 	m.Set(state.STAND, statemachine.Transition{
 		List: map[int]int{

@@ -7,7 +7,7 @@ func runAction(code int, d *Dialog, a *actor.Actor) {
 	case 1:
 		actionSetInteraction(a)
 	case 2:
-		actionMakeHostile(a)
+		//		actionMakeHostile(a)
 	case 3:
 		actionPayCoin()
 	case 4:

@@ -4,6 +4,7 @@ import (
 	"math"
 	"platformer/activities"
 	"platformer/common"
+	"platformer/common/physics"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -13,7 +14,7 @@ type OnKillHandler func(pos pixel.Vec)
 type projectile struct {
 	active   bool
 	rect     pixel.Rect
-	phys     common.Phys
+	phys     physics.Phys
 	pos      pixel.Vec
 	force    pixel.Vec
 	vel      pixel.Vec
@@ -37,18 +38,18 @@ type projectile struct {
 
 func (p *projectile) Init(g float64) {
 	p.rect = pixel.R(p.pos.X-p.size/2, p.pos.Y-p.size/2, p.pos.X+p.size/2, p.pos.Y+p.size/2)
-	p.phys = common.NewPhys(p.rect,
-		common.WithGravity(g),
-		common.WithMass(p.mass),
-		common.WithRigidity(p.rigidity),
-		common.WithFriction(p.friction),
+	p.phys = physics.New(p.rect,
+		physics.WithGravity(g),
+		physics.WithMass(p.mass),
+		physics.WithRigidity(p.rigidity),
+		physics.WithFriction(p.friction),
 	)
 	p.active = true
 	p.sprite = pixel.NewSprite(nil, pixel.Rect{})
 	p.phys.Apply(p.force)
 }
 
-func (p *projectile) update(dt float64, objs, spec []common.Objecter) {
+func (p *projectile) update(dt float64, objs, spec []common.O) {
 	p.phys.Update(dt, objs)
 
 	p.time += dt

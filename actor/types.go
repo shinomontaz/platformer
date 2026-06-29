@@ -8,8 +8,9 @@ import (
 
 type Worlder interface {
 	GetGravity() float64
-	// AddStrike(owner *Actor, r pixel.Rect, power int, speed pixel.Vec)
-	AddSpell(owner *Actor, t pixel.Vec, spell string, objs []common.Objecter)
+	IsSee(from, to pixel.Vec) bool
+	AddSpell(owner *Actor, t pixel.Vec, spell string, objs []common.O)
+	GetCenter() pixel.Vec
 }
 
 type Stater interface {
@@ -29,3 +30,8 @@ type soundeffect struct {
 
 type OnKillHandler func(pos, vel pixel.Vec)
 type OnInteractHandler func(a *Actor)
+
+type object interface {
+	Rect() pixel.Rect
+	Id() int
+}

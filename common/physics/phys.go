@@ -1,9 +1,9 @@
-package common
+package physics
 
 import (
-	"fmt"
 	"image/color"
 	"math"
+	"platformer/common"
 
 	"github.com/lucasb-eyer/go-colorful"
 	"github.com/shinomontaz/pixel"
@@ -23,11 +23,11 @@ type Phys struct {
 	maxvelocity    float64
 
 	isground   bool
-	groundObj  Objecter
+	groundObj  common.O
 	groundPhys *Phys
 	color      color.Color
 
-	currObjs []Objecter
+	currObjs []common.O
 }
 
 type PhysOption func(p *Phys)
@@ -68,7 +68,7 @@ func WithMaxVel(max float64) PhysOption {
 	}
 }
 
-func NewPhys(r pixel.Rect, opts ...PhysOption) Phys {
+func New(r pixel.Rect, opts ...PhysOption) Phys {
 	p := Phys{
 		rect:           r,
 		color:          colorful.HappyColor(),
@@ -77,7 +77,6 @@ func NewPhys(r pixel.Rect, opts ...PhysOption) Phys {
 		friction:       0.01,
 		vel:            pixel.ZV,
 		mass:           1,
-		groundObj:      Objecter{},
 	}
 
 	for _, opt := range opts {
@@ -99,7 +98,7 @@ func (p *Phys) IsGround() bool {
 	return p.isground
 }
 
-func (p *Phys) GetGroundObject() Objecter {
+func (p *Phys) GetGroundObject() common.O {
 	return p.groundObj
 }
 
@@ -113,12 +112,9 @@ func (p *Phys) SetSpeed(newspeed pixel.Vec) {
 
 func (p *Phys) SetGroundPhys(phys *Phys) {
 	p.groundPhys = phys
-	if phys != nil {
-		fmt.Println("set ground phys with vel: ", phys.GetVel())
-	}
 }
 
-func (p *Phys) Update(dt float64, objs []Objecter) {
+func (p *Phys) Update(dt float64, objs []common.O) {
 	p.currObjs = objs
 
 	if p.vel.X != 0 && math.Abs(p.vel.X) >= dt*p.friction*p.gravity && p.isground {
@@ -158,7 +154,7 @@ func (p *Phys) Update(dt float64, objs []Objecter) {
 		p.isground = false
 		vec := p.vel.Scaled(dt)
 		ground, newvel, vec, groundObj := p.StepPrediction(vec) // p.vel and vec can be updated here
-		if groundObj.ID != p.groundObj.ID {
+		if groundObj != nil && (p.groundObj == nil || groundObj.Id() != p.groundObj.Id()) {
 			p.groundObj = groundObj
 		}
 		p.vel = newvel
@@ -179,10 +175,10 @@ func (p *Phys) Update(dt float64, objs []Objecter) {
 }
 
 // in: v - move vector, out - ground rate, new velocity, available move
-func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec, Objecter) {
+func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec, common.O) {
 	ground := 0.0
 	vel := p.vel
-	gObj := Objecter{}
+	var gObj common.O
 	broadbox := Broadbox(p.rect, v)
 	collisiontimes := []float64{}
 	if len(p.currObjs) == 0 {
@@ -197,6 +193,7 @@ func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec, Objec
 				r := math.Min(rect.Max.X, p.rect.Max.X)
 				ground = (r - l) / p.rect.W()
 				gObj = obj
+
 				continue
 			}
 			coltime, n := collide(p.rect, rect, v) // coltime in [0,1], where 1 means no collision
@@ -224,8 +221,8 @@ func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec, Objec
 				if n.X != 0 { // horisontal hit
 					if (ground >= 0 || n.Y > 0) && (vel.X != 0) && (rect.Max.Y < p.rect.Max.Y) && (rect.Max.Y-p.rect.Min.Y <= p.rect.H()/4) { // step on stair
 						vel.X *= 0.8
-						v = pixel.Vec{v.X, v.Y + rect.Max.Y - p.rect.Min.Y + p.rect.H()/4}
-						fmt.Println("horisontal step")
+						v = pixel.Vec{X: v.X, Y: v.Y + rect.Max.Y - p.rect.Min.Y + p.rect.H()/4}
+						//						fmt.Println("horisontal step")
 					} else {
 						vel.X = -vel.X * p.rigidity // horisontal bouncing
 						if ground != 0 {

@@ -3,7 +3,7 @@ package state
 import (
 	"fmt"
 	"math"
-	"platformer/common"
+	"platformer/common/rand"
 	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
@@ -48,7 +48,7 @@ func (s *Meleemove) Start() {
 	s.idleLimit = res.(float64)
 	variants := s.anims.GetGroupLen("meleemove")
 	if variants > 1 {
-		s.attackidx += int(math.Round(common.GetRandFloat() * float64(variants-1)))
+		s.attackidx += int(math.Round(rand.Float64() * float64(variants-1)))
 	}
 
 	s.striked = false

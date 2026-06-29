@@ -13,7 +13,7 @@
         "oldmargin": 8,
         "margin": 0,
         "mass": 10,
-        "jump": 42,
+        "jump": 30,
         "walk": 80,
         "run": 300,
         "body": "human",
@@ -49,18 +49,23 @@
                 "keys": ["down", "left"]
             },
             {
-                "type": "melee",
-                "name": "meleejump",
-                "speed": 250,
-                "hitbox": [10, -5, 20, 5],
-                "keys": ["ctrl", "left"]
+                "type": "move",
+                "name": "sit",
+                "keys": ["down"]
             },
             {
                 "type": "melee",
                 "name": "meleejump",
                 "speed": 250,
                 "hitbox": [10, -5, 20, 5],
-                "keys": ["ctrl", "right"]
+                "keys": ["ctrl", "up", "left"]
+            },
+            {
+                "type": "melee",
+                "name": "meleejump",
+                "speed": 250,
+                "hitbox": [10, -5, 20, 5],
+                "keys": ["ctrl", "up", "right"]
             }
         ]
     },

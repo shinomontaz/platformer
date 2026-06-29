@@ -2,7 +2,8 @@ package actor
 
 import (
 	"platformer/actor/statemachine"
-	"platformer/common"
+	"platformer/common/rand"
+
 	"platformer/config"
 	"platformer/particles"
 
@@ -119,9 +120,9 @@ func WithBody(body string) Option {
 	return func(a *Actor) {
 		if body == "human" {
 			a.onhit = func(pos, vel pixel.Vec) {
-				n := 10 * common.GetRandInt()
+				n := 10 * int(rand.Float64()*10.0)
 				for i := 0; i < n; i++ {
-					particles.AddBlood(pos, pixel.V(vel.X+common.GetRandFloat()*1000-500, common.GetRandFloat()*10000))
+					particles.AddBlood(pos, pixel.V(vel.X+rand.Float64()*1000-500, rand.Float64()*10000))
 				}
 			}
 		}

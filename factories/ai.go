@@ -5,7 +5,7 @@ import (
 	"platformer/ai"
 )
 
-func NewAi(t string, obj *actor.Actor, w Worlder) *ai.Ai {
+func NewAi(t string, obj *actor.Actor, w actor.Worlder) *ai.Ai {
 	switch t {
 	case "npc_roaming":
 		return ai.NewActiveNpc(obj, w)

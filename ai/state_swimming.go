@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 	"platformer/bindings"
-	"platformer/common"
+	"platformer/common/rand"
 
 	"github.com/shinomontaz/pixel/pixelgl"
 
@@ -38,7 +38,7 @@ func (s *StateSwimming) Update(dt float64) {
 		if s.leftright != 0 {
 			s.leftright = 0
 		} else {
-			s.leftright = float64(common.GetRandInt() - 5)
+			s.leftright = float64(int(rand.Float64()*10.0) - 5)
 		}
 		s.timer = 0
 	}

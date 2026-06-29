@@ -2,6 +2,7 @@ package particles
 
 import (
 	"platformer/common"
+	"platformer/common/rand"
 
 	"github.com/shinomontaz/pixel"
 	"github.com/shinomontaz/pixel/pixelgl"
@@ -48,9 +49,9 @@ func SetGravity(g float64) {
 }
 
 func AddBlood(pos, f pixel.Vec) {
-	r := 175 + common.GetRandInt()*5
-	g := 10 + common.GetRandInt()*2
-	b := 10 + common.GetRandInt()*2
+	r := 175 + int(rand.Float64()*10.0)*5
+	g := 10 + int(rand.Float64()*10.0)*2
+	b := 10 + int(rand.Float64()*10.0)*2
 	a := 255
 	//	col := colornames.Red
 
@@ -66,9 +67,9 @@ func AddBlood(pos, f pixel.Vec) {
 		active:   true,
 		color:    col,
 		pos:      pos,
-		ttl:      2*common.GetRandFloat() + 1,
+		ttl:      2*rand.Float64() + 1,
 		force:    f,
-		size:     1 + 3*common.GetRandFloat(),
+		size:     1 + 3*rand.Float64(),
 		mass:     0.1,
 		rigidity: 0.1,
 		friction: 1,
@@ -77,7 +78,7 @@ func AddBlood(pos, f pixel.Vec) {
 	particles[idx] = p
 }
 
-func Update(dt float64, objs []common.Objecter) {
+func Update(dt float64, objs []common.O) {
 	batch.Clear()
 	sprite := pixel.NewSprite(canvas, pixel.R(0, 0, 1, 1))
 	for i := range particles {

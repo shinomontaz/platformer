@@ -4,7 +4,6 @@ import (
 	"github.com/shinomontaz/pixel"
 
 	"platformer/activities"
-	"platformer/actor"
 	"platformer/common"
 )
 
@@ -30,11 +29,11 @@ func (l *List) AddEnemy(enemy common.Actorer) {
 	l.enemies = append(l.enemies, enemy)
 }
 
-func (l *List) AddNpc(npc *actor.Actor) {
+func (l *List) AddNpc(npc common.Actorer) {
 	l.npcs = append(l.npcs, npc)
 }
 
-func (l *List) DeleteNpc(npc *actor.Actor) {
+func (l *List) DeleteNpc(npc common.Actorer) {
 	i := 0
 	for _, n := range l.npcs {
 		if n == npc {
@@ -54,7 +53,7 @@ func (l *List) SetHero(h common.Actorer) {
 	l.hero = h
 }
 
-func (l *List) Update(dt float64, visiblePhys, visibleSpec []common.Objecter) {
+func (l *List) Update(dt float64, visiblePhys, visibleSpec []common.O) {
 
 	if l.hero != nil {
 		l.hero.Update(dt, visiblePhys)

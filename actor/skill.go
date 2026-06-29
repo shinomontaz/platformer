@@ -18,6 +18,7 @@ var ActionSkillMap = map[string]int{
 	"ranged":    events.RANGED,
 	"roll":      events.ROLL,
 	"cast":      events.CAST,
+	"sit":       events.SIT,
 }
 
 type Skill struct {

@@ -2,12 +2,12 @@ package actor
 
 import (
 	"errors"
-	"fmt"
 	"math"
 	"platformer/bindings"
 	"platformer/common"
+	"platformer/common/physics"
+	"platformer/common/rand"
 	"platformer/events"
-	"platformer/objects"
 	"platformer/projectiles"
 	"platformer/sound"
 
@@ -30,10 +30,9 @@ const (
 var counter int
 
 type Actor struct {
-	id        int
-	enemy     *Actor // enemy
-	phys      common.Phys
-	groundObj common.Objecter
+	id    int
+	enemy *Actor // enemy
+	phys  physics.Phys
 
 	action int
 	state  Stater
@@ -43,17 +42,18 @@ type Actor struct {
 
 	rect pixel.Rect
 
-	animdir   float64
-	anim      common.Animater
-	sprite    *pixel.Sprite
-	dir       float64
-	vel       pixel.Vec
-	runspeed  float64
-	walkspeed float64
-	grav      float64
-	jumpforce float64
-	mass      float64
-	isShift   bool
+	animdir        float64
+	anim           common.Animater
+	sprite         *pixel.Sprite
+	dir            float64
+	vel            pixel.Vec
+	runspeed       float64
+	walkspeed      float64
+	grav           float64
+	jumpforce      float64
+	mass           float64
+	isShift        bool
+	isDoubleJumped bool
 
 	sm *statemachine.Machine
 	w  Worlder
@@ -72,9 +72,9 @@ type Actor struct {
 	skills       []*Skill
 	skillmap     map[int]int // map of keyaction sum (as ints) to skills (indices in skills list). we can do sum as unique key duw to skill id definition: powers of 2
 	activeSkill  *Skill
-	currObjs     []common.Objecter
 	phrasesClass string
 	score        int
+	currObjs     []common.O
 
 	//	onkill     OnKillHandler
 	onkill []OnKillHandler
@@ -95,21 +95,20 @@ func Init(l *common.Loader) {
 func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Actor {
 	counter++
 	a := &Actor{
-		id:        counter,
-		anim:      anim,
-		rect:      rect,
-		dir:       1,
-		animdir:   1,
-		vel:       pixel.ZV,
-		grav:      w.GetGravity(),
-		w:         w,
-		mass:      1,
-		sounds:    make(map[string]soundeffect),
-		esbrs:     make([]common.EventSubscriber, 0),
-		skills:    make([]*Skill, 0),
-		skillmap:  make(map[int]int),
-		groundObj: common.Objecter{},
-		onkill:    make([]OnKillHandler, 0),
+		id:       counter,
+		anim:     anim,
+		rect:     rect,
+		dir:      1,
+		animdir:  1,
+		vel:      pixel.ZV,
+		grav:     w.GetGravity(),
+		w:        w,
+		mass:     1,
+		sounds:   make(map[string]soundeffect),
+		esbrs:    make([]common.EventSubscriber, 0),
+		skills:   make([]*Skill, 0),
+		skillmap: make(map[int]int),
+		onkill:   make([]OnKillHandler, 0),
 	}
 
 	for _, opt := range opts { // skills inited here as well
@@ -125,9 +124,9 @@ func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Acto
 		a.skillmap[sum] = idx
 	}
 
-	p := common.NewPhys(rect,
-		common.WithGravity(a.grav),
-		common.WithMass(a.mass),
+	p := physics.New(rect,
+		physics.WithGravity(a.grav),
+		physics.WithMass(a.mass),
 	) // TODO does we really need phys to know run and walk speeds?
 	a.phys = p
 
@@ -230,16 +229,11 @@ func (a *Actor) KeyAction(key pixelgl.Button) {
 		a.isShift = true
 	}
 
-	if action == bindings.UP && a.state.GetId() != state.JUMP {
-		multiplier := 0.5
-		if math.Abs(a.vel.X) > a.walkspeed || a.iswater {
-			multiplier = 1
-		}
-		a.appliedForce.Y = a.grav * (a.jumpforce + float64(a.strength) - a.mass) * multiplier
+	if action == bindings.UP && !a.isDoubleJumped {
+		a.appliedForce.Y = a.grav * (a.jumpforce + float64(a.strength) - a.mass)
 	}
 
 	if action == bindings.DOWN {
-		fmt.Println("key down")
 		a.appliedForce.Y = -a.grav * a.jumpforce * 10
 	}
 }
@@ -266,7 +260,12 @@ func (a *Actor) SetVel(v pixel.Vec) {
 	a.phys.SetSpeed(a.vel)
 }
 
-func (a *Actor) Update(dt float64, objs []common.Objecter) {
+func (a *Actor) SetForce(f pixel.Vec) {
+	a.appliedForce.X += f.X
+	a.appliedForce.Y += f.Y
+}
+
+func (a *Actor) Update(dt float64, objs []common.O) {
 	a.currObjs = objs
 	if a.appliedForce.X == 0 && math.Abs(a.vel.X) > a.walkspeed*0.1 && a.state.GetId() != state.MELEEMOVE { // active slowing in case of no active force applied
 		a.appliedForce.X = -a.walkspeed
@@ -286,19 +285,36 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 		}
 	}
 
-	a.phys.Apply(a.appliedForce)
-	a.phys.Update(dt, objs)
-	gdObj := a.phys.GetGroundObject()
-	if gdObj.ID != a.groundObj.ID {
-		a.groundObj = gdObj
-		a.phys.SetGroundPhys(objects.GetPhysById(gdObj.ID))
+	stId := a.state.GetId()
+	if stId == state.DOUBLEJUMP {
+		a.isDoubleJumped = true
+	}
+	if stId == state.STAND {
+		a.isDoubleJumped = false
+	}
+	if a.appliedForce.Y > 0 {
+		if (stId == state.JUMP || stId == state.FALL) && !a.isDoubleJumped {
+			a.action = events.DOUBLEJUMP
+		} else if stId == state.DOUBLEJUMP {
+			a.appliedForce.Y = 0
+		}
 	}
 
+	a.phys.Apply(a.appliedForce)
+	a.phys.Update(dt, objs)
+	// gdObj := a.phys.GetGroundObject()
+	// if gdObj.Id() != a.groundObj.Id() {
+	// 	a.groundObj = gdObj
+	// 	a.phys.SetGroundPhys(objects.GetPhysById(gdObj.ID))
+	// }
+
 	newspeed := a.phys.GetVel()
-	if math.Abs(newspeed.X) <= a.runspeed && math.Abs(newspeed.X) > a.walkspeed {
-		a.action = events.RUN
-	} else if math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed {
-		a.action = events.WALK
+	if a.action != events.DOUBLEJUMP {
+		if math.Abs(newspeed.X) <= a.runspeed && math.Abs(newspeed.X) > a.walkspeed {
+			a.action = events.RUN
+		} else if math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed {
+			a.action = events.WALK
+		}
 	}
 	a.vel = newspeed
 
@@ -319,28 +335,32 @@ func (a *Actor) Update(dt float64, objs []common.Objecter) {
 	a.isShift = false
 }
 
-func (a *Actor) UpdateSpecial(dt float64, objs []common.Objecter) {
+func (a *Actor) Landed() {
+	a.isDoubleJumped = false
+}
+
+func (a *Actor) UpdateSpecial(dt float64, objs []common.O) {
 	force := a.appliedForce
 
 	for _, o := range objs {
-		isIntercects := a.rect.Intersects(o.R)
+		isIntercects := a.rect.Intersects(o.Rect())
 		if !isIntercects { // no collision
 			continue
 		}
 
-		part := a.rect.Intersect(o.R)
+		part := a.rect.Intersect(o.Rect())
 
-		if o.Type == common.WATER {
-			ratio := part.H() / a.rect.H()
-			if ratio == 1 && !a.iswater {
-				a.iswater = true
-				a.state.SetWater(true)
-				if !a.iswaterresistant && a.hp > 0 {
-					a.Kill()
-				} else {
-					a.SetState(state.SWIM)
-				}
+		//		if o.Type() == common.WATER {
+		ratio := part.H() / a.rect.H()
+		if ratio == 1 && !a.iswater {
+			a.iswater = true
+			a.state.SetWater(true)
+			if !a.iswaterresistant && a.hp > 0 {
+				a.Kill()
+			} else {
+				a.SetState(state.SWIM)
 			}
+			//			}
 
 			force.Y += a.grav * (ratio + 0.1) // archimedus
 			a.phys.SetSpeed(a.vel.Scaled(0.92))
@@ -439,7 +459,6 @@ func (a *Actor) UseSkill() {
 		a.w.AddSpell(a, a.target, a.activeSkill.Name, a.currObjs)
 	}
 	if a.activeSkill.Type == "ranged" {
-		//t string, strength float64, owner common.Actorer
 		projectiles.AddProjectile(a.activeSkill.Name, 1, a.dir, a)
 	}
 }
@@ -463,7 +482,7 @@ func (a *Actor) GetEnemy() *Actor {
 func (a *Actor) AddSound(event string) {
 	if s, ok := a.sounds[event]; ok {
 		// select random sound
-		i := int(math.Round(common.GetRandFloat() * float64(len(s.List)-1)))
+		i := int(math.Round(rand.Float64() * float64(len(s.List)-1)))
 		sound.AddEffect(s.List[i], a.rect.Center())
 	}
 }
@@ -515,7 +534,7 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 
 func (a *Actor) Kill() {
 	a.hp = 0
-	if a.iswater {
+	if a.iswater && a.states[state.DEADSUNK] != nil {
 		a.SetState(state.DEADSUNK)
 	} else {
 		a.SetState(state.DEAD)
@@ -538,10 +557,10 @@ func (a *Actor) OnKill() {
 		return
 	}
 	// create random velocity vec
-	rnd := float64(common.GetRandInt() - 5)
+	rnd := float64(int(rand.Float64()*10.0) - 5)
 	y := 100.0 * rnd
 	for _, okh := range a.onkill {
-		okh(a.rect.Center(), pixel.V(30*float64(common.GetRandInt()-5), y))
+		okh(a.rect.Center(), pixel.V(30*float64(int(rand.Float64()*10.0)-5), y))
 	}
 }
 

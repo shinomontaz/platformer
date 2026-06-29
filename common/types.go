@@ -19,7 +19,7 @@ type EventSubscriber interface {
 }
 
 const (
-	GROUND = iota
+	GROUND int = iota
 	BARRIER
 	WATER
 	OBJECT
@@ -36,14 +36,14 @@ type SimpleObjecter interface {
 	GetRect() pixel.Rect
 	GetPos() pixel.Vec
 	GetId() int
-	Update(dt float64, visiblePhys []Objecter)
+	Update(dt float64, visiblePhys []O)
 	Draw(t pixel.Target)
 	IsGround() bool
 }
 
 type SpecialObjecter interface {
 	SimpleObjecter
-	UpdateSpecial(dt float64, visibleSpec []Objecter)
+	UpdateSpecial(dt float64, visibleSpec []O)
 }
 
 type Interactor interface {
@@ -57,3 +57,10 @@ type Actorer interface {
 	Hit(vec pixel.Vec, power int)
 	GetHp() int
 }
+
+type O interface {
+	Rect() pixel.Rect
+	Id() int
+}
+
+type Objecter = O

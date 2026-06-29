@@ -1,7 +1,9 @@
 package state
 
 import (
+	"fmt"
 	"math"
+	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -29,7 +31,8 @@ func NewJump(a Actor, an Animater) *Jump {
 }
 
 func (s *Jump) Start() {
-	//		s.a.Inform(events.BUSY)
+	fmt.Println("state jump")
+	//	s.a.Inform(events.BUSY)
 	s.jumpLimit = 1.0
 	s.animSpriteNum = 0
 	s.counter = 0
@@ -45,20 +48,20 @@ func (s *Jump) Update(dt float64) {
 }
 
 func (s *Jump) Listen(e int, v *pixel.Vec) {
-	// switch e {
-	// case events.WALK:
-	// 	s.a.SetState(WALK)
-	// 	return
-	// case events.RUN:
-	// 	s.a.SetState(RUN)
-	// 	return
-	// }
+	switch e {
+	case events.DOUBLEJUMP:
+		s.a.SetState(DOUBLEJUMP)
+		// case events.WALK:
+		// 	s.a.SetState(WALK)
+		// 	return
+		// case events.RUN:
+		// 	s.a.SetState(RUN)
+		// 	return
+	}
 
 	switch {
-	case v.Y < 0 && (!s.iswater || (s.iswater && !s.iswaterresistant)):
+	case v.Y <= 0 && (!s.iswater || (s.iswater && !s.iswaterresistant)):
 		s.a.SetState(FALL)
-	case v.Len() == 0:
-		s.a.SetState(STAND)
 	}
 
 	s.checkTransitions(e, v)

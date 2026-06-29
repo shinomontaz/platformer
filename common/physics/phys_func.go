@@ -1,4 +1,4 @@
-package common
+package physics
 
 import (
 	"math"
@@ -7,7 +7,7 @@ import (
 )
 
 // sweptAABB implemented here
-//Box b1, Box b2, float& normalx, float& normaly
+// Box b1, Box b2, float& normalx, float& normaly
 func collide(p, q pixel.Rect, v pixel.Vec) (float64, pixel.Vec) {
 	n := pixel.ZV
 	var xInvEntry, yInvEntry, xInvExit, yInvExit float64

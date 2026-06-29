@@ -95,6 +95,16 @@
             "name": "roll",
             "file":"characters/graverobber/GraveRobber_roll.png",
             "frames": [6, 0, 6]
+        },
+        {
+            "name": "sit",
+            "file":"characters/graverobber/GraveRobber_sitdown.png",
+            "frames": [4, 0, 3]
+        },
+        {
+            "name": "doublejump",
+            "file":"characters/graverobber/GraveRobber_doublejump.png",
+            "frames": [6, 0, 4]
         }
         ],
         "groups": [

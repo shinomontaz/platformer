@@ -3,7 +3,7 @@ package ai
 import (
 	"fmt"
 	"platformer/bindings"
-	"platformer/common"
+	"platformer/common/rand"
 	"platformer/events"
 	"platformer/talks"
 
@@ -76,7 +76,7 @@ func (s *StateRoaming) Update(dt float64) {
 		if s.dir != 0 {
 			s.dir = 0
 		} else {
-			s.dir = float64(common.GetRandInt() - 5)
+			s.dir = float64(int(rand.Float64()*10.0) - 5)
 		}
 		s.timer = 0
 	}

@@ -81,7 +81,7 @@ func Remove(l common.SimpleObjecter) {
 	list = list[:i]
 }
 
-func Update(dt float64, visiblePhys []common.Objecter) {
+func Update(dt float64, visiblePhys []common.O) {
 	for _, l := range list {
 		l.Update(dt, visiblePhys)
 	}

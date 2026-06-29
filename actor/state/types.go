@@ -13,6 +13,7 @@ const (
 	WALK
 	RUN
 	JUMP
+	DOUBLEJUMP
 	FALL
 	HIT
 	DEAD
@@ -27,6 +28,7 @@ const (
 	FISHING
 	SWIM
 	ROLL
+	SIT
 )
 
 type Stater interface {
@@ -52,6 +54,8 @@ type Actor interface {
 	OnKill()
 	GetDir() int
 	SetVel(v pixel.Vec)
+	SetForce(f pixel.Vec)
+	Landed()
 }
 
 type Animater interface {

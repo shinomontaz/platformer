@@ -2,14 +2,14 @@ package particles
 
 import (
 	"platformer/common"
+	"platformer/common/physics"
 
 	"github.com/shinomontaz/pixel"
 )
 
 type particle struct {
-	phys   common.Phys
-	active bool
-	//	color  color.Color
+	phys     physics.Phys
+	active   bool
 	color    uint32
 	ttl      float64
 	pos      pixel.Vec
@@ -22,16 +22,16 @@ type particle struct {
 
 func (p *particle) Init() {
 	rect := pixel.R(p.pos.X-p.size/2, p.pos.Y-p.size/2, p.pos.X+p.size/2, p.pos.Y+p.size/2)
-	p.phys = common.NewPhys(rect,
-		common.WithGravity(grav),
-		common.WithMass(p.mass),
-		common.WithRigidity(p.rigidity),
-		common.WithFriction(p.friction),
+	p.phys = physics.New(rect,
+		physics.WithGravity(grav),
+		physics.WithMass(p.mass),
+		physics.WithRigidity(p.rigidity),
+		physics.WithFriction(p.friction),
 	)
 	p.phys.Apply(p.force)
 }
 
-func (p *particle) update(dt float64, objs []common.Objecter) {
+func (p *particle) update(dt float64, objs []common.O) {
 	if p.ttl <= 0 {
 		p.active = false
 		return

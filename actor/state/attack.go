@@ -3,7 +3,7 @@ package state
 import (
 	"fmt"
 	"math"
-	"platformer/common"
+	"platformer/common/rand"
 	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
@@ -38,7 +38,7 @@ func (s *Attack) Start() {
 	s.time = 0.0
 	s.attackidx = 1
 	if s.variants > 1 {
-		s.attackidx += int(math.Round(common.GetRandFloat() * float64(s.variants-1)))
+		s.attackidx += int(math.Round(rand.Float64() * float64(s.variants-1)))
 	}
 }
 

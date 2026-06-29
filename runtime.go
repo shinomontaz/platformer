@@ -7,6 +7,7 @@ import (
 	"os"
 	"platformer/bindings"
 	"platformer/common"
+	"platformer/common/rand"
 	"platformer/config"
 	"platformer/sound"
 
@@ -35,6 +36,7 @@ type StartConfig struct {
 // get window mode, sound volumes and menu/game mode
 // currBounds
 func initRuntime() {
+	rand.Init(1 << 23)
 
 	var byteValue []byte
 	fconfig, err := os.Open("start.cfg")

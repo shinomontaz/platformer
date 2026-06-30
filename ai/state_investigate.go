@@ -1,13 +1,13 @@
 package ai
 
 import (
+	"math"
 	"platformer/actor"
 	"platformer/bindings"
 	"platformer/events"
 	"sort"
 
 	"github.com/shinomontaz/pixel"
-	"github.com/shinomontaz/pixel/pixelgl"
 )
 
 type StateInvestigate struct {
@@ -52,7 +52,6 @@ func (s *StateInvestigate) Update(dt float64) {
 	if hero == nil {
 		return
 	}
-	// look for hero
 	herohp := hero.GetHp()
 	heropos := hero.GetPos()
 	dir := s.ai.obj.GetDir()
@@ -60,27 +59,36 @@ func (s *StateInvestigate) Update(dt float64) {
 	currDist := l.Len()
 
 	if ((heropos.X < pos.X && dir < 0) || (heropos.X > pos.X && dir > 0)) && currDist < s.skills[len(s.skills)-1].Max {
-		// check if we see hero
 		if s.w.IsSee(pos, heropos) && herohp > 0 {
 			s.ai.SetState(CHOOSEATTACK, heropos)
 			return
 		}
 	}
 
-	if s.target.X-pos.X < 5 {
+	// Дошли до цели — стоим и ждём, не ходим (иначе осцилляция вокруг target)
+	if math.Abs(s.target.X-pos.X) < 10 {
 		s.timer += dt
-	}
-	if s.timer > s.timeout {
-		s.ai.SetState(IDLE, pixel.ZV)
 	} else {
-		b := pixelgl.KeyUnknown
-		if s.target.X > pos.X {
-			b = bindings.Active.GetBinding(bindings.KeyAction["right"])
-		} else {
-			b = bindings.Active.GetBinding(bindings.KeyAction["left"])
+		// Идём к цели с проверкой безопасности
+		moveDir := 1.0
+		if s.target.X < pos.X {
+			moveDir = -1.0
 		}
 
-		s.ai.obj.KeyAction(b)
+		v := pixel.V(moveDir, 0)
+		groundrate := s.ai.obj.StepPrediction(events.WALK, v)
+
+		if groundrate > 0.5 {
+			b := bindings.Active.GetBinding(bindings.KeyAction["right"])
+			if moveDir < 0 {
+				b = bindings.Active.GetBinding(bindings.KeyAction["left"])
+			}
+			s.ai.obj.KeyAction(b)
+		}
+	}
+
+	if s.timer > s.timeout {
+		s.ai.SetState(s.ai.homeState, pixel.ZV)
 	}
 }
 

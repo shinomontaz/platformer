@@ -13,4 +13,14 @@ const (
 	BUSTLE
 	FISHING
 	SWIMMING
+	HURTED
+)
+
+type aiReactionType int
+
+const (
+	HURTED_NONE aiReactionType = iota
+	HURTED_FLEE
+	HURTED_COUNTER
+	HURTED_RANDOM
 )

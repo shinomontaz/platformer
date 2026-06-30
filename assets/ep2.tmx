@@ -814,7 +814,7 @@
     <property name="ai" value="enemy_idle"/>
    </properties>
   </object>
-  <object id="224" name="goblin_range2" class="enemy" x="1828.5" y="856.167" width="51" height="61">
+  <object id="224" name="goblin_range2" class="enemy" x="1754.5" y="862.167" width="51" height="61">
    <properties>
     <property name="ai" value="enemy_idle"/>
    </properties>

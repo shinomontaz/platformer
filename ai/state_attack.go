@@ -2,7 +2,6 @@ package ai
 
 import (
 	"platformer/bindings"
-	"platformer/common/rand"
 
 	"platformer/events"
 
@@ -15,7 +14,6 @@ type StateAttack struct {
 	ai          *Ai
 	timer       float64
 	nonseelimit float64
-	counter     int
 	lastpos     pixel.Vec
 	vec         pixel.Vec
 	isbusy      bool
@@ -47,26 +45,11 @@ func (s *StateAttack) Update(dt float64) {
 
 	herohp := hero.GetHp()
 	if herohp <= 0 {
-		s.ai.SetState(IDLE, s.lastpos)
+		s.ai.SetState(s.ai.homeState, s.lastpos)
 		return
 	}
 	heropos := hero.GetPos()
 	s.lastpos = heropos
-
-	if s.counter > 0 { // here we made decision to switch to state BUSTLE with some probability - after strike
-		coeff := 0.25
-		if s.ai.attackskill.Type == "melee" {
-			coeff = 0.5
-		} else {
-			coeff = 0
-		}
-		dice := float64(s.counter) * rand.Float64()
-		if dice > coeff {
-			s.ai.SetState(BUSTLE, s.lastpos)
-			s.counter = 0
-			return
-		}
-	}
 
 	pos := s.ai.obj.GetPos()
 	dir := s.ai.obj.GetDir()
@@ -79,6 +62,7 @@ func (s *StateAttack) Update(dt float64) {
 			if s.timer > s.nonseelimit {
 				s.ai.SetState(INVESTIGATE, s.lastpos)
 			}
+
 			return
 		} else {
 			//			s.lastpos = heropos
@@ -86,20 +70,21 @@ func (s *StateAttack) Update(dt float64) {
 		}
 	}
 
-	s.vec = pixel.Vec{-1, 0}
+	s.vec = pixel.V(-1, 0)
 	if s.lastpos.X > pos.X {
-		s.vec = pixel.Vec{1, 0}
+		s.vec = pixel.V(1, 0)
 	}
 	l := pixel.L(pos, heropos)
 	currDist := l.Len()
-	if currDist < s.ai.attackskill.Min || currDist > s.ai.attackskill.Max {
-		// make decision - to step out or choose another attack skill
-		dice := rand.Float64()
-		if dice > 0.5 {
-			s.ai.SetState(CHOOSEATTACK, s.lastpos)
-			return
-		}
+	if currDist < s.ai.attackskill.Min {
+		s.ai.SetState(CHOOSEATTACK, s.lastpos)
+
+		return
+	}
+
+	if currDist > s.ai.attackskill.Max {
 		s.ai.SetState(INVESTIGATE, s.lastpos)
+
 		return
 	}
 
@@ -109,16 +94,12 @@ func (s *StateAttack) Update(dt float64) {
 	for _, k := range s.ai.attackskill.Keys {
 		b := bindings.Active.GetBinding(k)
 		s.ai.obj.KeyAction(b)
-		//		fmt.Println("s.ai.obj.KeyAction(b)", b)
 	}
-
-	s.counter++
 }
 
 func (s *StateAttack) Start(poi pixel.Vec) {
 	s.lastpos = poi
 	s.timer = 0
-	s.counter = 0
 }
 
 func (s *StateAttack) EventAction(e int) {

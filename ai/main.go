@@ -2,6 +2,7 @@ package ai
 
 import (
 	"platformer/actor"
+	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -20,14 +21,17 @@ type Ai struct {
 	states      map[int]Stater
 	id          int
 	attackskill *actor.Skill
+	homeState   int // состояние куда возвращаться после INVESTIGATE (IDLE, PATROL, ROAMING)
+	name        string
 }
 
 func NewCalmEnemy(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
-		obj:    obj,
-		w:      w,
-		states: make(map[int]Stater),
-		id:     counter,
+		obj:       obj,
+		w:         w,
+		states:    make(map[int]Stater),
+		id:        counter,
+		homeState: IDLE,
 	}
 
 	sIdle := NewIdle(a, a.w, true)
@@ -38,9 +42,6 @@ func NewCalmEnemy(obj *actor.Actor, w Worlder) *Ai {
 
 	sAttack := NewAttack(a, a.w)
 	a.states[ATTACK] = sAttack
-
-	sBustle := NewBustle(a, a.w)
-	a.states[BUSTLE] = sBustle
 
 	sInvestigate := NewInvestigate(a, a.w)
 	a.states[INVESTIGATE] = sInvestigate
@@ -56,10 +57,11 @@ func NewCalmEnemy(obj *actor.Actor, w Worlder) *Ai {
 
 func NewAgressiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
-		obj:    obj,
-		w:      w,
-		states: make(map[int]Stater),
-		id:     counter,
+		obj:       obj,
+		w:         w,
+		states:    make(map[int]Stater),
+		id:        counter,
+		homeState: IDLE,
 	}
 
 	sRoaming := NewRoaming(a, a.w, true)
@@ -71,11 +73,11 @@ func NewAgressiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	sAttack := NewAttack(a, a.w)
 	a.states[ATTACK] = sAttack
 
-	sBustle := NewBustle(a, a.w)
-	a.states[BUSTLE] = sBustle
-
 	sIdle := NewIdle(a, a.w, true)
 	a.states[IDLE] = sIdle
+
+	sHurted := NewHurted(a, a.w, HURTED_NONE)
+	a.states[HURTED] = sHurted
 
 	sInvestigate := NewInvestigate(a, a.w)
 	a.states[INVESTIGATE] = sInvestigate
@@ -96,10 +98,11 @@ func NewAgressiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 
 func NewActiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
-		obj:    obj,
-		w:      w,
-		states: make(map[int]Stater),
-		id:     counter,
+		obj:       obj,
+		w:         w,
+		states:    make(map[int]Stater),
+		id:        counter,
+		homeState: ROAMING,
 	}
 
 	sRoaming := NewRoaming(a, a.w, true)
@@ -111,9 +114,6 @@ func NewActiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	sAttack := NewAttack(a, a.w)
 	a.states[ATTACK] = sAttack
 
-	sBustle := NewBustle(a, a.w)
-	a.states[BUSTLE] = sBustle
-
 	sIdle := NewIdle(a, a.w, true)
 	a.states[IDLE] = sIdle
 
@@ -121,6 +121,36 @@ func NewActiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	a.states[INVESTIGATE] = sInvestigate
 
 	a.SetState(ROAMING, pixel.ZV)
+
+	list[obj] = a
+	obj.AddEventListener(a)
+
+	counter++
+	return a
+}
+
+func NewPatrolEnemy(obj *actor.Actor, w Worlder, patrolRange float64) *Ai {
+	a := &Ai{
+		obj:       obj,
+		w:         w,
+		states:    make(map[int]Stater),
+		id:        counter,
+		homeState: PATROL,
+	}
+
+	sPatrol := NewPatrol(a, a.w, patrolRange)
+	a.states[PATROL] = sPatrol
+
+	sChooseAttack := NewChooseAttack(a, a.w)
+	a.states[CHOOSEATTACK] = sChooseAttack
+
+	sAttack := NewAttack(a, a.w)
+	a.states[ATTACK] = sAttack
+
+	sInvestigate := NewInvestigate(a, a.w)
+	a.states[INVESTIGATE] = sInvestigate
+
+	a.SetState(PATROL, pixel.ZV)
 
 	list[obj] = a
 	obj.AddEventListener(a)
@@ -247,5 +277,13 @@ func (a *Ai) GetPos() pixel.Vec {
 }
 
 func (a *Ai) EventAction(e int) {
+	if e == events.HIT {
+		if _, ok := a.states[HURTED]; ok {
+			a.SetState(HURTED, pixel.ZV)
+
+			return
+		}
+	}
+
 	a.state.EventAction(e)
 }

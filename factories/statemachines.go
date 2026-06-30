@@ -21,7 +21,6 @@ func Machine(name string) *statemachine.Machine {
 	default:
 		return newEnemy()
 	}
-	return nil
 }
 
 func newPlayer() *statemachine.Machine {

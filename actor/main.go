@@ -524,9 +524,12 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 	a.hp -= power
 	if a.hp <= 0 {
 		a.Kill()
+
 		return
 	}
+
 	a.SetState(state.HIT)
+	a.Inform(events.HIT)
 	if a.onhit != nil {
 		a.onhit(a.rect.Center(), v)
 	}

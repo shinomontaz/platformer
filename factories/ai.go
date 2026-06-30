@@ -5,6 +5,14 @@ import (
 	"platformer/ai"
 )
 
+type AiOption func(*ai.Ai)
+
+func WithName(name string) AiOption {
+	return func(a *ai.Ai) {
+		a.name = name
+	}
+}
+
 func NewAi(t string, obj *actor.Actor, w actor.Worlder) *ai.Ai {
 	switch t {
 	case "npc_roaming":
@@ -15,6 +23,8 @@ func NewAi(t string, obj *actor.Actor, w actor.Worlder) *ai.Ai {
 		return ai.NewActiveEnemy(obj, w)
 	case "enemy_agressive":
 		return ai.NewAgressiveEnemy(obj, w)
+	case "enemy_patrol":
+		return ai.NewPatrolEnemy(obj, w, 150)
 	case "npc_fishing":
 		return ai.NewFishingNpc(obj, w)
 	case "npc_swimming":

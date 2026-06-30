@@ -3,6 +3,7 @@ package ai
 import (
 	"math"
 	"platformer/actor"
+	"platformer/bindings"
 	"platformer/common/rand"
 	"platformer/events"
 	"sort"
@@ -20,6 +21,9 @@ type StateChooseAttack struct {
 	isbusy      bool
 	skills      []*actor.Skill
 	skills2     []*actor.Skill
+
+	afterTimer  float64 // таймер после атаки
+	cooldownDur float64 // длительность паузы
 }
 
 func NewChooseAttack(ai *Ai, w Worlder) *StateChooseAttack {
@@ -31,7 +35,7 @@ func NewChooseAttack(ai *Ai, w Worlder) *StateChooseAttack {
 	}
 
 	skills := ai.obj.GetSkills()
-	cha.skills = make([]*actor.Skill, 0, len(skills))
+	cha.skills = make([]*actor.Skill, 0, len(skills)) // скилы по возрастанию макс дистанции
 	cha.skills2 = make([]*actor.Skill, 0, len(skills))
 
 	for _, sk := range skills {
@@ -53,87 +57,115 @@ func (s *StateChooseAttack) Update(dt float64) {
 		return
 	}
 
+	if s.afterTimer > 0 {
+		s.afterTimer -= dt
+
+		return
+	}
+
 	hero := s.ai.obj.GetEnemy()
 	if hero == nil {
 		return
 	}
 
-	if !hero.IsGround() {
-		return
-	}
-
-	heropos := s.lastpos //hero.GetPos()
+	heropos := hero.GetPos()
 	pos := s.ai.obj.GetPos()
 	dir := s.ai.obj.GetDir()
-	var isSee bool
+
+	// Проверяем видимость только если смотрим в сторону героя
 	if (heropos.X < pos.X && dir < 0) || (heropos.X > pos.X && dir > 0) {
-		isSee = s.w.IsSee(pos, heropos)
+		isSee := s.w.IsSee(pos, heropos)
 		if !isSee {
 			s.timer += dt
 			if s.timer > s.nonseelimit {
 				s.ai.SetState(INVESTIGATE, s.lastpos)
 			}
-			return // if not see do nothing, or
-		} else {
-			s.lastpos = heropos
-			s.timer = 0
+			return
 		}
+		s.lastpos = heropos
+		s.timer = 0
 	}
 
-	//	l := pixel.L(pos, heropos)
 	l := pos.X - heropos.X
-	currDist := math.Abs(l) //l.Len()
-	var choosed *actor.Skill
+	currDist := math.Abs(l)
+	maxRange := s.skills[len(s.skills)-1].Max
+	minRange := s.skills2[0].Min
 
-	if currDist > s.skills[len(s.skills)-1].Max {
+	// Слишком далеко — преследуем
+	if currDist > maxRange {
 		s.ai.SetState(INVESTIGATE, heropos)
+
 		return
-	} else if currDist < s.skills2[0].Min {
-		choosed = s.skills2[0]
-	} else {
-		for _, skill := range s.skills {
-			dir := float64(skill.GetDir())
-			if dir*l > 0 {
-				continue
-			}
-			if currDist < skill.Max && currDist > skill.Min {
-				if choosed != nil { // we already choosed some appropriate skill
-					var minWeightSkill *actor.Skill
-					var maxWeightSkill *actor.Skill
-					var w1, w2 int
-					if choosed.Weight > skill.Weight {
-						w1 = choosed.Weight
-						w2 = skill.Weight
-						minWeightSkill = skill
-						maxWeightSkill = choosed
-					} else {
-						w1 = skill.Weight
-						w2 = choosed.Weight
-						minWeightSkill = choosed
-						maxWeightSkill = skill
-					}
-					dice := rand.Float64() * float64(w1+w2)
-					if dice > float64(w1) {
-						choosed = minWeightSkill
-					} else {
-						choosed = maxWeightSkill
-					}
+	}
+
+	// Слишком близко — атакуем ближайшим скиллом
+	if currDist < minRange {
+		s.ai.attackskill = s.skills2[0]
+		s.ai.obj.SetSkill(s.ai.attackskill)
+		s.ai.SetState(ATTACK, heropos)
+
+		return
+	}
+
+	// В диапазоне — ищем подходящий скилл
+	var choosed *actor.Skill
+	for _, skill := range s.skills {
+		skillDir := float64(skill.GetDir())
+		if skillDir*l > 0 {
+			continue // скилл направлен в другую сторону
+		}
+		if currDist <= skill.Max && currDist >= skill.Min {
+			if choosed != nil {
+				// Выбираем по весу
+				var w1, w2 int
+				var minW, maxW *actor.Skill
+				if choosed.Weight > skill.Weight {
+					w1, w2 = choosed.Weight, skill.Weight
+					minW, maxW = skill, choosed
 				} else {
-					choosed = skill
+					w1, w2 = skill.Weight, choosed.Weight
+					minW, maxW = choosed, skill
 				}
+				dice := rand.Float64() * float64(w1+w2)
+				if dice > float64(w1) {
+					choosed = minW
+				} else {
+					choosed = maxW
+				}
+			} else {
+				choosed = skill
 			}
 		}
 	}
 
-	s.ai.attackskill = choosed
-	s.ai.obj.SetSkill(s.ai.attackskill)
-	//	fmt.Println("choosed attack skill", s.ai.attackskill, s.ai.obj.GetSkills())
-	s.ai.SetState(ATTACK, heropos)
+	if choosed != nil {
+		// Нашли скилл — атакуем
+		s.ai.attackskill = choosed
+		s.ai.obj.SetSkill(s.ai.attackskill)
+		s.ai.SetState(ATTACK, heropos)
+
+		return
+	}
+
+	// Скилл не найден в диапазоне — идём ближе к герою
+	// (дистанция между min и max скиллов, но ни один не подходит по направлению)
+	moveDir := -1.0
+	if heropos.X > pos.X {
+		moveDir = 1.0
+	}
+	v := pixel.V(moveDir, 0)
+	groundrate := s.ai.obj.StepPrediction(events.WALK, v)
+	if groundrate > 0.5 {
+		b := bindings.Active.GetBinding(bindings.KeyAction["right"])
+		if moveDir < 0 {
+			b = bindings.Active.GetBinding(bindings.KeyAction["left"])
+		}
+		s.ai.obj.KeyAction(b)
+	}
 }
 
 func (s *StateChooseAttack) Start(poi pixel.Vec) {
 	s.lastpos = poi
-	// fmt.Println("state chooseattack start")
 }
 
 func (s *StateChooseAttack) EventAction(e int) {

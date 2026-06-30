@@ -119,7 +119,7 @@ func (g *Game) Init() {
 	dialogs.Init(g.assetloader)
 	dialogs.SetWorld(g.w)
 
-	w.IsDebug = true
+	//	w.IsDebug = true
 
 	magic.SetWorld(g.w)
 
@@ -145,7 +145,7 @@ func (g *Game) Init() {
 			}
 			ai_type := o.Properties.GetString("ai")
 			if ai_type != "" {
-				g.ailist = append(g.ailist, factories.NewAi(ai_type, enemy, g.w))
+				g.ailist = append(g.ailist, factories.NewAi(ai_type, enemy, g.w, factories.WithName(o.Name)))
 			}
 			dir := o.Properties.GetFloat("dir")
 			if dir != 0 {

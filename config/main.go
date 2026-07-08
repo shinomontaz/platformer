@@ -15,6 +15,7 @@ var (
 	//	PlayerConfig Player
 	AnimConfig []Anims
 	Sounds     map[string]Soundprofile
+	Skills     map[string]Skill
 	Profiles   map[string]Profile
 	Loots      map[string]Profile
 	Spells     map[string]Spellprofile
@@ -44,21 +45,64 @@ func Init(loader *common.Loader, rtcfg *os.File) error {
 	byteValue, _ = io.ReadAll(fanims)
 	json.Unmarshal(byteValue, &AnimConfig)
 
+	// SKILLS
+	fskills, err := loader.Open(MainConfig.Skills)
+	if err != nil {
+		return err
+	}
+	defer fskills.Close()
+
+	sliceSkills := make([]Skill, 0)
+	byteValue, _ = io.ReadAll(fskills)
+	json.Unmarshal(byteValue, &sliceSkills)
+	Skills = make(map[string]Skill)
+	for _, sk := range sliceSkills {
+		Skills[sk.Name] = sk
+	}
+
 	fprofiles, err := loader.Open(MainConfig.Profiles)
 	if err != nil {
 		return err
 	}
 	defer fprofiles.Close()
 
-	sliceProfiles := make([]Profile, 0)
+	sliceProfilesRaw := make([]profileRaw, 0)
 	byteValue, _ = io.ReadAll(fprofiles)
-	json.Unmarshal(byteValue, &sliceProfiles)
+	json.Unmarshal(byteValue, &sliceProfilesRaw)
 
 	Profiles = make(map[string]Profile)
-	for _, pr := range sliceProfiles {
-		Profiles[pr.Type] = pr
+	for _, pr := range sliceProfilesRaw {
+		resolved := make([]Skill, 0, len(pr.SkillNames))
+		for _, name := range pr.SkillNames {
+			if sk, ok := Skills[name]; ok {
+				resolved = append(resolved, sk)
+			} else {
+				log.Printf("skill not found: %s for profile %s", name, pr.Type)
+			}
+		}
+		Profiles[pr.Type] = Profile{
+			Type:            pr.Type,
+			Anim:            pr.Anim,
+			Portrait:        pr.Portrait,
+			Body:            pr.Body,
+			Dir:             pr.Dir,
+			Hp:              pr.Hp,
+			Strength:        pr.Strength,
+			Width:           pr.Width,
+			Height:          pr.Height,
+			Margin:          pr.Margin,
+			Jump:            pr.Jump,
+			Mass:            pr.Mass,
+			Walk:            pr.Walk,
+			Run:             pr.Run,
+			Skills:          resolved,
+			Phrases:         pr.Phrases,
+			Dialog:          pr.Dialog,
+			Only:            pr.Only,
+			WaterResistance: pr.WaterResistance,
+			HurtReaction:    pr.HurtReaction,
+		}
 	}
-
 	floots, err := loader.Open(MainConfig.Loots)
 	if err != nil {
 		return err

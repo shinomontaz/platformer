@@ -53,7 +53,6 @@ func AddBlood(pos, f pixel.Vec) {
 	g := 10 + int(rand.Float64()*10.0)*2
 	b := 10 + int(rand.Float64()*10.0)*2
 	a := 255
-	//	col := colornames.Red
 
 	col := uint32(r&0xFF<<24 | g&0xFF<<16 | b&0xFF<<8 | a&0xFF)
 	addColorToBatch(col)

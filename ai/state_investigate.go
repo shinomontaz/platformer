@@ -11,7 +11,7 @@ import (
 )
 
 type StateInvestigate struct {
-	id      int
+	id      AiState
 	w       Worlder
 	ai      *Ai
 	target  pixel.Vec

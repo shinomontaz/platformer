@@ -1,7 +1,9 @@
 package ai
 
+type AiState int
+
 const (
-	IDLE = iota
+	IDLE AiState = iota
 	LOOKING
 	INACTIVE
 	PATROL
@@ -16,10 +18,10 @@ const (
 	HURTED
 )
 
-type aiReactionType int
+type ReactionType int
 
 const (
-	HURTED_NONE aiReactionType = iota
+	HURTED_NONE ReactionType = iota
 	HURTED_FLEE
 	HURTED_COUNTER
 	HURTED_RANDOM

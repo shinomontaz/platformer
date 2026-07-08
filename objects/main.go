@@ -46,7 +46,7 @@ func Add(name string, rect pixel.Rect, ai string) {
 		force.X = -5000
 	}
 
-	o.phys.Apply(force)
+	o.phys.SetVel(force)
 	objs = append(objs, o)
 }
 

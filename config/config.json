@@ -6,6 +6,7 @@
     "Height": 480,
     "AllAnims": "anims.json",
     "Sounds": "soundprofiles.json",
+    "Skills": "skills.json",
     "Profiles": "profiles.json",
     "Loots": "loots.json",
     "Spells": "spells.json"

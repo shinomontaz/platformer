@@ -56,6 +56,7 @@ type Actorer interface {
 	Interactor
 	Hit(vec pixel.Vec, power int)
 	GetHp() int
+	GetMass() float64
 }
 
 type O interface {

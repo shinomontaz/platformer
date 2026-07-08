@@ -46,7 +46,6 @@ type Actor struct {
 	anim           common.Animater
 	sprite         *pixel.Sprite
 	dir            float64
-	vel            pixel.Vec
 	runspeed       float64
 	walkspeed      float64
 	grav           float64
@@ -54,16 +53,17 @@ type Actor struct {
 	mass           float64
 	isShift        bool
 	isDoubleJumped bool
+	isGround       bool
+	isSit          bool
 
 	sm *statemachine.Machine
 	w  Worlder
 
-	hp           int
-	strength     int
-	portrait     *pixel.Sprite
-	sounds       map[string]soundeffect
-	appliedForce pixel.Vec
-	attackrange  float64
+	hp          int
+	strength    int
+	portrait    *pixel.Sprite
+	sounds      map[string]soundeffect
+	attackrange float64
 
 	target pixel.Vec
 
@@ -83,6 +83,8 @@ type Actor struct {
 	oninteract       OnInteractHandler
 	iswater          bool
 	iswaterresistant bool
+
+	hurtReaction string
 }
 
 var loader *common.Loader
@@ -100,7 +102,6 @@ func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Acto
 		rect:     rect,
 		dir:      1,
 		animdir:  1,
-		vel:      pixel.ZV,
 		grav:     w.GetGravity(),
 		w:        w,
 		mass:     1,
@@ -127,7 +128,8 @@ func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Acto
 	p := physics.New(rect,
 		physics.WithGravity(a.grav),
 		physics.WithMass(a.mass),
-	) // TODO does we really need phys to know run and walk speeds?
+		physics.WithFriction(0),
+	)
 	a.phys = p
 
 	a.initStates()
@@ -203,38 +205,41 @@ func (a *Actor) StepPrediction(e int, v pixel.Vec) float64 {
 }
 
 func (a *Actor) KeyAction(key pixelgl.Button) {
+	a.isSit = false
 	if a.state.Busy() {
 		return
 	}
 	action := bindings.Active.GetAction(key) // get action id for this key
 	a.keycombo += action
 
-	isWalk := false
 	if action == bindings.RIGHT {
 		a.dir = 1
-		isWalk = true
 	} else if action == bindings.LEFT {
 		a.dir = -1
-		isWalk = true
-	}
-
-	if isWalk {
-		a.appliedForce.X = a.dir * a.walkspeed
-		if a.isShift {
-			a.appliedForce.X = a.dir * a.runspeed
-		}
 	}
 
 	if action == bindings.SHIFT {
 		a.isShift = true
 	}
 
-	if action == bindings.UP && !a.isDoubleJumped {
-		a.appliedForce.Y = a.grav * (a.jumpforce + float64(a.strength) - a.mass)
+	if action == bindings.UP {
+		if a.isGround {
+			v := a.phys.GetVel()
+			v.Y = a.jumpforce * 5
+			a.phys.SetVel(v)
+			a.isDoubleJumped = false
+		} else if !a.isDoubleJumped {
+			// Double jump в воздухе
+			v := a.phys.GetVel()
+			v.Y = a.jumpforce * 8
+			a.phys.SetVel(v)
+			a.isDoubleJumped = true
+			a.action = events.DOUBLEJUMP
+		}
 	}
 
-	if action == bindings.DOWN {
-		a.appliedForce.Y = -a.grav * a.jumpforce * 10
+	if action == bindings.DOWN && a.isGround {
+		a.isSit = true
 	}
 }
 
@@ -252,71 +257,47 @@ func (a *Actor) GetRect() pixel.Rect {
 }
 
 func (a *Actor) GetVel() pixel.Vec {
-	return a.vel
+	return a.phys.GetVel()
 }
 
 func (a *Actor) SetVel(v pixel.Vec) {
-	a.vel = v
-	a.phys.SetSpeed(a.vel)
-}
-
-func (a *Actor) SetForce(f pixel.Vec) {
-	a.appliedForce.X += f.X
-	a.appliedForce.Y += f.Y
+	a.phys.SetVel(v)
 }
 
 func (a *Actor) Update(dt float64, objs []common.O) {
 	a.currObjs = objs
-	if a.appliedForce.X == 0 && math.Abs(a.vel.X) > a.walkspeed*0.1 && a.state.GetId() != state.MELEEMOVE { // active slowing in case of no active force applied
-		a.appliedForce.X = -a.walkspeed
-		if a.vel.X < 0 {
-			a.appliedForce.X *= -1
-		}
-	}
+	a.isGround = a.phys.IsGround()
 
-	if math.Signbit(a.appliedForce.X) != math.Signbit(a.vel.X) { // to brake (тормозить) harder
-		a.appliedForce.X *= 3
-	} else {
-		if math.Abs(a.appliedForce.X) == a.walkspeed && math.Abs(a.vel.X) >= a.walkspeed*0.9 {
-			a.appliedForce.X = 0
-		}
-		if math.Abs(a.appliedForce.X) == a.runspeed && math.Abs(a.vel.X) >= a.runspeed*0.9 {
-			a.appliedForce.X = 0
-		}
-	}
-
-	stId := a.state.GetId()
-	if stId == state.DOUBLEJUMP {
-		a.isDoubleJumped = true
-	}
-	if stId == state.STAND {
-		a.isDoubleJumped = false
-	}
-	if a.appliedForce.Y > 0 {
-		if (stId == state.JUMP || stId == state.FALL) && !a.isDoubleJumped {
-			a.action = events.DOUBLEJUMP
-		} else if stId == state.DOUBLEJUMP {
-			a.appliedForce.Y = 0
-		}
-	}
-
-	a.phys.Apply(a.appliedForce)
 	a.phys.Update(dt, objs)
-	// gdObj := a.phys.GetGroundObject()
-	// if gdObj.Id() != a.groundObj.Id() {
-	// 	a.groundObj = gdObj
-	// 	a.phys.SetGroundPhys(objects.GetPhysById(gdObj.ID))
-	// }
 
-	newspeed := a.phys.GetVel()
+	vel := a.phys.GetVel()
+
+	// Установка скорости движения через keycombo
+	if a.keycombo&bindings.LEFT != 0 || a.keycombo&bindings.RIGHT != 0 {
+		if a.state.GetId() != state.MELEEMOVE {
+			target := a.dir * a.walkspeed
+			if a.keycombo&bindings.SHIFT != 0 {
+				target = a.dir * a.runspeed
+			}
+			vel.X = target
+			a.phys.SetVel(vel)
+		}
+	} else if a.state.GetId() != state.MELEEMOVE {
+		// Торможение
+		vel.X *= 0.7
+		if math.Abs(vel.X) < 1 {
+			vel.X = 0
+		}
+		a.phys.SetVel(vel)
+	}
+
 	if a.action != events.DOUBLEJUMP {
-		if math.Abs(newspeed.X) <= a.runspeed && math.Abs(newspeed.X) > a.walkspeed {
+		if math.Abs(vel.X) > a.walkspeed {
 			a.action = events.RUN
-		} else if math.Abs(newspeed.X) > 0 && math.Abs(newspeed.X) <= a.walkspeed {
+		} else if math.Abs(vel.X) > 0 {
 			a.action = events.WALK
 		}
 	}
-	a.vel = newspeed
 
 	if idx, ok := a.skillmap[a.keycombo]; ok {
 		a.SetSkill(a.skills[idx])
@@ -325,11 +306,10 @@ func (a *Actor) Update(dt float64, objs []common.O) {
 		a.action = events.INTERACT
 	}
 
-	a.state.Listen(a.action, &a.vel)
+	a.state.Listen(a.action, &vel)
 	a.state.Update(dt)
 
 	a.rect = a.phys.GetRect()
-	a.appliedForce = pixel.ZV
 	a.keycombo = 0
 	a.action = 0
 	a.isShift = false
@@ -340,33 +320,31 @@ func (a *Actor) Landed() {
 }
 
 func (a *Actor) UpdateSpecial(dt float64, objs []common.O) {
-	force := a.appliedForce
+	// for _, o := range objs {
+	// 	isIntercects := a.rect.Intersects(o.Rect())
+	// 	if !isIntercects { // no collision
+	// 		continue
+	// 	}
 
-	for _, o := range objs {
-		isIntercects := a.rect.Intersects(o.Rect())
-		if !isIntercects { // no collision
-			continue
-		}
+	// 	part := a.rect.Intersect(o.Rect())
 
-		part := a.rect.Intersect(o.Rect())
+	// 	//		if o.Type() == common.WATER {
+	// 	ratio := part.H() / a.rect.H()
+	// 	if ratio == 1 && !a.iswater {
+	// 		a.iswater = true
+	// 		a.state.SetWater(true)
+	// 		if !a.iswaterresistant && a.hp > 0 {
+	// 			a.Kill()
+	// 		} else {
+	// 			a.SetState(state.SWIM)
+	// 		}
+	// 		//			}
 
-		//		if o.Type() == common.WATER {
-		ratio := part.H() / a.rect.H()
-		if ratio == 1 && !a.iswater {
-			a.iswater = true
-			a.state.SetWater(true)
-			if !a.iswaterresistant && a.hp > 0 {
-				a.Kill()
-			} else {
-				a.SetState(state.SWIM)
-			}
-			//			}
-
-			force.Y += a.grav * (ratio + 0.1) // archimedus
-			a.phys.SetSpeed(a.vel.Scaled(0.92))
-		}
-	}
-	a.phys.Apply(force)
+	// 		force.Y += a.grav * (ratio + 0.1) // archimedus
+	// 		a.phys.SetSpeed(a.vel.Scaled(0.92))
+	// 	}
+	// }
+	// a.phys.Apply(force)
 }
 
 func (a *Actor) SetState(id int) {
@@ -427,16 +405,16 @@ func (a *Actor) GetSkillAttr(attr string) (interface{}, error) {
 }
 
 func (a *Actor) Strike(ttl float64) {
-	if a.activeSkill == nil || a.activeSkill.Type != "melee" {
+	if a.activeSkill == nil || (a.activeSkill.Type != "melee" && a.activeSkill.Type != "meleemove" && a.activeSkill.Type != "meleejump") {
 		// select one skill of type melee
 		for _, s := range a.skills {
-			if s.Type == "melee" {
+			if s.Type == "melee" || s.Type == "meleemove" || s.Type == "meleejump" {
 				a.SetSkill(s)
 				break
 			}
 		}
 	}
-	if a.activeSkill.Type == "melee" {
+	if a.activeSkill.Type == "melee" || a.activeSkill.Type == "meleemove" || a.activeSkill.Type == "meleejump" {
 		power := a.strength
 		w := a.activeSkill.Hitbox.W()
 		h := a.activeSkill.Hitbox.H()
@@ -447,7 +425,7 @@ func (a *Actor) Strike(ttl float64) {
 		}
 		rect := pixel.R(minx, miny, minx+w, miny+h)
 
-		activities.AddStrike(a, rect, power, a.vel, activities.WithTTL(ttl))
+		activities.AddStrike(a, rect, power, a.phys.GetVel(), activities.WithTTL(ttl))
 	}
 }
 
@@ -491,6 +469,14 @@ func (a *Actor) GetHp() int {
 	return a.hp
 }
 
+func (a *Actor) GetMass() float64 {
+	return a.mass
+}
+
+func (a *Actor) GetHurtReaction() string {
+	return a.hurtReaction
+}
+
 func (a *Actor) GetPortrait() *pixel.Sprite {
 	return a.portrait
 }
@@ -518,21 +504,24 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 		return
 	}
 
-	v := pixel.V(vec.X*(20*math.Max(a.walkspeed+float64(power)*10-a.mass, 0)), a.grav*(8+float64(power)*10-a.mass))
-	a.phys.Apply(v)
+	// Отброс: power=0 если жертва тяжелее атакующего (вычислено в hitbox.go)
+	if power > 0 {
+		knockback := float64(power) / a.mass
+		v := pixel.V(vec.X*knockback*a.walkspeed, a.grav*knockback*0.3)
+		a.phys.SetVel(v)
+		if a.onhit != nil {
+			a.onhit(a.rect.Center(), v)
+		}
+	}
 
 	a.hp -= power
 	if a.hp <= 0 {
 		a.Kill()
-
 		return
 	}
 
 	a.SetState(state.HIT)
 	a.Inform(events.HIT)
-	if a.onhit != nil {
-		a.onhit(a.rect.Center(), v)
-	}
 }
 
 func (a *Actor) Kill() {

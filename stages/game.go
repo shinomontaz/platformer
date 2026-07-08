@@ -145,7 +145,7 @@ func (g *Game) Init() {
 			}
 			ai_type := o.Properties.GetString("ai")
 			if ai_type != "" {
-				g.ailist = append(g.ailist, factories.NewAi(ai_type, enemy, g.w, factories.WithName(o.Name)))
+				g.ailist = append(g.ailist, factories.NewAi(ai_type, enemy, g.w))
 			}
 			dir := o.Properties.GetFloat("dir")
 			if dir != 0 {

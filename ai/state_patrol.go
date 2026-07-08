@@ -12,7 +12,7 @@ import (
 // При IsSee(hero) → CHOOSEATTACK. При ALERT → INVESTIGATE.
 // В отличие от ROAMING, патрулирующий монстр видит героя в обе стороны.
 type StatePatrol struct {
-	id          int
+	id          AiState
 	w           Worlder
 	ai          *Ai
 	isbusy      bool

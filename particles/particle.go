@@ -28,7 +28,7 @@ func (p *particle) Init() {
 		physics.WithRigidity(p.rigidity),
 		physics.WithFriction(p.friction),
 	)
-	p.phys.Apply(p.force)
+	p.phys.SetVel(p.force)
 }
 
 func (p *particle) update(dt float64, objs []common.O) {

@@ -18,6 +18,12 @@ func WithRun(speed float64) Option {
 	}
 }
 
+func WithHurtReaction(r string) Option {
+	return func(a *Actor) {
+		a.hurtReaction = r
+	}
+}
+
 func WithWalk(speed float64) Option {
 	return func(a *Actor) {
 		a.walkspeed = speed
@@ -121,8 +127,8 @@ func WithBody(body string) Option {
 		if body == "human" {
 			a.onhit = func(pos, vel pixel.Vec) {
 				n := 10 * int(rand.Float64()*10.0)
-				for i := 0; i < n; i++ {
-					particles.AddBlood(pos, pixel.V(vel.X+rand.Float64()*1000-500, rand.Float64()*10000))
+				for range n {
+					particles.AddBlood(pos, pixel.V(vel.X+rand.Float64()*a.grav/2-a.grav/4, rand.Float64()*a.grav/2))
 				}
 			}
 		}

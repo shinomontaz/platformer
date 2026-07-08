@@ -77,12 +77,18 @@ func updatePlStrikes(dt float64, hittable []common.Actorer) {
 			}
 			r := hh.GetRect()
 			if b.rect.Intersects(r) {
-				vec := pixel.ZV // TODO: detect hit vector
+				vec := pixel.ZV
 				vec.X = -1
 				if r.Center().X > b.dir.A.X {
 					vec.X = 1
 				}
-				hh.Hit(vec, b.power)
+				attackerMass := b.owner.GetMass()
+				victimMass := hh.GetMass()
+				power := b.power
+				if victimMass >= attackerMass {
+					power = 0
+				}
+				hh.Hit(vec, power)
 				b.hitted[hh] = struct{}{}
 			}
 		}
@@ -109,12 +115,18 @@ func updateEnStrikes(dt float64, hittable []common.Actorer) {
 			}
 			r := hh.GetRect()
 			if b.rect.Intersects(r) {
-				vec := pixel.ZV // TODO: detect hit vector
+				vec := pixel.ZV
 				vec.X = -float64(b.power)
 				if b.dir.A.X > b.dir.B.X {
 					vec.X = float64(b.power)
 				}
-				hh.Hit(vec, b.power)
+				attackerMass := b.owner.GetMass()
+				victimMass := hh.GetMass()
+				power := b.power
+				if victimMass >= attackerMass {
+					power = 0
+				}
+				hh.Hit(vec, power)
 				b.hitted[hh] = struct{}{}
 			}
 		}

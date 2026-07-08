@@ -12,7 +12,7 @@ import (
 )
 
 type StateSwimming struct {
-	id        int
+	id        AiState
 	w         Worlder
 	ai        *Ai
 	timeout   float64

@@ -12,7 +12,7 @@ import (
 )
 
 type StateChooseAttack struct {
-	id          int
+	id          AiState
 	w           Worlder
 	ai          *Ai
 	timer       float64
@@ -21,9 +21,6 @@ type StateChooseAttack struct {
 	isbusy      bool
 	skills      []*actor.Skill
 	skills2     []*actor.Skill
-
-	afterTimer  float64 // таймер после атаки
-	cooldownDur float64 // длительность паузы
 }
 
 func NewChooseAttack(ai *Ai, w Worlder) *StateChooseAttack {
@@ -54,12 +51,6 @@ func NewChooseAttack(ai *Ai, w Worlder) *StateChooseAttack {
 
 func (s *StateChooseAttack) Update(dt float64) {
 	if s.isbusy {
-		return
-	}
-
-	if s.afterTimer > 0 {
-		s.afterTimer -= dt
-
 		return
 	}
 

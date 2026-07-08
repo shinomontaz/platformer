@@ -8,7 +8,7 @@ import (
 )
 
 type StateFishing struct {
-	id     int
+	id     AiState
 	w      Worlder
 	ai     *Ai
 	isbusy bool

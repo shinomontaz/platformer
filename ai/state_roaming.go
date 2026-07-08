@@ -11,7 +11,7 @@ import (
 )
 
 type StateRoaming struct {
-	id            int
+	id            AiState
 	w             Worlder
 	ai            *Ai
 	isbusy        bool

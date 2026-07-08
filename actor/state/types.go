@@ -54,7 +54,6 @@ type Actor interface {
 	OnKill()
 	GetDir() int
 	SetVel(v pixel.Vec)
-	SetForce(f pixel.Vec)
 	Landed()
 }
 

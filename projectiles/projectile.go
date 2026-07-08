@@ -46,7 +46,7 @@ func (p *projectile) Init(g float64) {
 	)
 	p.active = true
 	p.sprite = pixel.NewSprite(nil, pixel.Rect{})
-	p.phys.Apply(p.force)
+	p.phys.SetVel(p.force)
 }
 
 func (p *projectile) update(dt float64, objs, spec []common.O) {

@@ -43,7 +43,7 @@ func (s *Melee) Start() {
 	s.attackidx = 1
 	s.striked = false
 
-	skillname, err := s.a.GetSkillAttr("name")
+	skillname, err := s.a.GetSkillAttr("type")
 	if err != nil {
 		panic(err)
 	}

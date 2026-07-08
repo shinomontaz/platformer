@@ -9,14 +9,15 @@ import (
 )
 
 type StateAttack struct {
-	id          int
-	w           Worlder
-	ai          *Ai
-	timer       float64
-	nonseelimit float64
-	lastpos     pixel.Vec
-	vec         pixel.Vec
-	isbusy      bool
+	id            AiState
+	w             Worlder
+	ai            *Ai
+	timer         float64
+	nonseelimit   float64
+	lastpos       pixel.Vec
+	vec           pixel.Vec
+	isbusy        bool
+	cooldownTimer float64
 }
 
 func NewAttack(ai *Ai, w Worlder) *StateAttack {
@@ -30,6 +31,11 @@ func NewAttack(ai *Ai, w Worlder) *StateAttack {
 
 func (s *StateAttack) Update(dt float64) {
 	if s.isbusy {
+		return
+	}
+
+	if s.cooldownTimer > 0 {
+		s.cooldownTimer -= dt
 		return
 	}
 
@@ -55,6 +61,7 @@ func (s *StateAttack) Update(dt float64) {
 	dir := s.ai.obj.GetDir()
 	var isSee bool
 
+	// Проверяем видимость только если смотрим в сторону героя
 	if (heropos.X < pos.X && dir < 0) || (heropos.X > pos.X && dir > 0) {
 		isSee = s.w.IsSee(pos, heropos)
 		if !isSee {
@@ -64,10 +71,11 @@ func (s *StateAttack) Update(dt float64) {
 			}
 
 			return
-		} else {
-			//			s.lastpos = heropos
-			s.timer = 0
 		}
+	} else { // мы не смотрим в сторону героя
+		s.timer = 0
+		s.ai.SetState(INVESTIGATE, s.lastpos)
+		return
 	}
 
 	s.vec = pixel.V(-1, 0)
@@ -95,11 +103,14 @@ func (s *StateAttack) Update(dt float64) {
 		b := bindings.Active.GetBinding(k)
 		s.ai.obj.KeyAction(b)
 	}
+
+	s.cooldownTimer = s.ai.attackskill.Cooldown
 }
 
 func (s *StateAttack) Start(poi pixel.Vec) {
 	s.lastpos = poi
 	s.timer = 0
+	s.cooldownTimer = 0
 }
 
 func (s *StateAttack) EventAction(e int) {

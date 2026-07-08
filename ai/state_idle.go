@@ -8,7 +8,7 @@ import (
 )
 
 type StateIdle struct {
-	id      int
+	id      AiState
 	w       Worlder
 	ai      *Ai
 	isbusy  bool

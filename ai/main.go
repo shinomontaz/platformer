@@ -18,18 +18,31 @@ type Ai struct {
 	obj         *actor.Actor
 	w           Worlder
 	state       Stater
-	states      map[int]Stater
+	states      map[AiState]Stater
 	id          int
 	attackskill *actor.Skill
-	homeState   int // состояние куда возвращаться после INVESTIGATE (IDLE, PATROL, ROAMING)
+	homeState   AiState // состояние куда возвращаться после INVESTIGATE (IDLE, PATROL, ROAMING)
 	name        string
+}
+
+func parseReaction(s string) ReactionType {
+	switch s {
+	case "flee":
+		return HURTED_FLEE
+	case "counter":
+		return HURTED_COUNTER
+	case "random":
+		return HURTED_RANDOM
+	default:
+		return HURTED_NONE
+	}
 }
 
 func NewCalmEnemy(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:       obj,
 		w:         w,
-		states:    make(map[int]Stater),
+		states:    make(map[AiState]Stater),
 		id:        counter,
 		homeState: IDLE,
 	}
@@ -42,6 +55,10 @@ func NewCalmEnemy(obj *actor.Actor, w Worlder) *Ai {
 
 	sAttack := NewAttack(a, a.w)
 	a.states[ATTACK] = sAttack
+
+	reaction := parseReaction(obj.GetHurtReaction())
+	sHurted := NewHurted(a, a.w, reaction)
+	a.states[HURTED] = sHurted
 
 	sInvestigate := NewInvestigate(a, a.w)
 	a.states[INVESTIGATE] = sInvestigate
@@ -59,7 +76,7 @@ func NewAgressiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:       obj,
 		w:         w,
-		states:    make(map[int]Stater),
+		states:    make(map[AiState]Stater),
 		id:        counter,
 		homeState: IDLE,
 	}
@@ -76,7 +93,8 @@ func NewAgressiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	sIdle := NewIdle(a, a.w, true)
 	a.states[IDLE] = sIdle
 
-	sHurted := NewHurted(a, a.w, HURTED_NONE)
+	reaction := parseReaction(obj.GetHurtReaction())
+	sHurted := NewHurted(a, a.w, reaction)
 	a.states[HURTED] = sHurted
 
 	sInvestigate := NewInvestigate(a, a.w)
@@ -100,7 +118,7 @@ func NewActiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:       obj,
 		w:         w,
-		states:    make(map[int]Stater),
+		states:    make(map[AiState]Stater),
 		id:        counter,
 		homeState: ROAMING,
 	}
@@ -116,6 +134,10 @@ func NewActiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 
 	sIdle := NewIdle(a, a.w, true)
 	a.states[IDLE] = sIdle
+
+	reaction := parseReaction(obj.GetHurtReaction())
+	sHurted := NewHurted(a, a.w, reaction)
+	a.states[HURTED] = sHurted
 
 	sInvestigate := NewInvestigate(a, a.w)
 	a.states[INVESTIGATE] = sInvestigate
@@ -133,7 +155,7 @@ func NewPatrolEnemy(obj *actor.Actor, w Worlder, patrolRange float64) *Ai {
 	a := &Ai{
 		obj:       obj,
 		w:         w,
-		states:    make(map[int]Stater),
+		states:    make(map[AiState]Stater),
 		id:        counter,
 		homeState: PATROL,
 	}
@@ -146,6 +168,10 @@ func NewPatrolEnemy(obj *actor.Actor, w Worlder, patrolRange float64) *Ai {
 
 	sAttack := NewAttack(a, a.w)
 	a.states[ATTACK] = sAttack
+
+	reaction := parseReaction(obj.GetHurtReaction())
+	sHurted := NewHurted(a, a.w, reaction)
+	a.states[HURTED] = sHurted
 
 	sInvestigate := NewInvestigate(a, a.w)
 	a.states[INVESTIGATE] = sInvestigate
@@ -163,7 +189,7 @@ func NewCalmNpc(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:    obj,
 		w:      w,
-		states: make(map[int]Stater),
+		states: make(map[AiState]Stater),
 		id:     counter,
 	}
 
@@ -183,7 +209,7 @@ func NewFishingNpc(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:    obj,
 		w:      w,
-		states: make(map[int]Stater),
+		states: make(map[AiState]Stater),
 		id:     counter,
 	}
 
@@ -203,7 +229,7 @@ func NewActiveNpc(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:    obj,
 		w:      w,
-		states: make(map[int]Stater),
+		states: make(map[AiState]Stater),
 		id:     counter,
 	}
 
@@ -226,7 +252,7 @@ func NewSwimmingNpc(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:    obj,
 		w:      w,
-		states: make(map[int]Stater),
+		states: make(map[AiState]Stater),
 		id:     counter,
 	}
 
@@ -253,7 +279,7 @@ func (ai *Ai) GetId() int {
 	return ai.id
 }
 
-func (ai *Ai) SetState(state int, poi pixel.Vec) {
+func (ai *Ai) SetState(state AiState, poi pixel.Vec) {
 	ai.state = ai.states[state]
 	ai.state.Start(poi)
 }

@@ -8,15 +8,15 @@ import (
 )
 
 type StateHurted struct {
-	id       int
+	id       AiState
 	w        Worlder
 	ai       *Ai
-	reaction aiReactionType
+	reaction ReactionType
 	timer    float64
 	duration float64 // сколько длится реакция
 }
 
-func NewHurted(ai *Ai, w Worlder, reaction aiReactionType) *StateHurted {
+func NewHurted(ai *Ai, w Worlder, reaction ReactionType) *StateHurted {
 	return &StateHurted{
 		id:       HURTED,
 		ai:       ai,
@@ -75,7 +75,7 @@ func (s *StateHurted) Update(dt float64) {
 }
 
 func (s *StateHurted) EventAction(e int) {
-	if e == events.GAMEVENT_HIT {
+	if e == events.HIT {
 		// Повторное попадание — сбрасываем таймер
 		s.timer = 0
 	}

@@ -7,14 +7,8 @@ import (
 
 type AiOption func(*ai.Ai)
 
-func WithName(name string) AiOption {
-	return func(a *ai.Ai) {
-		a.name = name
-	}
-}
-
-func NewAi(t string, obj *actor.Actor, w actor.Worlder) *ai.Ai {
-	switch t {
+func NewAi(aiType string, obj *actor.Actor, w actor.Worlder) *ai.Ai {
+	switch aiType {
 	case "npc_roaming":
 		return ai.NewActiveNpc(obj, w)
 	case "enemy_roaming":

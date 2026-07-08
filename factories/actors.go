@@ -27,5 +27,6 @@ func NewActor(prof config.Profile, w actor.Worlder) *actor.Actor {
 		actor.WithBody(prof.Body),
 		actor.WithScore(prof.Hp), // for now!
 		actor.WithWaterResistance(prof.WaterResistance),
+		actor.WithHurtReaction(prof.HurtReaction),
 	)
 }

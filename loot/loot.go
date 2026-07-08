@@ -76,7 +76,6 @@ func (a *Loot) GetRect() pixel.Rect {
 }
 
 func (a *Loot) Update(dt float64, objs []common.O) {
-	a.phys.Apply(a.appliedForce)
 	a.phys.Update(dt, objs)
 
 	a.vec = pixel.ZV

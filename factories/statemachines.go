@@ -123,12 +123,17 @@ func newMage() *statemachine.Machine {
 	m.Set(state.CAST, statemachine.Transition{})
 	m.Set(state.STAND, statemachine.Transition{
 		List: map[int]int{
-			events.CAST: state.CAST,
+			events.RANGED: state.CAST,
 		},
 	})
 	m.Set(state.IDLE, statemachine.Transition{
 		List: map[int]int{
-			events.CAST: state.CAST,
+			events.RANGED: state.CAST,
+		},
+	})
+	m.Set(state.WALK, statemachine.Transition{
+		List: map[int]int{
+			events.RANGED: state.CAST,
 		},
 	})
 

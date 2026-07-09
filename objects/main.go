@@ -41,12 +41,12 @@ func Add(name string, rect pixel.Rect, ai string) {
 		physics.WithFriction(0),
 	)
 
-	force := pixel.ZV
+	vel := pixel.ZV
 	if ai == "floater" {
-		force.X = -5000
+		vel.X = -100
 	}
 
-	o.phys.SetVel(force)
+	o.phys.SetVel(vel)
 	objs = append(objs, o)
 }
 

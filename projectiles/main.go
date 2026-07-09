@@ -26,12 +26,12 @@ func AddProjectile(t string, strength float64, dir float64, owner common.Actorer
 	g := grav
 	switch t {
 	case "sling":
-		f = pixel.V(10000*dir, 5000+rand.Float64()*7500)
+		f = pixel.V(160*dir, 80+rand.Float64()*120)
 	case "crossbow":
-		f = pixel.V(9000*dir, 500+rand.Float64()*750)
+		f = pixel.V(150*dir, 8+rand.Float64()*12)
 		g = grav / 9
 	case "deathbolt":
-		f = pixel.V(8000*dir, 0)
+		f = pixel.V(130*dir, 0)
 		g = grav / 1000
 	}
 

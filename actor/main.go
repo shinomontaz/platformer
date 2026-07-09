@@ -320,31 +320,37 @@ func (a *Actor) Landed() {
 }
 
 func (a *Actor) UpdateSpecial(dt float64, objs []common.O) {
-	// for _, o := range objs {
-	// 	isIntercects := a.rect.Intersects(o.Rect())
-	// 	if !isIntercects { // no collision
-	// 		continue
-	// 	}
+	wasInWater := a.iswater
+	a.iswater = false
 
-	// 	part := a.rect.Intersect(o.Rect())
+	for _, o := range objs {
+		if !a.rect.Intersects(o.Rect()) {
+			continue
+		}
+		part := a.rect.Intersect(o.Rect())
+		ratio := part.H() / a.rect.H()
 
-	// 	//		if o.Type() == common.WATER {
-	// 	ratio := part.H() / a.rect.H()
-	// 	if ratio == 1 && !a.iswater {
-	// 		a.iswater = true
-	// 		a.state.SetWater(true)
-	// 		if !a.iswaterresistant && a.hp > 0 {
-	// 			a.Kill()
-	// 		} else {
-	// 			a.SetState(state.SWIM)
-	// 		}
-	// 		//			}
+		a.iswater = true
 
-	// 		force.Y += a.grav * (ratio + 0.1) // archimedus
-	// 		a.phys.SetSpeed(a.vel.Scaled(0.92))
-	// 	}
-	// }
-	// a.phys.Apply(force)
+		if ratio == 1 && !a.iswaterresistant && a.hp > 0 {
+			a.Kill()
+			return
+		}
+
+		if !wasInWater && a.iswaterresistant {
+			a.SetState(state.SWIM)
+		}
+
+		// Архимед + замедление
+		vel := a.phys.GetVel()
+		vel.Y += a.grav * (ratio + 0.1) * dt
+		vel = vel.Scaled(0.92)
+		a.phys.SetVel(vel)
+	}
+
+	if wasInWater && !a.iswater {
+		a.state.SetWater(false)
+	}
 }
 
 func (a *Actor) SetState(id int) {
@@ -505,9 +511,8 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 	}
 
 	// Отброс: power=0 если жертва тяжелее атакующего (вычислено в hitbox.go)
-	if power > 0 {
-		knockback := float64(power) / a.mass
-		v := pixel.V(vec.X*knockback*a.walkspeed, a.grav*knockback*0.3)
+	if a.mass/10 < float64(power) {
+		v := pixel.V(vec.X*5*float64(power)*a.walkspeed, a.grav*float64(power)*0.1)
 		a.phys.SetVel(v)
 		if a.onhit != nil {
 			a.onhit(a.rect.Center(), v)
@@ -519,7 +524,6 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 		a.Kill()
 		return
 	}
-
 	a.SetState(state.HIT)
 	a.Inform(events.HIT)
 }

@@ -46,7 +46,7 @@ func (s *Meleemove) Start() {
 	}
 
 	s.idleLimit = res.(float64)
-	variants := s.anims.GetGroupLen("meleemove")
+	variants := s.anims.GetLen("meleemove/")
 	if variants > 1 {
 		s.attackidx += int(math.Round(rand.Float64() * float64(variants-1)))
 	}
@@ -91,7 +91,7 @@ func (s *Meleemove) GetSprite() *pixel.Sprite {
 		s.sprite = pixel.NewSprite(nil, pixel.Rect{})
 	}
 
-	pic, rect := s.anims.GetGroupSprite("meleemove", fmt.Sprintf("attack%d", s.attackidx), s.animSpriteNum)
+	pic, rect := s.anims.GetSprite(fmt.Sprintf("meleemove/attack%d", s.attackidx), s.animSpriteNum)
 	s.sprite.Set(pic, rect)
 
 	return s.sprite

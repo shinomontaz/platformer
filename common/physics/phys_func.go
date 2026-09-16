@@ -11,6 +11,7 @@ import (
 func collide(p, q pixel.Rect, v pixel.Vec) (float64, pixel.Vec) {
 	n := pixel.ZV
 	var xInvEntry, yInvEntry, xInvExit, yInvExit float64
+	// find the distance between the objects on the near and far sides for both x and y
 	if v.X > 0 {
 		xInvEntry = q.Min.X - p.Max.X
 		xInvExit = q.Max.X - p.Min.X

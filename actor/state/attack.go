@@ -28,7 +28,7 @@ func NewAttack(a Actor, an Animater) *Attack {
 			trs:   a.GetTransition(ATTACK),
 		},
 		idleLimit: 0.5, // seconds before idle
-		variants:  an.GetGroupLen("melee"),
+		variants:  an.GetLen("melee/"),
 	}
 
 	return fs
@@ -65,7 +65,8 @@ func (s *Attack) GetSprite() *pixel.Sprite {
 	if s.sprite == nil {
 		s.sprite = pixel.NewSprite(nil, pixel.Rect{})
 	}
-	pic, rect := s.anims.GetGroupSprite("melee", fmt.Sprintf("attack%d", s.attackidx), s.animSpriteNum)
+	//	pic, rect := s.anims.GetGroupSprite("melee", fmt.Sprintf("attack%d", s.attackidx), s.animSpriteNum)
+	pic, rect := s.anims.GetSprite(fmt.Sprintf("melee/attack%d", s.attackidx), s.animSpriteNum)
 	s.sprite.Set(pic, rect)
 
 	return s.sprite

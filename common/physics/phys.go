@@ -25,6 +25,7 @@ type Phys struct {
 	groundObj  common.O
 	groundPhys *Phys
 	color      color.Color
+	mask       []bool
 
 	currObjs []common.O
 }
@@ -180,12 +181,14 @@ func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec, commo
 				r := math.Min(rect.Max.X, p.rect.Max.X)
 				ground = (r - l) / p.rect.W()
 				gObj = obj
+
 				continue
 			}
 			coltime, n := collide(p.rect, rect, v)
-			if coltime == 1 {
+			if coltime == 1 { // нет пересечения
 				continue
 			}
+
 			if n.X == 0 && vel.Y == 0 {
 				l := math.Max(rect.Min.X, p.rect.Min.X)
 				r := math.Min(rect.Max.X, p.rect.Max.X)
@@ -233,6 +236,10 @@ func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec, commo
 
 func (p *Phys) Move(v pixel.Vec) {
 	p.rect = p.rect.Moved(v)
+}
+
+func (p *Phys) SetRect(r pixel.Rect) {
+	p.rect = r
 }
 
 func (p *Phys) GetRect() pixel.Rect {

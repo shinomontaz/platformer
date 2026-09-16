@@ -135,3 +135,9 @@ func WithBody(body string) Option {
 
 	}
 }
+
+func WithBBox(bbox pixel.Rect) Option {
+	return func(a *Actor) {
+		a.bbox = bbox
+	}
+}

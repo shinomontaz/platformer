@@ -51,7 +51,7 @@ func (s *Melee) Start() {
 	if s.skillname == "" {
 		s.skillname = "melee"
 	}
-	s.variants = s.anims.GetGroupLen(s.skillname)
+	s.variants = s.anims.GetLen(s.skillname + "/")
 
 	if s.variants > 1 {
 		s.attackidx += int(math.Round(rand.Float64() * float64(s.variants-1)))
@@ -88,7 +88,7 @@ func (s *Melee) GetSprite() *pixel.Sprite {
 	if s.sprite == nil {
 		s.sprite = pixel.NewSprite(nil, pixel.Rect{})
 	}
-	pic, rect := s.anims.GetGroupSprite(s.skillname, fmt.Sprintf("attack%d", s.attackidx), s.animSpriteNum)
+	pic, rect := s.anims.GetSprite(fmt.Sprintf("%s/attack%d", s.skillname, s.attackidx), s.animSpriteNum)
 	s.sprite.Set(pic, rect)
 
 	return s.sprite

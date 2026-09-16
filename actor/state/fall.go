@@ -1,7 +1,6 @@
 package state
 
 import (
-	"fmt"
 	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
@@ -30,8 +29,6 @@ func NewFall(a Actor, an Animater) *Fall {
 }
 
 func (s *Fall) Start() {
-	//	s.a.Inform(events.BUSY)
-	fmt.Println("state fall")
 	s.fallLimit = 1.0
 	s.busy = true
 	s.animSpriteNum = 3

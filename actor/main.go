@@ -41,6 +41,7 @@ type Actor struct {
 	keycombo int // sum of all actionId ( from pressed keys )/ it is unique due to actionId const definition: powers of 2
 
 	rect pixel.Rect
+	bbox pixel.Rect
 
 	animdir        float64
 	anim           common.Animater
@@ -268,6 +269,18 @@ func (a *Actor) Update(dt float64, objs []common.O) {
 	a.currObjs = objs
 	a.isGround = a.phys.IsGround()
 
+	bbox := a.bbox
+	if a.dir < 0 {
+		w := a.rect.W()
+		bbox = pixel.R(w-a.bbox.Max.X, a.bbox.Min.Y,
+			w-a.bbox.Min.X, a.bbox.Max.Y)
+	}
+	collisionRect := pixel.R(
+		a.rect.Min.X+bbox.Min.X, a.rect.Min.Y+bbox.Min.Y,
+		a.rect.Min.X+bbox.Max.X, a.rect.Min.Y+bbox.Max.Y,
+	)
+	oldMin := collisionRect.Min
+	a.phys.SetRect(collisionRect)
 	a.phys.Update(dt, objs)
 
 	vel := a.phys.GetVel()
@@ -282,7 +295,7 @@ func (a *Actor) Update(dt float64, objs []common.O) {
 			vel.X = target
 			a.phys.SetVel(vel)
 		}
-	} else if a.state.GetId() != state.MELEEMOVE {
+	} else if a.state.GetId() != state.MELEEMOVE && a.isGround {
 		// Торможение
 		vel.X *= 0.7
 		if math.Abs(vel.X) < 1 {
@@ -309,7 +322,10 @@ func (a *Actor) Update(dt float64, objs []common.O) {
 	a.state.Listen(a.action, &vel)
 	a.state.Update(dt)
 
-	a.rect = a.phys.GetRect()
+	newRect := a.phys.GetRect()
+	delta := newRect.Min.Sub(oldMin)
+	a.rect = a.rect.Moved(delta)
+
 	a.keycombo = 0
 	a.action = 0
 	a.isShift = false

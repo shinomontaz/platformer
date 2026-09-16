@@ -15,7 +15,7 @@
         "mass": 10,
         "jump": 30,
         "walk": 80,
-        "run": 300,
+        "run": 180,
         "body": "human",
         "skills": [
             "generic_melee",

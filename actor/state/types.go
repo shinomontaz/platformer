@@ -59,7 +59,5 @@ type Actor interface {
 
 type Animater interface {
 	GetSprite(name string, idx int) (pixel.Picture, pixel.Rect)
-	GetGroupSprite(group, name string, idx int) (pixel.Picture, pixel.Rect)
-	GetGroupLen(name string) int
 	GetLen(name string) int
 }

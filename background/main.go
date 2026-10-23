@@ -78,7 +78,7 @@ func New(start pixel.Vec, viewport pixel.Rect, loader *common.Loader, path strin
 
 func (b *Back) Update(dt float64, pos pixel.Vec) {
 	x := (pos.X - b.start.X) * b.speed
-	steps := int(math.Abs(x / b.width))
+	steps := int(math.Floor(x / b.width))
 
 	if steps != b.steps {
 		b.vector1, b.vector2 = b.vector2, b.vector1

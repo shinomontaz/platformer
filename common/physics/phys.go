@@ -149,7 +149,7 @@ func (p *Phys) Update(dt float64, objs []common.O) {
 			p.groundObj = groundObj
 		}
 		p.vel = newvel
-		if ground > 0 {
+		if ground > 0.05 {
 			p.isground = true
 			if p.vel.Y > 0 && p.vel.Y < p.gravity*dt {
 				p.vel.Y = 0
@@ -176,7 +176,7 @@ func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec, commo
 	for _, obj := range p.currObjs {
 		rect := obj.Rect()
 		if Isinbox(rect, broadbox) {
-			if rect.Max.Y == p.rect.Min.Y {
+			if math.Abs(rect.Max.Y-p.rect.Min.Y) < 0.001 {
 				l := math.Max(rect.Min.X, p.rect.Min.X)
 				r := math.Min(rect.Max.X, p.rect.Max.X)
 				ground = (r - l) / p.rect.W()
@@ -195,6 +195,15 @@ func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec, commo
 				ground = (r - l) / p.rect.W()
 				gObj = obj
 			} else {
+				// Шаг вверх: низкая преграда сбоку
+				stepHeight := rect.Max.Y - p.rect.Min.Y
+				if n.X != 0 && vel.X != 0 && vel.Y <= 0 &&
+					rect.Max.Y < p.rect.Max.Y && stepHeight > 0 && stepHeight <= p.rect.H()/2 {
+					// Поднять траекторию ровно на высоту ступеньки
+					v = pixel.Vec{X: v.X, Y: stepHeight + 0.01}
+					continue // без coltime — движение не обрезается
+				}
+
 				collisiontimes = append(collisiontimes, coltime)
 				if n.Y > 0 {
 					l := math.Min(rect.Min.X, p.rect.Min.X)

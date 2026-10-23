@@ -79,7 +79,7 @@ func (s *Meleemove) Update(dt float64) {
 
 	s.time += dt
 	s.animSpriteNum = int(math.Floor(s.time / 0.1))
-	if s.animSpriteNum == 3 && !s.striked {
+	if s.animSpriteNum == 1 && !s.striked {
 		s.a.Strike(s.idleLimit - s.time)
 		s.striked = true
 	}

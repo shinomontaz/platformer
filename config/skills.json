@@ -13,7 +13,7 @@
         "type": "meleemove",
         "name": "generic_meleemove_left",
         "speed": 180,
-        "hitbox": [10, -5, 20, 5],
+        "hitbox": [5, -5, 15, 5],
         "keys": ["ctrl", "left"],
         "cooldown": 1
     },
@@ -21,7 +21,7 @@
         "type": "meleemove",
         "name": "generic_meleemove_right",
         "speed": 180,
-        "hitbox": [10, -5, 20, 5],
+        "hitbox": [5, -5, 15, 5],
         "keys": ["ctrl", "right"],
         "cooldown": 1
     },

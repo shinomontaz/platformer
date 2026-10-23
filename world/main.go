@@ -217,16 +217,16 @@ func (w *World) initShader(shadername string) {
 	w.uObjects = make([]mgl32.Vec4, 0)
 	w.uLight = [2]float32{float32(-w.viewport.W()/2 + 100.0), float32(w.viewport.H()/2 - 100.0)}
 
-	// w.cnv.SetUniform("uLight", &w.uLight)
-	// w.cnv.SetUniform("uObjects", &w.uObjects)
-	// w.cnv.SetUniform("uNumObjects", &w.uNumObjects)
+	w.cnv.SetUniform("uLight", &w.uLight)
+	w.cnv.SetUniform("uObjects", &w.uObjects)
+	w.cnv.SetUniform("uNumObjects", &w.uNumObjects)
 
-	//	fragSource, err := w.loader.LoadFileToString(shadername)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	fragSource, err := w.loader.LoadFileToString(shadername)
+	if err != nil {
+		panic(err)
+	}
 
-	//	w.cnv.SetFragmentShader(fragSource)
+	w.cnv.SetFragmentShader(fragSource)
 }
 
 func (w *World) initProps() {
@@ -411,7 +411,7 @@ func (w *World) SetCreatures(c *creatures.List) {
 // func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
 func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel.Vec) {
 	w.cnv.Clear(color.RGBA{0, 0, 0, 1})
-	//	w.cnv2.Clear(color.RGBA{240, 248, 255, 1})
+//	w.cnv2.Clear(color.RGBA{240, 248, 255, 1})
 	w.cnv2.Clear(color.RGBA{0, 0, 0, 1})
 
 	w.cnv2.SetMatrix(pixel.IM.Moved(w.cnv2.Bounds().Center().Sub(cam)))

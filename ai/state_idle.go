@@ -8,7 +8,7 @@ import (
 )
 
 type StateIdle struct {
-	id      int
+	id      AiState
 	w       Worlder
 	ai      *Ai
 	isbusy  bool
@@ -43,7 +43,7 @@ func (s *StateIdle) Update(dt float64) {
 			// check if we see target
 			if s.w.IsSee(pos, s.heropos) && herohp > 0 {
 				talks.AddAlert(pos, 200)
-				s.ai.SetState(ATTACK, s.heropos)
+				s.ai.SetState(CHOOSEATTACK, s.heropos)
 			}
 		}
 	}
@@ -54,14 +54,13 @@ func (s *StateIdle) Start(poi pixel.Vec) {
 }
 
 func (s *StateIdle) EventAction(e int) {
-	if e == events.ALERT {
-		s.ai.SetState(INVESTIGATE, s.heropos)
-	}
-	if e == events.BUSY {
+	switch e {
+	case events.BUSY:
 		s.isbusy = true
-	}
-	if e == events.RELEASED {
+	case events.RELEASED:
 		s.isbusy = false
+	case events.ALERT:
+		s.ai.SetState(INVESTIGATE, s.heropos)
 	}
 }
 

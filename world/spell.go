@@ -23,7 +23,7 @@ func init() {
 	plspells = make([]Speller, 0)
 }
 
-func AddSpell(owner *actor.Actor, t pixel.Vec, spell string, objs []common.Objecter) {
+func AddSpell(owner *actor.Actor, t pixel.Vec, spell string, objs []common.O) {
 	// add spell here
 	//	s string, source, target pixel.Vec
 	sp := magic.Create(spell, owner, t, objs)

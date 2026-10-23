@@ -196,12 +196,12 @@ void main() {
     }
 
     if (!inside) {
-        if (!shadowed) {
-            color += drawLight(vTexCoords.xy, circle_pos, vec3(1.0, 0.75, 0.5), 100.0, 10.0);
-        } else {
+//        if (!shadowed) {
+//           color += drawLight(vTexCoords.xy, circle_pos, vec3(1.0, 0.75, 0.5), 100.0, 10.0);
+//        } else {
+        if (shadowed) {
             color -= 0.1;
         }
-
     }
 
     fragColor = vec4(color, 1.0);

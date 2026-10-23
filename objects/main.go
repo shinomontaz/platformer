@@ -4,6 +4,7 @@ import (
 	"math"
 	"platformer/animation"
 	"platformer/common"
+	"platformer/common/physics"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -13,15 +14,11 @@ type object struct {
 	animSpriteNum int
 	counter       float64
 	rect          pixel.Rect
-	phys          common.Phys
+	phys          physics.Phys
 	vel           pixel.Vec
 	animdir       float64
 	dir           float64
 }
-
-// type List struct {
-// 	objs []*object
-// }
 
 var objs []*object
 
@@ -38,43 +35,48 @@ func Add(name string, rect pixel.Rect, ai string) {
 		vel:     pixel.ZV,
 	}
 
-	o.phys = common.NewPhys(o.rect,
-		common.WithMass(0),
-		common.WithRigidity(1),
-		common.WithFriction(0),
+	o.phys = physics.New(o.rect,
+		physics.WithMass(0),
+		physics.WithRigidity(1),
+		physics.WithFriction(0),
 	)
 
-	force := pixel.Vec{0, 0}
+	vel := pixel.ZV
 	if ai == "floater" {
-		force.X = -5000
+		vel.X = -100
 	}
 
-	o.phys.Apply(force)
+	o.phys.SetVel(vel)
 	objs = append(objs, o)
 }
 
-func List(r pixel.Rect) []common.Objecter {
-	res := make([]common.Objecter, 0)
-	for i, o := range objs {
-		//		if r.Intersects(o.rect) {
-		res = append(res, common.Objecter{ID: uint32(i + 1), R: o.rect, Type: common.OBJECT})
-		//		}
-	}
-	return res
-}
-
-func GetPhysById(id uint32) *common.Phys {
-	idx := int(id - 1) // REASON: we add objects with i+1 to list of Objecter ( look List method )
+func GetPhysById(id uint32) *physics.Phys {
+	idx := int(id - 1)
 	if idx >= 0 && idx < len(objs)-1 {
 		return &objs[idx].phys
 	}
 	return nil
 }
 
-func Update(dt float64, qt *common.Quadtree) {
+type objWrapper struct {
+	id   int
+	rect pixel.Rect
+}
+
+func (o objWrapper) Rect() pixel.Rect { return o.rect }
+func (o objWrapper) Id() int          { return o.id }
+
+func List() []common.O {
+	res := make([]common.O, 0, len(objs))
+	for i, o := range objs {
+		res = append(res, objWrapper{id: i + 1, rect: o.rect})
+	}
+	return res
+}
+
+func Update(dt float64, visiblePhys []common.O) {
 	for _, o := range objs {
-		vPhys := qt.Retrieve(o.rect)
-		o.update(dt, vPhys)
+		o.update(dt, visiblePhys)
 	}
 }
 
@@ -84,12 +86,11 @@ func Draw(win pixel.Target) {
 	}
 }
 
-func (o *object) update(dt float64, vPhys []common.Objecter) {
+func (o *object) update(dt float64, vPhys []common.O) {
 	o.phys.Update(dt, vPhys)
 	o.rect = o.phys.GetRect()
 
 	o.vel = o.phys.GetVel()
-	//	fmt.Println(o.vel, math.Signbit(o.vel.X), o.dir)
 	if !math.Signbit(o.vel.X) {
 		o.dir = 1
 	} else {

@@ -12,43 +12,48 @@ var ActionSkillMap = map[string]int{
 	"melee":     events.MELEE,
 	"meleemove": events.MELEEMOVE,
 	"meleejump": events.MELEEJUMP,
+	"meleedown": events.MELEE,
 	"deathbolt": events.RANGED,
 	"crossbow":  events.RANGED,
 	"sling":     events.RANGED,
 	"ranged":    events.RANGED,
 	"roll":      events.ROLL,
 	"cast":      events.CAST,
+	"sit":       events.SIT,
+	"dash":      events.DASH,
 }
 
 type Skill struct {
-	Id     int
-	Min    float64
-	Max    float64
-	Weight int
-	Type   string
-	Name   string
-	Dir    int
-	Keys   []int
-	Event  int
-	Ttl    float64
-	Speed  float64
-	Hitbox pixel.Rect
+	Id       int
+	Min      float64
+	Max      float64
+	Weight   int
+	Type     string
+	Name     string
+	Dir      int
+	Keys     []int
+	Event    int
+	Ttl      float64
+	Speed    float64
+	Hitbox   pixel.Rect
+	Cooldown float64
 }
 
 func NewSkill(pr config.Skill) *Skill {
 	s := &Skill{
-		Min:    pr.Min,
-		Max:    pr.Max,
-		Weight: pr.Weight,
-		Type:   pr.Type,
-		Name:   pr.Name,
-		Dir:    pr.Dir,
-		Ttl:    0.5,
-		Speed:  pr.Speed,
-		Keys:   make([]int, 0),
+		Min:      pr.Min,
+		Max:      pr.Max,
+		Weight:   pr.Weight,
+		Type:     pr.Type,
+		Name:     pr.Name,
+		Dir:      pr.Dir,
+		Ttl:      0.5,
+		Speed:    pr.Speed,
+		Keys:     make([]int, 0),
+		Cooldown: pr.Cooldown,
 	}
 
-	s.Event = ActionSkillMap[pr.Name]
+	s.Event = ActionSkillMap[pr.Type]
 
 	for _, ev := range pr.Keys {
 		if eventId, ok := bindings.KeyAction[ev]; ok {

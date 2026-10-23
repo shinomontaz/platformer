@@ -23,7 +23,7 @@ var typesBinds = map[int]string{
 	bindings.SHIFT: "default",
 	bindings.LEFT:  "default",
 	bindings.RIGHT: "default",
-	bindings.UP:    "default",
+	bindings.UP:    "pressed",
 	bindings.DOWN:  "default",
 }
 

@@ -1,7 +1,6 @@
 package world
 
 import (
-	"fmt"
 	"image/color"
 	"sync"
 
@@ -9,6 +8,7 @@ import (
 
 	"platformer/actor"
 	"platformer/common"
+	"platformer/common/quadtree"
 	"platformer/creatures"
 	"platformer/inventory"
 	"platformer/loot"
@@ -24,6 +24,7 @@ import (
 )
 
 type World struct {
+	r      pixel.Rect
 	b      Background
 	loader *common.Loader
 
@@ -31,42 +32,44 @@ type World struct {
 	cnv2   *pixelgl.Canvas
 	Height float64
 	Width  float64
-	qtTile *common.Quadtree
-	qtObjs *common.Quadtree
-	qtPhys *common.Quadtree
-	qtSpec *common.Quadtree
+	qtPhys *quadtree.Qt
+	qtTile *quadtree.Qt
+	qtObjs *quadtree.Qt
+	qtSpec *quadtree.Qt
 
 	gravity float64
 
-	tm      *tmx.Map
-	geom    *tmx.ObjectGroup
-	scenery *tmx.ObjectGroup
-	//	meta         *tmx.Object
+	tm *tmx.Map
+
+	objMap map[groupType]*tmx.ObjectGroup
+
 	meta pixel.Vec // here is a center of the map
 
 	batches      []*pixel.Batch
 	batchIndices map[string]int
 	sprites      map[string]*pixel.Sprite
 
-	objects     map[uint32]*tmx.Object
-	objectTiles map[uint32]*tmx.LayerTile
-	//	phys        map[uint32]*tmx.Object
-	tiles      map[uint32]*tmx.LayerTile
+	specobjs    []object
+	objects     []object
+	objectTiles []*tmx.LayerTile
+	physobjs    []object
+
+	tiles      []tile
 	imdrawrect *imdraw.IMDraw
 
 	viewport      pixel.Rect
 	creaturesmeta []*tmx.Object
+	crtrs         *creatures.List
 
-	visibleTiles []common.Objecter
-	visibleObjs  []common.Objecter
-	visiblePhys  []common.Objecter
-	visibleSpec  []common.Objecter
+	visibleTiles []tile
+	visibleObjs  []object
+	visiblePhys  []common.O
+	visibleSpec  []common.O
 
 	uObjects    []mgl32.Vec4 // = 250 rectangles
 	uNumObjects int32
 	uLight      mgl32.Vec2
 
-	c       *creatures.List
 	IsDebug bool
 }
 
@@ -88,36 +91,35 @@ func WithLoader(l *common.Loader) Option {
 
 func New(source string, rect pixel.Rect, opts ...Option) (*World, error) {
 	w := World{
-		batches:      make([]*pixel.Batch, 0),
-		batchIndices: make(map[string]int),
-		sprites:      make(map[string]*pixel.Sprite),
-		tiles:        make(map[uint32]*tmx.LayerTile),
-		//		phys:         make(map[uint32]*tmx.Object),
-		objects: make(map[uint32]*tmx.Object),
+		batches:      []*pixel.Batch{},
+		batchIndices: map[string]int{},
+		sprites:      map[string]*pixel.Sprite{},
+		tiles:        []tile{},
+		objects:      []object{},
+		physobjs:     []object{},
+		specobjs:     []object{},
 
-		objectTiles:   make(map[uint32]*tmx.LayerTile),
-		creaturesmeta: make([]*tmx.Object, 0),
-		viewport:      rect,
-		imdrawrect:    imdraw.New(nil),
+		objectTiles: []*tmx.LayerTile{},
+
+		visibleTiles: []tile{},
+		visiblePhys:  []common.O{},
+		visibleObjs:  []object{},
+		visibleSpec:  []common.O{},
+
+		viewport:   rect,
+		imdrawrect: imdraw.New(nil),
 	}
 
 	for _, opt := range opts {
 		opt(&w)
 	}
 
-	mapsource, err := w.loader.Open(source)
+	var err error
+	w.tm, err = w.loadMap(source)
 	if err != nil {
 		return nil, err
 	}
-	defer mapsource.Close()
-
-	tm, err := tmx.LoadReader("assets", mapsource)
-	if err != nil {
-		return nil, fmt.Errorf("%s 111", err)
-	}
-
-	w.tm = tm
-
+	w.objMap = w.readObjects(w.tm)
 	w.init()
 
 	return &w, nil
@@ -127,54 +129,12 @@ func (w *World) init() {
 	w.Height = float64(w.tm.TileHeight * w.tm.Height)
 	w.Width = float64(w.tm.TileWidth * w.tm.Width)
 
-	r := pixel.R(0.0, 0.0, w.Width, w.Height)
-	w.qtTile = common.New(1, 10, r)
-	w.qtPhys = common.New(1, 10, r)
-	w.qtObjs = common.New(1, 10, r)
-	w.qtSpec = common.New(1, 10, r)
+	w.r = pixel.R(0.0, 0.0, w.Width, w.Height)
+	w.qtTile = quadtree.New(1, 10, w.r)
+	w.qtObjs = quadtree.New(1, 10, w.r)
+	w.qtSpec = quadtree.New(1, 10, w.r)
 
-	w.meta = pixel.Vec{w.tm.Properties.GetFloat("centerX"), w.tm.Properties.GetFloat("centerY")}
-
-	for _, og := range w.tm.ObjectGroups {
-		if og.Name == "geom" {
-			w.geom = og
-		}
-		if og.Name == "meta" {
-			for _, o := range og.Objects {
-				// if o.Class == "hero" {
-				// 	w.meta = o
-				// }
-
-				if o.Class == "enemy" || o.Class == "npc" || o.Class == "coin" || o.Class == "object" { // TODO: refactor!
-					o.Y = w.Height - o.Y
-					w.creaturesmeta = append(w.creaturesmeta, o)
-				}
-
-				if o.Class == "water" {
-					min := pixel.V(
-						float64(o.X),
-						float64(w.Height)-float64(o.Y)-float64(o.Height),
-					)
-					max := pixel.Vec{
-						X: min.X + float64(o.Width),
-						Y: min.Y + float64(o.Height),
-					}
-
-					rc := pixel.Rect{
-						Min: min,
-						Max: max,
-					}
-
-					w.qtSpec.Insert(common.Objecter{ID: o.GID, R: rc, Type: common.WATER})
-
-					w.drawRectIfNeeded(o, rc)
-				}
-			}
-		}
-		if og.Name == "scenery" {
-			w.scenery = og
-		}
-	}
+	w.meta = pixel.Vec{X: w.tm.Properties.GetFloat("centerX"), Y: w.tm.Properties.GetFloat("centerY")}
 
 	rect := pixel.Rect{
 		Min: pixel.V(
@@ -213,6 +173,38 @@ func (w *World) init() {
 		defer wg.Done()
 	}()
 	wg.Wait()
+
+	if og := w.objMap[CREATURES]; og != nil {
+		for _, o := range og.Objects {
+			if o.Class == "enemy" || o.Class == "npc" || o.Class == "coin" || o.Class == "object" {
+				o.Y = w.Height - o.Y
+				w.creaturesmeta = append(w.creaturesmeta, o)
+			}
+			if o.Class == "water" {
+				min := pixel.V(
+					float64(o.X),
+					float64(w.Height)-float64(o.Y)-float64(o.Height),
+				)
+				max := pixel.Vec{
+					X: min.X + float64(o.Width),
+					Y: min.Y + float64(o.Height),
+				}
+				rc := pixel.Rect{
+					Min: min,
+					Max: max,
+				}
+				oo := object{
+					ID:     len(w.specobjs),
+					R:      rc,
+					Center: rc.Center(),
+					T:      common.WATER,
+				}
+				w.specobjs = append(w.specobjs, oo)
+				w.qtSpec.Insert(oo)
+				w.drawRectIfNeeded(o, rc)
+			}
+		}
+	}
 }
 
 func (w *World) initShader(shadername string) {
@@ -225,16 +217,16 @@ func (w *World) initShader(shadername string) {
 	w.uObjects = make([]mgl32.Vec4, 0)
 	w.uLight = [2]float32{float32(-w.viewport.W()/2 + 100.0), float32(w.viewport.H()/2 - 100.0)}
 
-	// w.cnv.SetUniform("uLight", &w.uLight)
-	// w.cnv.SetUniform("uObjects", &w.uObjects)
-	// w.cnv.SetUniform("uNumObjects", &w.uNumObjects)
+	w.cnv.SetUniform("uLight", &w.uLight)
+	w.cnv.SetUniform("uObjects", &w.uObjects)
+	w.cnv.SetUniform("uNumObjects", &w.uNumObjects)
 
-	//	fragSource, err := w.loader.LoadFileToString(shadername)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	fragSource, err := w.loader.LoadFileToString(shadername)
+	if err != nil {
+		panic(err)
+	}
 
-	//	w.cnv.SetFragmentShader(fragSource)
+	w.cnv.SetFragmentShader(fragSource)
 }
 
 func (w *World) initProps() {
@@ -253,8 +245,14 @@ func (w *World) initSets() {
 	for _, tileset := range w.tm.Tilesets {
 		if len(tileset.Tiles) > 0 { // tileset of pictures
 			for _, tile := range tileset.Tiles {
+				if tile.Image == nil {
+					continue
+				}
 				if _, alreadyLoaded := w.sprites[tile.Image.Source]; !alreadyLoaded {
-					pictureData, _ := w.loader.LoadPicture(tile.Image.Source)
+					pictureData, err := w.loader.LoadPicture(tile.Image.Source)
+					if err != nil {
+						panic(err)
+					}
 					sprite := pixel.NewSprite(pictureData, pictureData.Bounds())
 					w.sprites[tile.Image.Source] = sprite
 					w.batches = append(w.batches, pixel.NewBatch(&pixel.TrianglesData{}, pictureData))
@@ -264,7 +262,10 @@ func (w *World) initSets() {
 			}
 		} else {
 			if _, alreadyLoaded := w.sprites[tileset.Image.Source]; !alreadyLoaded {
-				pictureData, _ := w.loader.LoadPicture(tileset.Image.Source)
+				pictureData, err := w.loader.LoadPicture(tileset.Image.Source)
+				if err != nil {
+					panic(err)
+				}
 				sprite := pixel.NewSprite(pictureData, pictureData.Bounds())
 				w.sprites[tileset.Image.Source] = sprite
 				w.batches = append(w.batches, pixel.NewBatch(&pixel.TrianglesData{}, pictureData))
@@ -276,56 +277,38 @@ func (w *World) initSets() {
 }
 
 func (w *World) initTiles() {
+	var ts *tmx.Tileset
 	for _, layer := range w.tm.Layers {
-		for tileIndex, tile := range layer.Tiles {
-			if tile.Nil {
+		for tileIndex, tmxTile := range layer.Tiles {
+			if tmxTile.Nil {
 				continue
 			}
-			ts := tile.Tileset
-
-			tile.ID = ts.FirstGID + tile.ID - 1
+			ts = tmxTile.Tileset
 
 			// Calculate the framing for the tile within its tileset's source image
 			gamePos := indexToGamePos(tileIndex, w.tm.Width, w.tm.Height)
 			pos := gamePos.ScaledXY(pixel.V(float64(ts.TileWidth), float64(ts.TileHeight)))
-			w.tiles[tile.ID] = tile
-			res := w.qtTile.Insert(common.Objecter{ID: tile.ID, R: pixel.R(pos.X, pos.Y, pos.X+float64(ts.TileWidth), pos.Y+float64(ts.TileHeight))})
-			if !res {
-				fmt.Println(layer.Name, ts.FirstGID, tile.ID, common.Objecter{ID: tile.ID, R: pixel.R(pos.X, pos.Y, pos.X+float64(ts.TileWidth), pos.Y+float64(ts.TileHeight))})
+
+			tile := tile{
+				Index:   len(w.tiles),
+				ID:      ts.FirstGID + tmxTile.ID - 1,
+				R:       pixel.R(pos.X, pos.Y, pos.X+float64(ts.TileWidth), pos.Y+float64(ts.TileHeight)),
+				Tileset: ts,
+			}
+			w.tiles = append(w.tiles, tile)
+			if !w.qtTile.Insert(tile) {
 				panic("cannot insert tile!")
 			}
 		}
 	}
 }
 
-func (w *World) initPhys() {
-	for _, o := range w.geom.Objects {
-		min := pixel.V(
-			float64(o.X),
-			float64(w.Height)-float64(o.Y)-float64(o.Height),
-		)
-		max := pixel.Vec{
-			X: min.X + float64(o.Width),
-			Y: min.Y + float64(o.Height),
-		}
-
-		rc := pixel.Rect{
-			Min: min,
-			Max: max,
-		}
-		phType := common.GROUND
-		if o.Class == "barier" {
-			phType = common.BARRIER
-		}
-		//		w.phys[o.GID] = o
-		w.qtPhys.Insert(common.Objecter{ID: o.GID, R: rc, Type: phType})
-
-		w.drawRectIfNeeded(o, rc)
-	}
-}
-
 func (w *World) initObjs() {
-	for _, o := range w.scenery.Objects {
+	og := w.objMap[SCENERY]
+	if og == nil {
+		return
+	}
+	for _, o := range og.Objects {
 		min := pixel.V(
 			float64(o.X),
 			float64(w.Height)-float64(o.Y),
@@ -342,12 +325,18 @@ func (w *World) initObjs() {
 
 		dTile, err := w.tm.TileGIDToTile(o.GID) // type(dTile) = *tmx.LayerTile
 		if err != nil {
-			panic(err) // TODO!
+			panic(err)
 		}
-		w.objectTiles[o.GID] = dTile
 
-		w.objects[o.GID] = o
-		w.qtObjs.Insert(common.Objecter{ID: o.GID, R: rc})
+		oo := object{
+			ID:     len(w.objects),
+			R:      rc,
+			Center: rc.Center(),
+		}
+
+		w.objectTiles = append(w.objectTiles, dTile)
+		w.objects = append(w.objects, oo)
+		w.qtObjs.Insert(oo)
 	}
 }
 
@@ -355,54 +344,31 @@ func (w *World) GetViewport() pixel.Rect {
 	return w.viewport
 }
 
-func (w *World) GetVisiblePhys() []common.Objecter {
-	return w.visiblePhys
-}
-
 func (w *World) Update(rect pixel.Rect, hpos pixel.Vec, dt float64) {
 	w.viewport = rect
 
-	w.visibleTiles = w.qtTile.Retrieve(w.viewport)
-	w.visibleObjs = w.qtObjs.Retrieve(w.viewport) // scenery and objects
-	w.visibleSpec = w.qtSpec.Retrieve(w.viewport)
+	w.updateTiles()
+	w.updateObjects()
+	w.updateSpecs()
 
-	w.visiblePhys = w.qtPhys.Retrieve(w.viewport)
-	w.uObjects = make([]mgl32.Vec4, 0)
-	c := w.viewport.Center()
-	for _, o := range w.visiblePhys {
-		if o.Type != common.GROUND {
-			continue
-		}
-		uObject := mgl32.Vec4{float32(-c.X + o.R.Min.X), float32(-c.Y + o.R.Min.Y - 150), float32(-c.X + o.R.Max.X), float32(-c.Y + o.R.Max.Y - 150)}
-		w.uObjects = append(w.uObjects, uObject)
-	}
-	w.uNumObjects = int32(len(w.uObjects))
+	w.updatePhys()
 
-	w.visiblePhys = append(w.visiblePhys, objects.List(w.viewport)...)
-	w.c.Update(dt, w.visiblePhys, w.visibleSpec)
+	w.UpdateCreatures(dt)
 	loot.Update(dt, w.visiblePhys)
-	collectedloot := loot.Collect(w.c.GetHero())
+
+	collectedloot := loot.Collect(w.crtrs.GetHero())
 	inventory.Add(collectedloot)
+
 	particles.Update(dt, w.visiblePhys)
 	projectiles.Update(dt, w.visiblePhys, w.visibleSpec)
-	objects.Update(dt, w.qtPhys)
+
+	objects.Update(dt, w.visiblePhys)
+
 	w.b.Update(dt, hpos)
 }
 
 func (w *World) GetGravity() float64 {
 	return w.gravity
-}
-
-func (w *World) SetCreatures(crtrs *creatures.List) {
-	w.c = crtrs
-}
-
-// func (w *World) SetObjects(objs *creatures.List) {
-// 	w.objs = objs
-// }
-
-func (w *World) GetCreatures() *creatures.List {
-	return w.c
 }
 
 func (w *World) IsSee(from, to pixel.Vec) bool {
@@ -418,7 +384,7 @@ func (w *World) IsSee(from, to pixel.Vec) bool {
 	objs := w.qtPhys.Retrieve(box)
 
 	for _, o := range objs { // check collision for line from -> to against physic layer
-		if len(o.R.IntersectionPoints(line)) > 0 {
+		if len(w.physobjs[o].R.IntersectionPoints(line)) > 0 {
 			return false
 		}
 	}
@@ -426,7 +392,7 @@ func (w *World) IsSee(from, to pixel.Vec) bool {
 	return true
 }
 
-func (w *World) AddSpell(owner *actor.Actor, t pixel.Vec, spell string, objs []common.Objecter) {
+func (w *World) AddSpell(owner *actor.Actor, t pixel.Vec, spell string, objs []common.O) {
 	AddSpell(owner, t, spell, objs)
 }
 
@@ -438,9 +404,12 @@ func (w *World) SetBackground(b Background) {
 	w.b = b
 }
 
-//func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
-func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel.Vec) {
+func (w *World) SetCreatures(c *creatures.List) {
+	w.crtrs = c
+}
 
+// func (w *World) Draw(win *pixelgl.Window, hpos pixel.Vec, cam pixel.Vec) {
+func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel.Vec) {
 	w.cnv.Clear(color.RGBA{0, 0, 0, 1})
 	//	w.cnv2.Clear(color.RGBA{240, 248, 255, 1})
 	w.cnv2.Clear(color.RGBA{0, 0, 0, 1})
@@ -455,8 +424,7 @@ func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel
 		batch.Clear()
 	}
 
-	for _, t := range w.visibleTiles {
-		tile := w.tiles[t.ID]
+	for _, tile := range w.visibleTiles {
 		ts := tile.Tileset
 		tID := int(tile.ID - ts.FirstGID + 1)
 
@@ -469,16 +437,30 @@ func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel
 		fY := iY + float64(ts.TileHeight)
 
 		sprite := w.sprites[ts.Image.Source]
+		if sprite == nil {
+			continue
+		}
+		batchIdx, ok := w.batchIndices[ts.Image.Source]
+		if !ok {
+			continue
+		}
+
 		sprite.Set(sprite.Picture(), pixel.R(iX, iY, fX, fY))
-		pos := t.R.Center()
-		sprite.Draw(w.batches[w.batchIndices[ts.Image.Source]], pixel.IM.Moved(pos))
+		pos := tile.R.Center()
+		sprite.Draw(w.batches[batchIdx], pixel.IM.Moved(pos))
+	}
+
+	if w.crtrs != nil {
+		w.crtrs.DrawBack(w.cnv2)
 	}
 
 	for _, obj := range w.visibleObjs {
-		o := w.objects[obj.ID]
-		dTile := w.objectTiles[o.GID]
+		dTile := w.objectTiles[obj.ID]
 
-		tile, _ := dTile.Tileset.GetTilesetTile(dTile.ID)
+		tile, err := dTile.Tileset.GetTilesetTile(dTile.ID)
+		if err != nil || tile == nil {
+			continue
+		}
 
 		iX := 0.0
 		fX := float64(tile.Image.Width)
@@ -486,12 +468,20 @@ func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel
 		fY := float64(tile.Image.Height)
 
 		sprite := w.sprites[tile.Image.Source]
+		if sprite == nil {
+			continue
+		}
+		batchIdx, ok := w.batchIndices[tile.Image.Source]
+		if !ok {
+			continue
+		}
+
 		sprite.Set(sprite.Picture(), pixel.R(iX, iY, fX, fY))
 		flip := 1.0
 		if dTile.HorizontalFlip {
 			flip = -1.0
 		}
-		sprite.Draw(w.batches[w.batchIndices[tile.Image.Source]], pixel.IM.ScaledXY(pixel.ZV, pixel.V(flip, 1)).Moved(obj.R.Center()))
+		sprite.Draw(w.batches[batchIdx], pixel.IM.ScaledXY(pixel.ZV, pixel.V(flip, 1)).Moved(obj.Center))
 	}
 
 	for _, batch := range w.batches {
@@ -502,7 +492,7 @@ func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel
 		imd := imdraw.New(nil)
 		imd.Color = color.RGBA{255, 0, 0, 1}
 		for _, p := range w.visiblePhys {
-			vertices := p.R.Vertices()
+			vertices := p.Rect().Vertices()
 			for _, v := range vertices {
 				imd.Push(v)
 			}
@@ -513,7 +503,9 @@ func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel
 
 	drawSpells(w.cnv2)
 
-	w.c.Draw(w.cnv2)
+	if w.crtrs != nil {
+		w.crtrs.Draw(w.cnv2)
+	}
 	loot.Draw(w.cnv2)
 	particles.Draw(w.cnv2)
 	projectiles.Draw(w.cnv2)

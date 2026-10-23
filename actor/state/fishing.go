@@ -2,7 +2,7 @@ package state
 
 import (
 	"math"
-	"platformer/common"
+	"platformer/common/rand"
 	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
@@ -25,7 +25,7 @@ func NewFishing(a Actor, an Animater) *Fishing {
 			trs:   a.GetTransition(IDLE),
 		},
 		sprite:    pixel.NewSprite(nil, pixel.Rect{}),
-		idleLimit: common.GetRandFloat() * 2.0, // seconds before idle
+		idleLimit: rand.Float64() * 2.0, // seconds before idle
 	}
 
 	return fs

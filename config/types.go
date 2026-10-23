@@ -7,6 +7,7 @@ type Main struct {
 	Height   float64 `json:"Height"`
 	WorldCfg string  `json:"WorldCfg"`
 	AllAnims string  `json:"AllAnims"`
+	Skills   string  `json:"Skills"`
 	Profiles string  `json:"Profiles"`
 	Loots    string  `json:"Loots"`
 	Sounds   string  `json:"sounds"`
@@ -44,16 +45,40 @@ type Anims struct {
 }
 
 type Skill struct {
-	Type   string    `json:"type"`
-	Name   string    `json:"name"`
-	Min    float64   `json:"min"`
-	Max    float64   `json:"max"`
-	Weight int       `json:"weight"`
-	Dir    int       `json:"dir"`
-	Ttl    float64   `json:"ttl"`
-	Hitbox []float64 `json:"hitbox"`
-	Speed  float64   `json:"speed"`
-	Keys   []string  `json:"keys"`
+	Type     string    `json:"type"`
+	Name     string    `json:"name"`
+	Min      float64   `json:"min"`
+	Max      float64   `json:"max"`
+	Weight   int       `json:"weight"`
+	Dir      int       `json:"dir"`
+	Ttl      float64   `json:"ttl"`
+	Hitbox   []float64 `json:"hitbox"`
+	Speed    float64   `json:"speed"`
+	Keys     []string  `json:"keys"`
+	Cooldown float64   `json:"cooldown"`
+}
+
+type profileRaw struct {
+	Type            string   `json:"type"`
+	Anim            string   `json:"anim"`
+	Portrait        string   `json:"portrait"`
+	Body            string   `json:"body"`
+	Dir             float64  `json:"dir"`
+	Hp              int      `json:"hp"`
+	Strength        int      `json:"strength"`
+	Width           float64  `json:"width"`
+	Height          float64  `json:"height"`
+	Margin          float64  `json:"margin"`
+	Jump            float64  `json:"jump"`
+	Mass            float64  `json:"mass"`
+	Walk            float64  `json:"walk"`
+	Run             float64  `json:"run"`
+	SkillNames      []string `json:"skills"`
+	Phrases         string   `json:"phrases"`
+	Dialog          int      `json:"dialog"`
+	Only            int      `json:"only"`
+	WaterResistance bool     `json:"waterresistance"`
+	HurtReaction    string   `json:"hurtreaction"`
 }
 type Profile struct {
 	Type            string  `json:"type"`
@@ -75,6 +100,7 @@ type Profile struct {
 	Dialog          int     `json:"dialog"`
 	Only            int     `json:"only"`
 	WaterResistance bool    `json:"waterresistance"`
+	HurtReaction    string  `json:"hurtreaction"`
 }
 
 type Soundeffect struct {

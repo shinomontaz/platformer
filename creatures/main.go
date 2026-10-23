@@ -4,7 +4,6 @@ import (
 	"github.com/shinomontaz/pixel"
 
 	"platformer/activities"
-	"platformer/actor"
 	"platformer/common"
 )
 
@@ -12,12 +11,14 @@ type List struct {
 	npcs    []common.Actorer
 	enemies []common.Actorer
 	hero    common.Actorer
+	back    []common.Actorer // существа ЗА scenery (лодка поверх них)
 }
 
 func New() *List {
 	return &List{
 		enemies: make([]common.Actorer, 0),
 		npcs:    make([]common.Actorer, 0),
+		back:    make([]common.Actorer, 0),
 	}
 }
 
@@ -30,11 +31,11 @@ func (l *List) AddEnemy(enemy common.Actorer) {
 	l.enemies = append(l.enemies, enemy)
 }
 
-func (l *List) AddNpc(npc *actor.Actor) {
+func (l *List) AddNpc(npc common.Actorer) {
 	l.npcs = append(l.npcs, npc)
 }
 
-func (l *List) DeleteNpc(npc *actor.Actor) {
+func (l *List) DeleteNpc(npc common.Actorer) {
 	i := 0
 	for _, n := range l.npcs {
 		if n == npc {
@@ -54,8 +55,7 @@ func (l *List) SetHero(h common.Actorer) {
 	l.hero = h
 }
 
-func (l *List) Update(dt float64, visiblePhys, visibleSpec []common.Objecter) {
-
+func (l *List) Update(dt float64, visiblePhys, visibleSpec []common.O) {
 	if l.hero != nil {
 		l.hero.Update(dt, visiblePhys)
 		l.hero.UpdateSpecial(dt, visibleSpec)
@@ -68,12 +68,17 @@ func (l *List) Update(dt float64, visiblePhys, visibleSpec []common.Objecter) {
 		npc.Update(dt, visiblePhys)
 		npc.UpdateSpecial(dt, visibleSpec)
 	}
+	for _, npc := range l.back {
+		npc.Update(dt, visiblePhys)
+		npc.UpdateSpecial(dt, visibleSpec)
+	}
+
 	activities.UpdateStrikes(dt, l.enemies, l.hero)
 	activities.UpdateInteractions(dt, l.npcs)
 }
 
 func (l *List) Draw(t pixel.Target) {
-	//	activities.DrawStrikes(t)
+	activities.DrawStrikes(t)
 	for _, e := range l.enemies {
 		e.Draw(t)
 	}
@@ -82,5 +87,15 @@ func (l *List) Draw(t pixel.Target) {
 	}
 	if l.hero != nil {
 		l.hero.Draw(t)
+	}
+}
+
+func (l *List) AddNpcBack(npc common.Actorer) {
+	l.back = append(l.back, npc)
+}
+
+func (l *List) DrawBack(t pixel.Target) {
+	for _, n := range l.back {
+		n.Draw(t)
 	}
 }

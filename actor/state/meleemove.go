@@ -3,7 +3,7 @@ package state
 import (
 	"fmt"
 	"math"
-	"platformer/common"
+	"platformer/common/rand"
 	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
@@ -46,9 +46,9 @@ func (s *Meleemove) Start() {
 	}
 
 	s.idleLimit = res.(float64)
-	variants := s.anims.GetGroupLen("meleemove")
+	variants := s.anims.GetLen("meleemove/")
 	if variants > 1 {
-		s.attackidx += int(math.Round(common.GetRandFloat() * float64(variants-1)))
+		s.attackidx += int(math.Round(rand.Float64() * float64(variants-1)))
 	}
 
 	s.striked = false
@@ -79,7 +79,7 @@ func (s *Meleemove) Update(dt float64) {
 
 	s.time += dt
 	s.animSpriteNum = int(math.Floor(s.time / 0.1))
-	if s.animSpriteNum == 3 && !s.striked {
+	if s.animSpriteNum == 1 && !s.striked {
 		s.a.Strike(s.idleLimit - s.time)
 		s.striked = true
 	}
@@ -91,7 +91,7 @@ func (s *Meleemove) GetSprite() *pixel.Sprite {
 		s.sprite = pixel.NewSprite(nil, pixel.Rect{})
 	}
 
-	pic, rect := s.anims.GetGroupSprite("meleemove", fmt.Sprintf("attack%d", s.attackidx), s.animSpriteNum)
+	pic, rect := s.anims.GetSprite(fmt.Sprintf("meleemove/attack%d", s.attackidx), s.animSpriteNum)
 	s.sprite.Set(pic, rect)
 
 	return s.sprite

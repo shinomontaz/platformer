@@ -43,7 +43,7 @@ func (ui *Ui) Draw(t pixel.Target) {
 	ui.ch.GetPortrait().Draw(t, pixel.IM.Moved(vec))
 
 	for i := 0; i < ui.ch.GetHp(); i++ {
-		vec = vec.Add(pixel.Vec{marginx, 0})
+		vec = vec.Add(pixel.Vec{X: marginx, Y: 0})
 		ui.heart.Draw(t, pixel.IM.Moved(vec))
 	}
 

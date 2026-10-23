@@ -664,6 +664,7 @@
    <properties>
     <property name="ai" value="enemy_idle"/>
     <property name="reward" value="coin"/>
+    <property name="type" value=""/>
    </properties>
   </object>
   <object id="42" name="chest" class="npc" x="1679.17" y="822.337" width="32.3333" height="40.6667">
@@ -679,6 +680,7 @@
     <property name="ai" value="enemy_idle"/>
     <property name="dir" type="float" value="-1"/>
     <property name="reward" value="coin"/>
+    <property name="type" value=""/>
    </properties>
   </object>
   <object id="45" name="turtle" class="object" x="2400.25" y="954.348" width="70.5" height="35.9167">
@@ -690,6 +692,7 @@
    <properties>
     <property name="ai" value="enemy_idle"/>
     <property name="dir" type="float" value="-1"/>
+    <property name="type" value="generic_range"/>
    </properties>
   </object>
   <object id="54" name="man" class="npc" x="3867.17" y="662.667" width="32.3333" height="40.6667">
@@ -703,24 +706,28 @@
    <properties>
     <property name="ai" value="enemy_idle"/>
     <property name="reward" value="key"/>
+    <property name="type" value=""/>
    </properties>
   </object>
   <object id="60" name="mummy" class="enemy" x="4994.17" y="800.5" width="51" height="61">
    <properties>
     <property name="ai" value="enemy_idle"/>
     <property name="reward" value="key"/>
+    <property name="type" value=""/>
    </properties>
   </object>
   <object id="61" name="mummy" class="enemy" x="5815.17" y="800.5" width="51" height="61">
    <properties>
     <property name="ai" value="enemy_idle"/>
     <property name="reward" value="key"/>
+    <property name="type" value=""/>
    </properties>
   </object>
   <object id="62" name="bigbloated" class="enemy" x="5162.5" y="1095.17" width="73" height="82">
    <properties>
     <property name="ai" value="enemy_idle"/>
     <property name="reward" value="key"/>
+    <property name="type" value=""/>
    </properties>
   </object>
   <object id="71" class="water" x="7360.17" y="705.75" width="577.333" height="94.5003">
@@ -737,24 +744,28 @@
    <properties>
     <property name="ai" value="enemy_idle"/>
     <property name="reward" value="key"/>
+    <property name="type" value=""/>
    </properties>
   </object>
   <object id="76" name="mummy" class="enemy" x="6491.83" y="585.5" width="51" height="61">
    <properties>
     <property name="ai" value="enemy_idle"/>
     <property name="reward" value="key"/>
+    <property name="type" value=""/>
    </properties>
   </object>
   <object id="77" name="mummy" class="enemy" x="6610.5" y="588.167" width="51" height="61">
    <properties>
     <property name="ai" value="enemy_idle"/>
     <property name="reward" value="key"/>
+    <property name="type" value=""/>
    </properties>
   </object>
   <object id="78" name="mummy" class="enemy" x="6707.83" y="592.167" width="51" height="61">
    <properties>
     <property name="ai" value="enemy_idle"/>
     <property name="reward" value="key"/>
+    <property name="type" value=""/>
    </properties>
   </object>
   <object id="79" name="mummy" class="enemy" x="6790.5" y="589.5" width="51" height="61">
@@ -773,12 +784,14 @@
    <properties>
     <property name="ai" value="enemy_idle"/>
     <property name="dir" type="float" value="-1"/>
+    <property name="type" value=""/>
    </properties>
   </object>
   <object id="82" name="deceased" class="enemy" x="6405.17" y="589.5" width="51" height="61">
    <properties>
     <property name="ai" value="enemy_idle"/>
     <property name="dir" type="float" value="-1"/>
+    <property name="type" value=""/>
    </properties>
   </object>
   <object id="83" name="fisherman" class="npc" x="8068.5" y="627.667" width="32.3333" height="40.6667">
@@ -797,6 +810,7 @@
    <properties>
     <property name="ai" value="enemy_idle"/>
     <property name="dir" type="int" value="-1"/>
+    <property name="type" value=""/>
    </properties>
   </object>
   <object id="181" name="octopus" class="enemy" x="633.833" y="1021" width="32.3333" height="40.6667">
@@ -807,21 +821,25 @@
   <object id="222" name="goblin_melee" class="enemy" x="2266.5" y="855.5" width="51" height="61">
    <properties>
     <property name="ai" value="enemy_idle"/>
+    <property name="type" value="generic_melee"/>
    </properties>
   </object>
   <object id="223" name="goblin_melee2" class="enemy" x="3850.5" y="830.833" width="51" height="61">
    <properties>
     <property name="ai" value="enemy_idle"/>
+    <property name="type" value=""/>
    </properties>
   </object>
-  <object id="224" name="goblin_range2" class="enemy" x="1828.5" y="856.167" width="51" height="61">
+  <object id="224" name="goblin_range2" class="enemy" x="1754.5" y="862.167" width="51" height="61">
    <properties>
     <property name="ai" value="enemy_idle"/>
+    <property name="type" value=""/>
    </properties>
   </object>
   <object id="225" name="goblin_mage" class="enemy" x="2089.17" y="856.167" width="51" height="61">
    <properties>
     <property name="ai" value="enemy_idle"/>
+    <property name="type" value=""/>
    </properties>
   </object>
  </objectgroup>

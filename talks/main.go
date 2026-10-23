@@ -5,6 +5,7 @@ import (
 	"math"
 	"platformer/activities"
 	"platformer/common"
+	"platformer/common/rand"
 
 	"github.com/shinomontaz/pixel"
 	"github.com/shinomontaz/pixel/pixelgl"
@@ -23,7 +24,7 @@ func Init(loader *common.Loader) {
 }
 
 func AddAlert(pos pixel.Vec, force float64) {
-	al := addAlert(pos, colornames.Red, randSeq([]rune("#$%&@*?arlTVXx"), 2+int(common.GetRandFloat()*3))+"!", 1, force)
+	al := addAlert(pos, colornames.Red, randSeq([]rune("#$%&@*?arlTVXx"), 2+int(rand.Float64()*3))+"!", 1, force)
 	alerts = append(alerts, al)
 	activities.Alert(al.GetRect())
 }
@@ -54,11 +55,11 @@ func Draw(win *pixelgl.Window, camPos, center pixel.Vec) {
 	}
 }
 
-//var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+// var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 func randSeq(letters []rune, n int) string {
 	b := make([]rune, n)
 	for i := range b {
-		b[i] = letters[int(math.Round(common.GetRandFloat()*float64(len(letters)-1)))]
+		b[i] = letters[int(math.Round(rand.Float64()*float64(len(letters)-1)))]
 	}
 	return string(b)
 }

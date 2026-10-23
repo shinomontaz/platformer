@@ -1,0 +1,142 @@
+[
+    {
+        "type": "melee",
+        "name": "generic_melee",
+        "max": 19,
+        "min": 5,
+        "weight": 1,
+        "hitbox": [10, -5, 20, 5],
+        "keys": ["ctrl"],
+        "cooldown": 0.5
+    },
+    {
+        "type": "meleemove",
+        "name": "generic_meleemove_left",
+        "speed": 180,
+        "hitbox": [5, -5, 15, 5],
+        "keys": ["ctrl", "left"],
+        "cooldown": 1
+    },
+    {
+        "type": "meleemove",
+        "name": "generic_meleemove_right",
+        "speed": 180,
+        "hitbox": [5, -5, 15, 5],
+        "keys": ["ctrl", "right"],
+        "cooldown": 1
+    },
+    {
+        "type": "roll",
+        "name": "roll_right",
+        "keys": ["down", "right"]
+    },
+    {
+        "type": "roll",
+        "name": "roll_left",
+        "keys": ["down", "left"]
+    },
+    {
+        "type": "sit",
+        "name": "sit",
+        "keys": ["down"]
+    },
+    {
+        "type": "meleejump",
+        "name": "generic_meleejump_left",
+        "speed": 250,
+        "hitbox": [10, -5, 20, 5],
+        "keys": ["ctrl", "up", "left"]
+    },
+    {
+        "type": "meleejump",
+        "name": "generic_meleejump_right",
+        "speed": 250,
+        "hitbox": [10, -5, 20, 5],
+        "keys": ["ctrl", "up", "right"]
+    },
+
+    {
+        "type": "ranged",
+        "name": "deathbolt",
+        "max": 250,
+        "min": 50,
+        "weight": 1,
+        "keys": ["ctrl"],
+        "cooldown": 1
+    },
+    {
+        "type": "ranged",
+        "name": "crossbow",
+        "max": 200,
+        "min": 30,
+        "weight": 1,
+        "keys": ["ctrl"],
+        "cooldown": 1.5
+    },
+    {
+        "type": "ranged",
+        "name": "sling",
+        "action": "ranged",
+        "max": 200,
+        "min": 25,
+        "weight": 1,
+        "keys": ["ctrl"],
+        "cooldown": 0.8
+    },
+    {
+        "type": "melee",
+        "name": "boss_melee",
+        "max": 35,
+        "min": 5,
+        "weight": 1,
+        "hitbox": [20, -5, 36, 10],
+        "keys": ["ctrl"],
+        "cooldown": 0.5
+    },
+    {
+        "type": "meleedown",
+        "name": "boss_meleedown",
+        "max": 35,
+        "min": 5,
+        "weight": 1,
+        "hitbox": [10, -36, 36, -26],
+        "keys": ["ctrl", "down"],
+        "cooldown": 1
+    },
+    {
+        "type": "melee",
+        "name": "boss_melee_bite",
+        "max": 50,
+        "min": 20,
+        "weight": 1,
+        "hitbox": [20, -5, 36, 10],
+        "keys": ["ctrl"],
+        "cooldown": 0.5
+    },
+    {
+        "type": "meleemove",
+        "name": "boss_meleemove_left",
+        "max": 300,
+        "min": 50,
+        "weight": 1,
+        "speed": 180,
+        "dir": -1,
+        "ttl": 2,
+        "hitbox": [20, -5, 36, 10],
+        "keys": ["ctrl", "left"],
+        "cooldown": 1.5
+    },
+    {
+        "type": "meleemove",
+        "name": "boss_meleemove_right",
+        "max": 300,
+        "min": 50,
+        "weight": 1,
+        "speed": 180,
+        "dir": 1,
+        "ttl": 2,
+        "hitbox": [20, -5, 36, 10],
+        "keys": ["ctrl", "right"],
+        "cooldown": 1.5
+    }
+]

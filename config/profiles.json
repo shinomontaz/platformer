@@ -13,55 +13,18 @@
         "oldmargin": 8,
         "margin": 0,
         "mass": 10,
-        "jump": 42,
+        "jump": 30,
         "walk": 80,
-        "run": 300,
+        "run": 180,
         "body": "human",
         "skills": [
-            {
-                "type": "melee",
-                "name": "melee",
-                "hitbox": [10, -5, 20, 5],
-                "keys": ["ctrl"]
-            },
-            {
-                "type": "melee",
-                "name": "meleemove",
-                "speed": 100,
-                "hitbox": [10, -5, 20, 5],
-                "keys": ["ctrl", "left"]
-            },
-            {
-                "type": "melee",
-                "name": "meleemove",
-                "speed": 100,
-                "hitbox": [10, -5, 20, 5],
-                "keys": ["ctrl", "right"]
-            },
-            {
-                "type": "move",
-                "name": "roll",
-                "keys": ["down", "right"]
-            },
-            {
-                "type": "move",
-                "name": "roll",
-                "keys": ["down", "left"]
-            },
-            {
-                "type": "melee",
-                "name": "meleejump",
-                "speed": 250,
-                "hitbox": [10, -5, 20, 5],
-                "keys": ["ctrl", "left"]
-            },
-            {
-                "type": "melee",
-                "name": "meleejump",
-                "speed": 250,
-                "hitbox": [10, -5, 20, 5],
-                "keys": ["ctrl", "right"]
-            }
+            "generic_melee",
+            "generic_meleemove_left",
+            "generic_meleemove_right",
+            "roll_left",
+            "roll_right",
+            "generic_meleejump_left",
+            "generic_meleejump_right"
         ]
     },
     {
@@ -79,16 +42,9 @@
         "walk": 60,
         "run": 60,
         "body": "undead",
+        "hurt_reaction": "none",
         "skills": [
-            {
-                "type": "melee",
-                "name": "melee",
-                "max": 19,
-                "min": 5,
-                "hitbox": [10, -5, 20, 5],
-                "weight": 1,
-                "keys": ["ctrl"]
-            }
+            "generic_melee"
         ]
     },
     {
@@ -106,15 +62,9 @@
         "walk": 60,
         "run": 60,
         "body": "undead",
+        "hurt_reaction": "none",
         "skills": [
-            {
-                "type": "ranged",
-                "name": "deathbolt",
-                "max": 250,
-                "min": 50,
-                "weight": 1,
-                "keys": ["ctrl"]
-            }
+            "deathbolt"
         ]
     },
     {
@@ -131,16 +81,9 @@
         "walk": 60,
         "run": 60,
         "body": "human",
+        "hurt_reaction": "random",
         "skills": [
-            {
-                "type": "melee",
-                "name": "melee",
-                "max": 19,
-                "min": 5,
-                "hitbox": [10, -5, 20, 5],
-                "weight": 1,
-                "keys": ["ctrl"]
-            }
+            "generic_melee"
         ]
     },
     {
@@ -157,15 +100,9 @@
         "walk": 60,
         "run": 60,
         "body": "human",
+        "hurt_reaction": "flee",
         "skills": [
-            {
-                "type": "ranged",
-                "name": "crossbow",
-                "max": 200,
-                "min": 30,
-                "weight": 1,
-                "keys": ["ctrl"]
-            }
+            "crossbow"
         ]
     },
     {
@@ -182,16 +119,9 @@
         "walk": 70,
         "run": 70,
         "body": "human",
+        "hurt_reaction": "flee",
         "skills": [
-            {
-                "type": "melee",
-                "name": "melee",
-                "max": 19,
-                "min": 5,
-                "hitbox": [10, -5, 20, 5],
-                "weight": 1,
-                "keys": ["ctrl"]
-            }
+            "generic_melee"
         ]
     },
     {
@@ -208,15 +138,9 @@
         "walk": 70,
         "run": 70,
         "body": "human",
+        "hurt_reaction": "flee",
         "skills": [
-            {
-                "type": "ranged",
-                "name": "sling",
-                "max": 200,
-                "min": 25,
-                "weight": 1,
-                "keys": ["ctrl"]
-            }
+            "sling"
         ]
     },
     {
@@ -233,15 +157,9 @@
         "walk": 30,
         "run": 30,
         "body": "human",
+        "hurt_reaction": "flee",
         "skills": [
-            {
-                "type": "ranged",
-                "name": "deathbolt",
-                "max": 300,
-                "min": 50,
-                "weight": 1,
-                "keys": ["ctrl"]
-            }
+            "deathbolt"
         ]
     },
     {
@@ -259,25 +177,10 @@
         "walk": 50,
         "run": 50,
         "body": "reptile",
+        "hurt_reaction": "random",
         "skills": [
-            {
-                "type": "melee",
-                "name": "melee",
-                "max": 35,
-                "min": 5,
-                "weight": 1,
-                "hitbox": [20, -5, 36, 10],
-                "keys": ["ctrl"]
-            },
-            {
-                "type": "melee",
-                "name": "meleedown",
-                "max": 35,
-                "min": 5,
-                "weight": 1,
-                "hitbox": [10, -36, 36, -26],
-                "keys": ["ctrl", "down"]
-            }
+           "boss_melee",
+           "boss_meleedown"
         ]
     },
     {
@@ -295,40 +198,11 @@
         "walk": 70,
         "run": 200,
         "body": "reptile",
+        "hurt_reaction": "random",
         "skills": [
-            {
-                "type": "melee",
-                "name": "melee",
-                "max": 50,
-                "min": 20,
-                "weight": 1,
-                "hitbox": [20, -5, 36, 10],
-                "keys": ["ctrl"]
-            },
-            {
-                "type": "melee",
-                "name": "meleemove",
-                "max": 300,
-                "min": 50,
-                "weight": 1,
-                "speed": 150,
-                "dir": -1,
-                "ttl": 2,
-                "hitbox": [20, -5, 36, 10],
-                "keys": ["ctrl", "left"]
-            },
-            {
-                "type": "melee",
-                "name": "meleemove",
-                "max": 300,
-                "min": 50,
-                "weight": 1,
-                "speed": 150,
-                "dir": 1,
-                "ttl": 2,
-                "hitbox": [20, -5, 36, 10],
-                "keys": ["ctrl", "right"]
-            }
+            "boss_melee_bite",
+            "boss_meleemove_left",
+            "boss_meleemove_right"
         ]
     },
     {

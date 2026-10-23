@@ -1,9 +1,9 @@
-package common
+package physics
 
 import (
-	"fmt"
 	"image/color"
 	"math"
+	"platformer/common"
 
 	"github.com/lucasb-eyer/go-colorful"
 	"github.com/shinomontaz/pixel"
@@ -11,9 +11,8 @@ import (
 )
 
 type Phys struct {
-	rect  pixel.Rect
-	vel   pixel.Vec
-	force pixel.Vec
+	rect pixel.Rect
+	vel  pixel.Vec
 
 	rigidity       float64
 	rigidityBottom float64
@@ -23,11 +22,12 @@ type Phys struct {
 	maxvelocity    float64
 
 	isground   bool
-	groundObj  Objecter
+	groundObj  common.O
 	groundPhys *Phys
 	color      color.Color
+	mask       []bool
 
-	currObjs []Objecter
+	currObjs []common.O
 }
 
 type PhysOption func(p *Phys)
@@ -68,7 +68,7 @@ func WithMaxVel(max float64) PhysOption {
 	}
 }
 
-func NewPhys(r pixel.Rect, opts ...PhysOption) Phys {
+func New(r pixel.Rect, opts ...PhysOption) Phys {
 	p := Phys{
 		rect:           r,
 		color:          colorful.HappyColor(),
@@ -77,7 +77,6 @@ func NewPhys(r pixel.Rect, opts ...PhysOption) Phys {
 		friction:       0.01,
 		vel:            pixel.ZV,
 		mass:           1,
-		groundObj:      Objecter{},
 	}
 
 	for _, opt := range opts {
@@ -99,70 +98,58 @@ func (p *Phys) IsGround() bool {
 	return p.isground
 }
 
-func (p *Phys) GetGroundObject() Objecter {
+func (p *Phys) GetGroundObject() common.O {
 	return p.groundObj
 }
 
-func (p *Phys) Apply(force pixel.Vec) {
-	p.force = p.force.Add(force)
-}
-
-func (p *Phys) SetSpeed(newspeed pixel.Vec) {
+func (p *Phys) SetVel(newspeed pixel.Vec) {
 	p.vel = newspeed
 }
 
 func (p *Phys) SetGroundPhys(phys *Phys) {
 	p.groundPhys = phys
-	if phys != nil {
-		fmt.Println("set ground phys with vel: ", phys.GetVel())
-	}
 }
 
-func (p *Phys) Update(dt float64, objs []Objecter) {
+func (p *Phys) Update(dt float64, objs []common.O) {
 	p.currObjs = objs
+	dt = math.Min(dt, 0.1)
 
-	if p.vel.X != 0 && math.Abs(p.vel.X) >= dt*p.friction*p.gravity && p.isground {
-		sign := -1.0
-		if p.vel.X > 0 {
-			sign = 1.0
+	// 1. Трение (для частиц и снарядов)
+	if p.friction > 0 && p.isground {
+		p.vel.X *= (1.0 - p.friction*dt*60)
+		if math.Abs(p.vel.X) < 0.5 {
+			p.vel.X = 0
 		}
-		p.force.X -= sign * p.friction * p.mass * p.gravity // Friction force apply
 	}
 
-	if math.Abs(p.vel.X) <= dt*p.friction*p.mass*p.gravity { // static friction force check: no mass in this equation
-		p.vel.X = 0
-	}
-
+	// 2. Гравитация
 	if p.mass > 0 && !p.isground {
-		p.force.Y -= p.gravity // Gravity force to the forces
+		p.vel.Y -= p.gravity * dt
 	}
 
+	// 3. На земле — обнулить Y
 	if p.isground {
 		if p.vel.Y < 0 {
 			p.vel.Y = 0
 		}
-		if p.force.Y < 0 {
-			p.force.Y = 0
-		}
 	}
 
-	dt = math.Min(dt, 0.1) // some fix for debugger
+	// 4. Движение и коллизии
 	groundVel := pixel.ZV
 	if p.groundPhys != nil {
 		groundVel = p.groundPhys.GetVel()
 		p.vel = p.vel.Add(groundVel)
 	}
-	p.vel = p.vel.Add(p.force.Scaled(dt))
 
 	if p.vel.X != 0 || p.vel.Y != 0 {
 		p.isground = false
 		vec := p.vel.Scaled(dt)
-		ground, newvel, vec, groundObj := p.StepPrediction(vec) // p.vel and vec can be updated here
-		if groundObj.ID != p.groundObj.ID {
+		ground, newvel, vec, groundObj := p.StepPrediction(vec)
+		if groundObj != nil && (p.groundObj == nil || groundObj.Id() != p.groundObj.Id()) {
 			p.groundObj = groundObj
 		}
 		p.vel = newvel
-		if ground > 0 {
+		if ground > 0.05 {
 			p.isground = true
 			if p.vel.Y > 0 && p.vel.Y < p.gravity*dt {
 				p.vel.Y = 0
@@ -174,60 +161,65 @@ func (p *Phys) Update(dt float64, objs []Objecter) {
 	if groundVel.X != 0 || groundVel.Y != 0 {
 		p.vel = p.vel.Sub(groundVel)
 	}
-
-	p.force = pixel.ZV
 }
 
 // in: v - move vector, out - ground rate, new velocity, available move
-func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec, Objecter) {
+func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec, common.O) {
 	ground := 0.0
 	vel := p.vel
-	gObj := Objecter{}
+	var gObj common.O
 	broadbox := Broadbox(p.rect, v)
 	collisiontimes := []float64{}
 	if len(p.currObjs) == 0 {
 		return ground, vel, v, gObj
 	}
-	// precise check for each object that can intersects
 	for _, obj := range p.currObjs {
 		rect := obj.Rect()
-		if Isinbox(rect, broadbox) { // return !(p.Max.X < q.Min.X || p.Min.X > q.Max.X || p.Max.Y < q.Min.Y || p.Min.Y > q.Max.Y)
-			if rect.Max.Y == p.rect.Min.Y {
+		if Isinbox(rect, broadbox) {
+			if math.Abs(rect.Max.Y-p.rect.Min.Y) < 0.001 {
 				l := math.Max(rect.Min.X, p.rect.Min.X)
 				r := math.Min(rect.Max.X, p.rect.Max.X)
 				ground = (r - l) / p.rect.W()
 				gObj = obj
+
 				continue
 			}
-			coltime, n := collide(p.rect, rect, v) // coltime in [0,1], where 1 means no collision
-			if coltime == 1 {                      // no collision
+			coltime, n := collide(p.rect, rect, v)
+			if coltime == 1 { // нет пересечения
 				continue
 			}
 
-			if n.X == 0 && vel.Y == 0 { // here we step on ground, no collision actually
+			if n.X == 0 && vel.Y == 0 {
 				l := math.Max(rect.Min.X, p.rect.Min.X)
 				r := math.Min(rect.Max.X, p.rect.Max.X)
 				ground = (r - l) / p.rect.W()
 				gObj = obj
 			} else {
+				// Шаг вверх: низкая преграда сбоку
+				stepHeight := rect.Max.Y - p.rect.Min.Y
+				if n.X != 0 && vel.X != 0 && vel.Y <= 0 &&
+					rect.Max.Y < p.rect.Max.Y && stepHeight > 0 && stepHeight <= p.rect.H()/2 {
+					// Поднять траекторию ровно на высоту ступеньки
+					v = pixel.Vec{X: v.X, Y: stepHeight + 0.01}
+					continue // без coltime — движение не обрезается
+				}
+
 				collisiontimes = append(collisiontimes, coltime)
-				if n.Y > 0 { // hit floor
+				if n.Y > 0 {
 					l := math.Min(rect.Min.X, p.rect.Min.X)
 					r := math.Min(rect.Max.X, p.rect.Max.X)
 					ground = (r - l) / p.rect.W()
 					gObj = obj
-					//					vel.Y = 0
 					vel.Y = -vel.Y * p.rigidityBottom
-				} else if n.Y < 0 { // hit ceiling
+				} else if n.Y < 0 {
 					vel.Y = -vel.Y * p.rigidity
 				}
-				if n.X != 0 { // horisontal hit
-					if (ground >= 0 || n.Y > 0) && (vel.X != 0) && (rect.Max.Y < p.rect.Max.Y) && (rect.Max.Y-p.rect.Min.Y <= p.rect.H()/4) { // step on stair
+				if n.X != 0 {
+					if (ground >= 0 || n.Y > 0) && (vel.X != 0) && (rect.Max.Y < p.rect.Max.Y) && (rect.Max.Y-p.rect.Min.Y <= p.rect.H()/4) {
 						vel.X *= 0.8
-						v = pixel.Vec{v.X, v.Y + rect.Max.Y - p.rect.Min.Y + p.rect.H()/4}
-						fmt.Println("horisontal step")
+						v = pixel.Vec{X: v.X, Y: v.Y + rect.Max.Y - p.rect.Min.Y + p.rect.H()/4}
 					} else {
-						vel.X = -vel.X * p.rigidity // horisontal bouncing
+						vel.X = -vel.X * p.rigidity
 						if ground != 0 {
 							vel.X *= p.rigidity
 						}
@@ -239,13 +231,11 @@ func (p *Phys) StepPrediction(v pixel.Vec) (float64, pixel.Vec, pixel.Vec, Objec
 
 	if len(collisiontimes) > 0 {
 		mintime := collisiontimes[0]
-		// find minimal collision time
 		for _, ct := range collisiontimes {
 			if mintime > ct {
 				mintime = ct
 			}
 		}
-
 		v.X *= mintime
 		v.Y *= mintime
 	}
@@ -257,20 +247,21 @@ func (p *Phys) Move(v pixel.Vec) {
 	p.rect = p.rect.Moved(v)
 }
 
+func (p *Phys) SetRect(r pixel.Rect) {
+	p.rect = r
+}
+
 func (p *Phys) GetRect() pixel.Rect {
 	return p.rect
 }
 
 func (p *Phys) Draw(t pixel.Target) {
 	imd := imdraw.New(nil)
-
 	vertices := p.rect.Vertices()
-
 	imd.Color = p.color
 	for _, v := range vertices {
 		imd.Push(v)
 	}
 	imd.Rectangle(1)
-
 	imd.Draw(t)
 }

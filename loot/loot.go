@@ -3,6 +3,8 @@ package loot
 import (
 	"math"
 	"platformer/common"
+	"platformer/common/physics"
+	"platformer/common/rand"
 	"platformer/sound"
 
 	"github.com/shinomontaz/pixel"
@@ -10,7 +12,7 @@ import (
 
 type Loot struct {
 	id   int
-	phys common.Phys
+	phys physics.Phys
 	mass float64
 
 	rect pixel.Rect
@@ -49,11 +51,11 @@ func New(id int, anim common.Animater, rect pixel.Rect, opts ...Option) *Loot {
 		opt(a)
 	}
 
-	p := common.NewPhys(rect,
+	p := physics.New(rect,
 
-		common.WithGravity(a.grav),
-		common.WithMass(a.mass),
-		common.WithRigidityBottom(0.3),
+		physics.WithGravity(a.grav),
+		physics.WithMass(a.mass),
+		physics.WithRigidityBottom(0.3),
 	) // TODO does we really need phys to know run and walk speeds?
 	a.phys = p
 
@@ -73,8 +75,7 @@ func (a *Loot) GetRect() pixel.Rect {
 	return a.rect
 }
 
-func (a *Loot) Update(dt float64, objs []common.Objecter) {
-	a.phys.Apply(a.appliedForce)
+func (a *Loot) Update(dt float64, objs []common.O) {
 	a.phys.Update(dt, objs)
 
 	a.vec = pixel.ZV
@@ -112,7 +113,7 @@ func (l *Loot) Draw(t pixel.Target) {
 func (l *Loot) AddSound(event string) {
 	if s, ok := l.sounds[event]; ok {
 		// select random sound
-		i := int(math.Round(common.GetRandFloat() * float64(len(s.List)-1)))
+		i := int(math.Round(rand.Float64() * float64(len(s.List)-1)))
 		sound.AddEffect(s.List[i], l.rect.Center())
 	}
 }

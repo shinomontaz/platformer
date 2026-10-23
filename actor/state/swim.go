@@ -3,7 +3,7 @@ package state
 import (
 	"fmt"
 	"math"
-	"platformer/common"
+	"platformer/common/rand"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -27,7 +27,7 @@ func NewSwim(a Actor, an Animater) *Swim {
 			iswater:          true,
 		},
 		sprite:    pixel.NewSprite(nil, pixel.Rect{}),
-		idleLimit: common.GetRandFloat() * 5.0,
+		idleLimit: rand.Float64() * 5.0,
 	}
 
 	return fs

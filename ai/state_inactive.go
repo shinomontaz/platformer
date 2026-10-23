@@ -7,7 +7,7 @@ import (
 )
 
 type StateInactive struct {
-	id int
+	id AiState
 	w  Worlder
 	ai *Ai
 }

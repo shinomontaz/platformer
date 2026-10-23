@@ -7,6 +7,7 @@ import (
 	"platformer/actor"
 	"platformer/animation"
 	"platformer/common"
+	"platformer/common/rand"
 
 	"github.com/shinomontaz/pixel"
 	"github.com/shinomontaz/pixel/text"
@@ -31,10 +32,10 @@ type Deathstrike struct {
 	rect          pixel.Rect
 	atlas         *text.Atlas
 	fnt           font.Face
-	currObjs      []common.Objecter
+	currObjs      []common.O
 }
 
-func NewDeathstrike(s string, owner *actor.Actor, target pixel.Vec, objs []common.Objecter) *Deathstrike {
+func NewDeathstrike(s string, owner *actor.Actor, target pixel.Vec, objs []common.O) *Deathstrike {
 	basicrect := pixel.R(0, 0, 48, 64)
 
 	ds := Deathstrike{
@@ -115,7 +116,7 @@ func (d *Deathstrike) Draw(t pixel.Target) {
 func randSeq(letters []rune, n int) string {
 	b := make([]rune, n)
 	for i := range b {
-		b[i] = letters[int(math.Round(common.GetRandFloat()*float64(len(letters)-1)))]
+		b[i] = letters[int(math.Round(rand.Float64()*float64(len(letters)-1)))]
 	}
 	return string(b)
 }

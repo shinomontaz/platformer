@@ -43,7 +43,9 @@ func NewParallax(start pixel.Vec, viewport pixel.Rect, loader *common.Loader) *P
 func (p *Pback) Update(dt float64, pos pixel.Vec) {
 	p.imd.Clear()
 	p.imd.Color = color.RGBA{207, 199, 223, 1} // rocs1
+
 	p.imd.Push(pixel.Vec{pos.X - p.width/2, pos.Y - p.height/2 + 150}, pixel.Vec{pos.X + p.width, pos.Y + p.height/2 + 150})
+
 	p.imd.Rectangle(0)
 
 	for _, l := range p.layers {

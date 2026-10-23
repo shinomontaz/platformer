@@ -2,6 +2,7 @@ package ai
 
 import (
 	"platformer/actor"
+	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -17,17 +18,33 @@ type Ai struct {
 	obj         *actor.Actor
 	w           Worlder
 	state       Stater
-	states      map[int]Stater
+	states      map[AiState]Stater
 	id          int
 	attackskill *actor.Skill
+	homeState   AiState // состояние куда возвращаться после INVESTIGATE (IDLE, PATROL, ROAMING)
+	name        string
+}
+
+func parseReaction(s string) ReactionType {
+	switch s {
+	case "flee":
+		return HURTED_FLEE
+	case "counter":
+		return HURTED_COUNTER
+	case "random":
+		return HURTED_RANDOM
+	default:
+		return HURTED_NONE
+	}
 }
 
 func NewCalmEnemy(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
-		obj:    obj,
-		w:      w,
-		states: make(map[int]Stater),
-		id:     counter,
+		obj:       obj,
+		w:         w,
+		states:    make(map[AiState]Stater),
+		id:        counter,
+		homeState: IDLE,
 	}
 
 	sIdle := NewIdle(a, a.w, true)
@@ -39,8 +56,9 @@ func NewCalmEnemy(obj *actor.Actor, w Worlder) *Ai {
 	sAttack := NewAttack(a, a.w)
 	a.states[ATTACK] = sAttack
 
-	sBustle := NewBustle(a, a.w)
-	a.states[BUSTLE] = sBustle
+	reaction := parseReaction(obj.GetHurtReaction())
+	sHurted := NewHurted(a, a.w, reaction)
+	a.states[HURTED] = sHurted
 
 	sInvestigate := NewInvestigate(a, a.w)
 	a.states[INVESTIGATE] = sInvestigate
@@ -56,10 +74,11 @@ func NewCalmEnemy(obj *actor.Actor, w Worlder) *Ai {
 
 func NewAgressiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
-		obj:    obj,
-		w:      w,
-		states: make(map[int]Stater),
-		id:     counter,
+		obj:       obj,
+		w:         w,
+		states:    make(map[AiState]Stater),
+		id:        counter,
+		homeState: IDLE,
 	}
 
 	sRoaming := NewRoaming(a, a.w, true)
@@ -71,11 +90,12 @@ func NewAgressiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	sAttack := NewAttack(a, a.w)
 	a.states[ATTACK] = sAttack
 
-	sBustle := NewBustle(a, a.w)
-	a.states[BUSTLE] = sBustle
-
 	sIdle := NewIdle(a, a.w, true)
 	a.states[IDLE] = sIdle
+
+	reaction := parseReaction(obj.GetHurtReaction())
+	sHurted := NewHurted(a, a.w, reaction)
+	a.states[HURTED] = sHurted
 
 	sInvestigate := NewInvestigate(a, a.w)
 	a.states[INVESTIGATE] = sInvestigate
@@ -96,10 +116,11 @@ func NewAgressiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 
 func NewActiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
-		obj:    obj,
-		w:      w,
-		states: make(map[int]Stater),
-		id:     counter,
+		obj:       obj,
+		w:         w,
+		states:    make(map[AiState]Stater),
+		id:        counter,
+		homeState: ROAMING,
 	}
 
 	sRoaming := NewRoaming(a, a.w, true)
@@ -111,11 +132,12 @@ func NewActiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	sAttack := NewAttack(a, a.w)
 	a.states[ATTACK] = sAttack
 
-	sBustle := NewBustle(a, a.w)
-	a.states[BUSTLE] = sBustle
-
 	sIdle := NewIdle(a, a.w, true)
 	a.states[IDLE] = sIdle
+
+	reaction := parseReaction(obj.GetHurtReaction())
+	sHurted := NewHurted(a, a.w, reaction)
+	a.states[HURTED] = sHurted
 
 	sInvestigate := NewInvestigate(a, a.w)
 	a.states[INVESTIGATE] = sInvestigate
@@ -129,11 +151,45 @@ func NewActiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 	return a
 }
 
+func NewPatrolEnemy(obj *actor.Actor, w Worlder, patrolRange float64) *Ai {
+	a := &Ai{
+		obj:       obj,
+		w:         w,
+		states:    make(map[AiState]Stater),
+		id:        counter,
+		homeState: PATROL,
+	}
+
+	sPatrol := NewPatrol(a, a.w, patrolRange)
+	a.states[PATROL] = sPatrol
+
+	sChooseAttack := NewChooseAttack(a, a.w)
+	a.states[CHOOSEATTACK] = sChooseAttack
+
+	sAttack := NewAttack(a, a.w)
+	a.states[ATTACK] = sAttack
+
+	reaction := parseReaction(obj.GetHurtReaction())
+	sHurted := NewHurted(a, a.w, reaction)
+	a.states[HURTED] = sHurted
+
+	sInvestigate := NewInvestigate(a, a.w)
+	a.states[INVESTIGATE] = sInvestigate
+
+	a.SetState(PATROL, pixel.ZV)
+
+	list[obj] = a
+	obj.AddEventListener(a)
+
+	counter++
+	return a
+}
+
 func NewCalmNpc(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:    obj,
 		w:      w,
-		states: make(map[int]Stater),
+		states: make(map[AiState]Stater),
 		id:     counter,
 	}
 
@@ -153,7 +209,7 @@ func NewFishingNpc(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:    obj,
 		w:      w,
-		states: make(map[int]Stater),
+		states: make(map[AiState]Stater),
 		id:     counter,
 	}
 
@@ -173,7 +229,7 @@ func NewActiveNpc(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:    obj,
 		w:      w,
-		states: make(map[int]Stater),
+		states: make(map[AiState]Stater),
 		id:     counter,
 	}
 
@@ -196,7 +252,7 @@ func NewSwimmingNpc(obj *actor.Actor, w Worlder) *Ai {
 	a := &Ai{
 		obj:    obj,
 		w:      w,
-		states: make(map[int]Stater),
+		states: make(map[AiState]Stater),
 		id:     counter,
 	}
 
@@ -223,7 +279,7 @@ func (ai *Ai) GetId() int {
 	return ai.id
 }
 
-func (ai *Ai) SetState(state int, poi pixel.Vec) {
+func (ai *Ai) SetState(state AiState, poi pixel.Vec) {
 	ai.state = ai.states[state]
 	ai.state.Start(poi)
 }
@@ -247,5 +303,13 @@ func (a *Ai) GetPos() pixel.Vec {
 }
 
 func (a *Ai) EventAction(e int) {
+	if e == events.HIT {
+		if _, ok := a.states[HURTED]; ok {
+			a.SetState(HURTED, pixel.ZV)
+
+			return
+		}
+	}
+
 	a.state.EventAction(e)
 }

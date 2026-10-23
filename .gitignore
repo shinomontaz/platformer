@@ -7,6 +7,9 @@
 *.so
 *.dylib
 platformer.*
+.master
+
+memory-bank
 
 platformer
 
@@ -20,5 +23,6 @@ run
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+context.md
 
 .DS_Store

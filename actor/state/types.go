@@ -13,6 +13,7 @@ const (
 	WALK
 	RUN
 	JUMP
+	DOUBLEJUMP
 	FALL
 	HIT
 	DEAD
@@ -27,6 +28,7 @@ const (
 	FISHING
 	SWIM
 	ROLL
+	SIT
 )
 
 type Stater interface {
@@ -52,11 +54,10 @@ type Actor interface {
 	OnKill()
 	GetDir() int
 	SetVel(v pixel.Vec)
+	Landed()
 }
 
 type Animater interface {
 	GetSprite(name string, idx int) (pixel.Picture, pixel.Rect)
-	GetGroupSprite(group, name string, idx int) (pixel.Picture, pixel.Rect)
-	GetGroupLen(name string) int
 	GetLen(name string) int
 }

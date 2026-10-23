@@ -36,9 +36,12 @@ type Game struct {
 	Common
 	assetloader   *common.Loader
 	initialBounds pixel.Rect
-	u             *ui.Ui
-	w             *world.World
-	hero          *actor.Actor
+
+	u     *ui.Ui
+	w     *world.World
+	hero  *actor.Actor
+	crtrs *creatures.List
+
 	initialCenter pixel.Vec
 	lastPos       pixel.Vec
 
@@ -101,7 +104,6 @@ func (g *Game) Init() {
 		panic(err)
 	}
 	g.w = w
-	g.hero = factories.NewActor(config.Profiles["player"], g.w)
 
 	grav := w.GetGravity()
 	particles.Init(5000)
@@ -117,7 +119,18 @@ func (g *Game) Init() {
 	dialogs.Init(g.assetloader)
 	dialogs.SetWorld(g.w)
 
-	crtrs := creatures.New()
+	//	w.IsDebug = true
+
+	magic.SetWorld(g.w)
+
+	g.initialCenter = g.w.GetCenter()
+
+	// create hero and creatures
+	g.crtrs = creatures.New()
+	g.hero = factories.NewActor(config.Profiles["player"], g.w)
+	g.hero.Move(g.initialCenter)
+	g.crtrs.SetHero(g.hero)
+
 	list := g.w.GetMetas()
 	for _, o := range list {
 		if o.Class == "enemy" {
@@ -125,64 +138,53 @@ func (g *Game) Init() {
 			enemy.SetEnemy(g.hero)
 			enemy.Move(pixel.V(o.X, o.Y))
 			rew := o.Properties.GetString("reward")
-			if rew == "coin" { // make OnKill handler
+			if rew == "coin" {
 				enemy.SetOnKill(loot.AddCoin)
 			} else if rew == "key" {
 				enemy.SetOnKill(loot.AddKey)
 			}
 			ai_type := o.Properties.GetString("ai")
 			if ai_type != "" {
-				g.ailist = append(g.ailist, factories.NewAi(ai_type, enemy, w))
+				g.ailist = append(g.ailist, factories.NewAi(ai_type, enemy, g.w))
 			}
-
 			dir := o.Properties.GetFloat("dir")
 			if dir != 0 {
 				enemy.SetDir(dir)
 			}
-
 			enemy.SetOnKill(func(pos, vel pixel.Vec) { score.Add(config.Profiles[o.Name].Hp) })
-			crtrs.AddEnemy(enemy)
+			g.crtrs.AddEnemy(enemy)
 		}
 		if o.Class == "npc" {
 			npc := factories.NewActor(config.Profiles[o.Name], g.w)
 			npc.Move(pixel.V(o.X, o.Y))
 			rew := o.Properties.GetString("reward")
 			if rew == "coin" {
-				// make OnKill handler
 				npc.SetOnKill(loot.AddCoin)
-				// rew_count := o.Properties.GetInt("reward_count")
-				// if rew_count > 0 {
-				// }
 			} else if rew == "key" {
 				npc.SetOnKill(loot.AddKey)
 			}
-
 			interact_type := o.Properties.GetString("interact")
 			if interact_type == "phrase" {
 				phrasesClass := o.Properties.GetString("phrasesClass")
-				// create interact handler
 				npc.SetOnInteract(func(a *actor.Actor) { talks.AddPhrase(a.GetRect().Min, phrasesClass) })
 			} else if interact_type == "die" {
 				npc.SetOnInteract(func(a *actor.Actor) { a.Kill() })
 			} else if interact_type == "dialog" {
 				dialog_id := o.Properties.GetInt("dialog")
 				npc.SetOnInteract(func(a *actor.Actor) {
-					fmt.Println("DIALOG!!!")
 					dialogs.SetActive(dialog_id, a)
 					g.SetState(gamestate.DIALOG)
 				})
 			}
 			ai_type := o.Properties.GetString("ai")
 			if ai_type != "" {
-				g.ailist = append(g.ailist, factories.NewAi(ai_type, npc, w))
+				g.ailist = append(g.ailist, factories.NewAi(ai_type, npc, g.w))
 			}
-
 			dir := o.Properties.GetFloat("dir")
 			if dir != 0 {
 				npc.SetDir(dir)
 			}
-
-			crtrs.AddNpc(npc)
+			g.crtrs.AddNpc(npc)
 		}
 		if o.Class == "coin" {
 			loot.AddCoin(pixel.V(o.X, o.Y), pixel.ZV)
@@ -192,15 +194,7 @@ func (g *Game) Init() {
 			objects.Add(o.Name, pixel.R(o.X, o.Y-o.Height, o.X+o.Width, o.Y), ai_type)
 		}
 	}
-	crtrs.SetHero(g.hero)
-
-	//	w.IsDebug = isdebug
-	w.SetCreatures(crtrs)
-
-	magic.SetWorld(g.w)
-
-	g.initialCenter = g.w.GetCenter()
-	g.hero.Move(g.initialCenter)
+	g.w.SetCreatures(g.crtrs)
 
 	g.u = ui.New(g.hero, currBounds)
 
@@ -208,7 +202,6 @@ func (g *Game) Init() {
 
 	g.lastPos = g.hero.GetPos()
 
-	//	b := background.New(g.lastPos, currBounds.Moved(pixel.V(0, 150)), g.assetloader, "gamebackground.png")
 	b := background.NewParallax(g.lastPos, currBounds.Moved(pixel.V(0, 150)), g.assetloader)
 
 	g.w.SetBackground(b)

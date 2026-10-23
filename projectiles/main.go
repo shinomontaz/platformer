@@ -4,6 +4,7 @@ import (
 	"platformer/activities"
 	"platformer/animation"
 	"platformer/common"
+	"platformer/common/rand"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -25,12 +26,12 @@ func AddProjectile(t string, strength float64, dir float64, owner common.Actorer
 	g := grav
 	switch t {
 	case "sling":
-		f = pixel.V(10000*dir, 5000+common.GetRandFloat()*7500)
+		f = pixel.V(160*dir, 80+rand.Float64()*120)
 	case "crossbow":
-		f = pixel.V(9000*dir, 500+common.GetRandFloat()*750)
+		f = pixel.V(150*dir, 8+rand.Float64()*12)
 		g = grav / 9
 	case "deathbolt":
-		f = pixel.V(8000*dir, 0)
+		f = pixel.V(130*dir, 0)
 		g = grav / 1000
 	}
 
@@ -60,7 +61,7 @@ func AddProjectile(t string, strength float64, dir float64, owner common.Actorer
 	projectiles = append(projectiles, p)
 }
 
-func Update(dt float64, objs, spec []common.Objecter) {
+func Update(dt float64, objs, spec []common.O) {
 	i := 0
 	for _, pr := range projectiles {
 		if pr.hb.IsHitted() {

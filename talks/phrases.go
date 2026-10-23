@@ -5,6 +5,7 @@ import (
 	"io"
 	"math"
 	"platformer/common"
+	"platformer/common/rand"
 
 	"github.com/shinomontaz/pixel"
 	"golang.org/x/image/colornames"
@@ -38,7 +39,7 @@ func initPhrases(loader *common.Loader) {
 func AddPhrase(pos pixel.Vec, class string) {
 	if p, ok := phrases[class]; ok {
 		// get random string
-		txt := p.Variants[int(math.Round(common.GetRandFloat()*float64(len(p.Variants)-1)))]
+		txt := p.Variants[int(math.Round(rand.Float64()*float64(len(p.Variants)-1)))]
 		al := addAlert(pos, colornames.Green, txt, 2, 1)
 		alerts = append(alerts, al)
 	}

@@ -2,7 +2,8 @@ package actor
 
 import (
 	"platformer/actor/statemachine"
-	"platformer/common"
+	"platformer/common/rand"
+
 	"platformer/config"
 	"platformer/particles"
 
@@ -14,6 +15,12 @@ type Option func(*Actor)
 func WithRun(speed float64) Option {
 	return func(a *Actor) {
 		a.runspeed = speed
+	}
+}
+
+func WithHurtReaction(r string) Option {
+	return func(a *Actor) {
+		a.hurtReaction = r
 	}
 }
 
@@ -119,12 +126,18 @@ func WithBody(body string) Option {
 	return func(a *Actor) {
 		if body == "human" {
 			a.onhit = func(pos, vel pixel.Vec) {
-				n := 10 * common.GetRandInt()
-				for i := 0; i < n; i++ {
-					particles.AddBlood(pos, pixel.V(vel.X+common.GetRandFloat()*1000-500, common.GetRandFloat()*10000))
+				n := 10 * int(rand.Float64()*10.0)
+				for range n {
+					particles.AddBlood(pos, pixel.V(vel.X+rand.Float64()*a.grav/2-a.grav/4, rand.Float64()*a.grav/2))
 				}
 			}
 		}
 
+	}
+}
+
+func WithBBox(bbox pixel.Rect) Option {
+	return func(a *Actor) {
+		a.bbox = bbox
 	}
 }

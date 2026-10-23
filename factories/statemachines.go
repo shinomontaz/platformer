@@ -21,7 +21,6 @@ func Machine(name string) *statemachine.Machine {
 	default:
 		return newEnemy()
 	}
-	return nil
 }
 
 func newPlayer() *statemachine.Machine {
@@ -31,12 +30,15 @@ func newPlayer() *statemachine.Machine {
 	m.Set(state.MELEEMOVE, statemachine.Transition{})
 	m.Set(state.FISHING, statemachine.Transition{})
 	m.Set(state.ROLL, statemachine.Transition{})
+	m.Set(state.SIT, statemachine.Transition{})
+	m.Set(state.DOUBLEJUMP, statemachine.Transition{})
 
 	m.Set(state.STAND, statemachine.Transition{
 		List: map[int]int{
 			events.MELEE:     state.MELEE,
 			events.MELEEMOVE: state.MELEEMOVE,
 			events.INTERACT:  state.INTERACT,
+			events.SIT:       state.SIT,
 		},
 	})
 	m.Set(state.IDLE, statemachine.Transition{
@@ -44,6 +46,7 @@ func newPlayer() *statemachine.Machine {
 			events.MELEE:     state.MELEE,
 			events.MELEEMOVE: state.MELEEMOVE,
 			events.INTERACT:  state.INTERACT,
+			events.SIT:       state.SIT,
 		},
 	})
 	m.Set(state.WALK, statemachine.Transition{
@@ -120,12 +123,17 @@ func newMage() *statemachine.Machine {
 	m.Set(state.CAST, statemachine.Transition{})
 	m.Set(state.STAND, statemachine.Transition{
 		List: map[int]int{
-			events.CAST: state.CAST,
+			events.RANGED: state.CAST,
 		},
 	})
 	m.Set(state.IDLE, statemachine.Transition{
 		List: map[int]int{
-			events.CAST: state.CAST,
+			events.RANGED: state.CAST,
+		},
+	})
+	m.Set(state.WALK, statemachine.Transition{
+		List: map[int]int{
+			events.RANGED: state.CAST,
 		},
 	})
 
@@ -134,6 +142,7 @@ func newMage() *statemachine.Machine {
 
 func newRanged() *statemachine.Machine {
 	m := statemachine.New()
+
 	m.Set(state.RANGED, statemachine.Transition{})
 	m.Set(state.STAND, statemachine.Transition{
 		List: map[int]int{

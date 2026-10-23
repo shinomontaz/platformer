@@ -2,6 +2,7 @@ package animation
 
 import (
 	"platformer/common"
+	"strings"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -19,11 +20,11 @@ type Anim struct {
 }
 
 type Anims struct {
-	items  map[string]*Anim
-	groups map[string]map[string]*Anim
-	rect   pixel.Rect
-	sprite *pixel.Sprite
-	m      [4]float64 // margin
+	items    map[string]*Anim
+	rect     pixel.Rect
+	sprite   *pixel.Sprite
+	m        [4]float64 // margin
+	lencache map[string]int
 }
 
 var loader *common.Loader
@@ -36,7 +37,7 @@ func Load(cfg AnimatingConfig) {
 	animRect := pixel.R(0, 0, cfg.W(), cfg.H())
 	a := New(animRect, cfg.M())
 	names, files, frames := cfg.Get()
-	for i := 0; i < len(names); i++ {
+	for i := range len(names) {
 		an, err := a.PrepareAnim(names[i], files[i], frames[i])
 		if err == nil {
 			a.items[names[i]] = an
@@ -45,13 +46,10 @@ func Load(cfg AnimatingConfig) {
 
 	grnames, grfiles, grframes := cfg.GetGroups()
 	for grname, animnames := range grnames {
-		if _, ok := a.groups[grname]; !ok {
-			a.groups[grname] = make(map[string]*Anim)
-			for i := 0; i < len(animnames); i++ {
-				an, err := a.PrepareAnim(animnames[i], grfiles[grname][i], grframes[grname][i])
-				if err == nil {
-					a.groups[grname][animnames[i]] = an
-				}
+		for i := range len(animnames) {
+			an, err := a.PrepareAnim(animnames[i], grfiles[grname][i], grframes[grname][i])
+			if err == nil {
+				a.items[grname+"/"+animnames[i]] = an
 			}
 		}
 	}
@@ -69,22 +67,12 @@ func GetGroup(name string) *Anims {
 
 func New(rect pixel.Rect, margin [4]float64) *Anims {
 	return &Anims{
-		rect:   rect,
-		items:  make(map[string]*Anim),
-		groups: make(map[string]map[string]*Anim),
-		sprite: pixel.NewSprite(nil, pixel.Rect{}),
-		m:      margin,
+		rect:     rect,
+		items:    make(map[string]*Anim),
+		sprite:   pixel.NewSprite(nil, pixel.Rect{}),
+		m:        margin,
+		lencache: make(map[string]int),
 	}
-}
-
-func (a *Anims) GetGroupSprite(group, name string, num int) (pixel.Picture, pixel.Rect) {
-	_, ok := a.groups[group]
-	if !ok {
-		return a.GetSprite("idle", num)
-	}
-
-	idx := num % len(a.groups[group][name].frames)
-	return a.groups[group][name].sheet, a.groups[group][name].frames[idx]
 }
 
 func (a *Anims) GetSprite(name string, num int) (pixel.Picture, pixel.Rect) {
@@ -99,11 +87,26 @@ func (a *Anims) GetSprite(name string, num int) (pixel.Picture, pixel.Rect) {
 }
 
 func (a *Anims) GetLen(name string) int {
-	return a.items[name].GetLen()
-}
+	if val, ok := a.lencache[name]; ok {
+		return val
+	}
 
-func (a *Anims) GetGroupLen(name string) int {
-	return len(a.groups[name])
+	if _, ok := a.items[name]; ok {
+		a.lencache[name] = len(a.items[name].frames)
+	}
+
+	if strings.Contains(name, "/") {
+		count := 0
+		prefix := name // "melee/"
+		for k := range a.items {
+			if strings.HasPrefix(k, prefix) {
+				count++
+			}
+		}
+		a.lencache[name] = count
+	}
+
+	return a.lencache[name]
 }
 
 func (a *Anims) PrepareAnim(name, file string, frames []int) (*Anim, error) {
@@ -126,10 +129,10 @@ func (a *Anims) PrepareAnim(name, file string, frames []int) (*Anim, error) {
 		))
 		x += a.m[2]
 	}
-
+	framesnum := frs[frames[1]:frames[2]]
 	return &Anim{
 		sheet:  spritesheet,
-		frames: frs[frames[1]:frames[2]],
+		frames: framesnum,
 		sprite: pixel.NewSprite(nil, pixel.Rect{}),
 	}, nil
 }
@@ -144,5 +147,6 @@ func (a *Anim) GetLen() int {
 
 func (a *Anim) GetSprite(idx int) *pixel.Sprite {
 	a.sprite.Set(a.sheet, a.frames[idx])
+
 	return a.sprite
 }

@@ -27,7 +27,7 @@ func Load(name string, cfg Spellprofile) {
 	}
 }
 
-func Create(s string, owner *actor.Actor, target pixel.Vec, objs []common.Objecter) Speller {
+func Create(s string, owner *actor.Actor, target pixel.Vec, objs []common.O) Speller {
 	switch s {
 	case "deathstrike":
 		return NewDeathstrike(s, owner, target, objs)

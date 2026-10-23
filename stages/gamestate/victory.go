@@ -101,8 +101,11 @@ func (v *Victory) Start() {
 			if dir != 0 {
 				npc.SetDir(dir)
 			}
-
-			crtrs.AddNpc(npc)
+			if o.Properties.GetString("z") == "back" {
+				crtrs.AddNpcBack(npc)
+			} else {
+				crtrs.AddNpc(npc)
+			}
 		}
 	}
 

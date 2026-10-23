@@ -11,7 +11,7 @@
  <tileset firstgid="61" name="Water" tilewidth="32" tileheight="32" tilecount="9" columns="3">
   <image source="tiles/fishing-assets/3 Objects/Water.png" width="96" height="96"/>
  </tileset>
- <tileset firstgid="70" name="scenery" tilewidth="199" tileheight="183" tilecount="68" columns="0">
+ <tileset firstgid="70" name="scenery" tilewidth="199" tileheight="183" tilecount="66" columns="0">
   <grid orientation="orthogonal" width="1" height="1"/>
   <tile id="67">
    <image width="23" height="18" source="tiles/swamp-tileset/3 Objects/Fence/1.png"/>
@@ -216,14 +216,8 @@
   <tile id="129">
    <image width="29" height="15" source="tiles/fishing-assets/3 Objects/Stay.png"/>
   </tile>
-  <tile id="130">
-   <image width="130" height="121" source="tiles/house.png"/>
-  </tile>
   <tile id="131">
    <image width="130" height="69" source="tiles/ruin.png"/>
-  </tile>
-  <tile id="132">
-   <image width="140" height="123" source="tiles/shop.png"/>
   </tile>
   <tile id="133">
    <image width="74" height="18" source="tiles/fishing-assets/3 Objects/Boat.png"/>
@@ -275,11 +269,13 @@
   <object id="25" name="player" class="npc" x="819.668" y="341.92" width="32.3333" height="40.6667">
    <properties>
     <property name="ai" value="npc_fishing"/>
+    <property name="z" value="back"/>
    </properties>
   </object>
   <object id="184" name="oldman" class="npc" x="786.333" y="342.167" width="32.3333" height="40.6667">
    <properties>
     <property name="ai" value="npc_calm"/>
+    <property name="z" value="back"/>
    </properties>
   </object>
   <object id="185" name="fish1" class="npc" x="800.833" y="443.667" width="32.3333" height="40.6667">
@@ -293,11 +289,6 @@
    </properties>
   </object>
   <object id="187" name="fish1" class="npc" x="616.833" y="405.667" width="32.3333" height="40.6667">
-   <properties>
-    <property name="ai" value="npc_swimming"/>
-   </properties>
-  </object>
-  <object id="188" name="fish1" class="npc" x="1038.83" y="404.667" width="32.3333" height="40.6667">
    <properties>
     <property name="ai" value="npc_swimming"/>
    </properties>

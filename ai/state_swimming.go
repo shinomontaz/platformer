@@ -3,10 +3,7 @@ package ai
 import (
 	"fmt"
 	"math"
-	"platformer/bindings"
 	"platformer/common/rand"
-
-	"github.com/shinomontaz/pixel/pixelgl"
 
 	"github.com/shinomontaz/pixel"
 )
@@ -34,36 +31,30 @@ func NewSwimming(ai *Ai, w Worlder, isagro bool) *StateSwimming {
 func (s *StateSwimming) Update(dt float64) {
 	s.timer += dt
 	s.totaltime += dt
+
 	if s.timer > s.timeout {
 		if s.leftright != 0 {
 			s.leftright = 0
+			s.timeout = 1 + rand.Float64()*2 // пауза
 		} else {
-			s.leftright = float64(int(rand.Float64()*10.0) - 5)
+			if rand.Float64() < 0.5 {
+				s.leftright = -1
+			} else {
+				s.leftright = 1
+			}
+			s.timeout = 3 + rand.Float64()*4 // плывёт дольше
 		}
 		s.timer = 0
 	}
 
-	s.updown = math.Sin(s.totaltime)
+	// Прямое управление скоростью: медленно плывём + мягкая синусоида по вертикали
+	vel := s.ai.obj.GetVel()
+	vel.X = s.leftright * 30
+	vel.Y = math.Sin(s.totaltime) * 20 // слабее Архимеда — не пересилит выталкивание
+	s.ai.obj.SetVel(vel)
 
 	if s.leftright != 0 {
-		b := pixelgl.KeyUnknown
-
-		if s.leftright < 0 {
-			b = bindings.Active.GetBinding(bindings.KeyAction["left"])
-		} else {
-			b = bindings.Active.GetBinding(bindings.KeyAction["right"])
-		}
-		s.ai.obj.KeyAction(b)
-	}
-
-	if s.updown != 0 {
-		b := pixelgl.KeyUnknown
-		if s.updown < 0 {
-			b = bindings.Active.GetBinding(bindings.KeyAction["down"])
-		} else {
-			b = bindings.Active.GetBinding(bindings.KeyAction["up"])
-		}
-		s.ai.obj.KeyAction(b)
+		s.ai.obj.SetDir(s.leftright)
 	}
 }
 

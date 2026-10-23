@@ -361,6 +361,20 @@ func (a *Actor) UpdateSpecial(dt float64, objs []common.O) {
 		vel := a.phys.GetVel()
 		vel.Y += a.grav * (ratio + 0.1) * dt
 		vel = vel.Scaled(0.92)
+		// Не выплывать над поверхностью: прижимаем ПОЗИЦИЮ к waterTop.
+		// Позицию AI не перезаписывает (в отличие от скорости) — клип устойчив.
+		// Исключение — прыжок: vel.Y >= jumpforce*2 не прижимаем (герой выпрыгивает на берег).
+		// jumpforce == 0 (рыба не умеет прыгать) — прижимаем всегда.
+		waterTop := o.Rect().Max.Y
+		if a.rect.Max.Y > waterTop {
+			if a.jumpforce == 0 || vel.Y < a.jumpforce*2 {
+				a.Move(pixel.V(0, waterTop-a.rect.Max.Y))
+				if vel.Y > 0 {
+					vel.Y = 0
+				}
+			}
+		}
+
 		a.phys.SetVel(vel)
 	}
 

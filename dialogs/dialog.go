@@ -104,7 +104,7 @@ func (d *Dialog) Draw(t pixel.Target) {
 	maintxtrect := d.maintxt.Bounds().Moved(pos)
 
 	portrait := d.a.GetPortrait()
-	portrait.Draw(t, pixel.IM.Moved(pixel.Vec{d.rect.Min.X + margin + portraitwidth, d.rect.Max.Y - margin - portraitwidth}))
+	portrait.Draw(t, pixel.IM.Moved(pixel.Vec{X: d.rect.Min.X + margin + portraitwidth, Y: d.rect.Max.Y - margin - portraitwidth}))
 
 	d.maintxt.Draw(t, pixel.IM.Moved(maintxtrect.Min))
 
@@ -119,14 +119,22 @@ func (d *Dialog) Draw(t pixel.Target) {
 			continue
 		}
 		anstxt.Clear()
+		d.fitText(anstxt, ans.Text)
 		anstxt.Color = colornames.Whitesmoke
+
+		ah := anstxt.Bounds().H()
+		y := maintxtrect.Min.Y - 4*margin - h - ah
+
 		if i == d.currAnswer {
 			anstxt.Color = colornames.Aliceblue
-			pointertxt.Draw(t, pixel.IM.Moved(pixel.Vec{maintxtrect.Min.X - 2*margin, maintxtrect.Min.Y - 4*margin - h}))
+			pointertxt.Draw(t, pixel.IM.Moved(pixel.Vec{
+				X: maintxtrect.Min.X - 2*margin,
+				Y: y + ah - pointertxt.Bounds().H(),
+			}))
 		}
-		fmt.Fprintln(anstxt, ans.Text)
-		anstxt.Draw(t, pixel.IM.Moved(pixel.Vec{maintxtrect.Min.X, maintxtrect.Min.Y - 4*margin - h}))
-		h += anstxt.Bounds().H() + margin
+
+		anstxt.Draw(t, pixel.IM.Moved(pixel.Vec{X: maintxtrect.Min.X, Y: y}))
+		h += ah + margin
 	}
 }
 
@@ -171,14 +179,17 @@ func (d *Dialog) setImdr() {
 }
 
 func (d *Dialog) prepareText() {
-	d.maintxtstring = d.Variants[d.currVariant].Text
 	d.maintxt.Color = colornames.Whitesmoke
-	fmt.Fprintln(d.maintxt, d.maintxtstring)
+	d.fitText(d.maintxt, d.Variants[d.currVariant].Text)
+}
 
-	for d.maintxt.Bounds().W() > d.rect.W()-2*margin-(margin+portraitwidth) {
-		d.maintxtstring = splitToChunks(d.maintxtstring)
-		d.maintxt.Clear()
-		fmt.Fprintln(d.maintxt, d.maintxtstring)
+func (d *Dialog) fitText(target *text.Text, str string) {
+	fmt.Fprintln(target, str)
+
+	for target.Bounds().W() > d.rect.W()-2*margin-(margin+portraitwidth) {
+		str = splitToChunks(str)
+		target.Clear()
+		fmt.Fprintln(target, str)
 	}
 }
 

@@ -78,7 +78,7 @@ func (l *List) Update(dt float64, visiblePhys, visibleSpec []common.O) {
 }
 
 func (l *List) Draw(t pixel.Target) {
-	activities.DrawStrikes(t)
+	//	activities.DrawStrikes(t)
 	for _, e := range l.enemies {
 		e.Draw(t)
 	}

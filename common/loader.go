@@ -4,8 +4,8 @@ import (
 	"archive/zip"
 	"fmt"
 	"image/png"
+	"io"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -25,7 +25,11 @@ type Option func(*Loader)
 
 func WithZip(name string) Option {
 	return func(l *Loader) {
-		l.opener, _ = zip.OpenReader(name)
+		zr, err := zip.OpenReader(name)
+		if err != nil {
+			panic(fmt.Sprintf("cannot open assets zip %q: %v", name, err))
+		}
+		l.opener = zr
 	}
 }
 
@@ -72,7 +76,7 @@ func (l *Loader) LoadFileToString(name string) (string, error) {
 	}
 	defer file.Close()
 
-	b, err := ioutil.ReadAll(file)
+	b, err := io.ReadAll(file)
 	if err != nil {
 		return "", err
 	}

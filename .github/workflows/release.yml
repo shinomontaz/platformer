@@ -1,0 +1,110 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  assets:
+    name: Build game.dat
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create game.dat
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y zip
+        zip -r game.dat assets config
+
+    - name: Upload game.dat to Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: game.dat
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    name: Build (${{ matrix.name }})
+    needs: assets
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        include:
+          - os: windows-latest
+            name: win64
+          - os: ubuntu-latest
+            name: linux-amd64
+          - os: macos-latest
+            name: darwin-arm64
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.24'
+
+    - name: Install Linux build deps
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgl1-mesa-dev libxcursor-dev libxrandr-dev \
+          libxinerama-dev libxi-dev libxxf86vm-dev zip
+
+    - name: Build (Windows)
+      if: runner.os == 'Windows'
+      run: go build -ldflags "-s -w -H=windowsgui" -o platformer.exe .
+
+    - name: Build (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: go build -ldflags "-s -w" -o platformer .
+
+    - name: Package (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        Compress-Archive -Path assets, config -DestinationPath game.dat
+        $cfg = (Get-Content start.tpl -Raw).
+          Replace('%test_flag%', 'false').
+          Replace('%assets_dir%', 'assets/').
+          Replace('%zip_file%', '"game.dat"').
+          Replace('%config_dir%', 'config/')
+        Set-Content -Path start.cfg -Value $cfg -Encoding ascii
+        Compress-Archive -Path platformer.exe, game.dat, start.cfg, runtime.cfg, README.md `
+          -DestinationPath "platformer-${{ github.ref_name }}-${{ matrix.name }}.zip"
+
+    - name: Package (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        zip -r game.dat assets config
+        sed -e 's/%test_flag%/false/' \
+            -e 's|%assets_dir%|assets/|' \
+            -e 's|%zip_file%|"game.dat"|' \
+            -e 's|%config_dir%|config/|' start.tpl > start.cfg
+        zip "platformer-${{ github.ref_name }}-${{ matrix.name }}.zip" \
+          platformer game.dat start.cfg runtime.cfg README.md
+
+    - name: Upload to Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: platformer-${{ github.ref_name }}-${{ matrix.name }}.zip
+        body: |
+          ## Установка
+
+          1. Скачайте архив для вашей ОС:
+             - Windows: `win64.zip`
+             - Linux: `linux-amd64.zip`
+             - macOS (Apple Silicon): `darwin-arm64.zip`
+          2. Распакуйте в любую папку
+          3. Запустите `platformer` / `platformer.exe`
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

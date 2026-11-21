@@ -39,10 +39,13 @@ jobs:
         include:
           - os: windows-latest
             name: win64
+            ext: zip
           - os: ubuntu-latest
             name: linux-amd64
+            ext: tar.gz
           - os: macos-latest
             name: darwin-arm64
+            ext: tar.gz
 
     steps:
     - name: Checkout code
@@ -58,8 +61,14 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libgl1-mesa-dev libxcursor-dev libxrandr-dev \
-          libxinerama-dev libxi-dev libxxf86vm-dev zip
+          libxinerama-dev libxi-dev libxxf86vm-dev libasound2-dev zip
 
+    - name: Embed icon (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        go install github.com/akavel/rsrc@latest
+        rsrc -ico assets/logo.ico -o rsrc_windows_amd64.syso
+        
     - name: Build (Windows)
       if: runner.os == 'Windows'
       run: go build -ldflags "-s -w -H=windowsgui" -o platformer.exe .
@@ -90,20 +99,20 @@ jobs:
             -e 's|%assets_dir%|assets/|' \
             -e 's|%zip_file%|"game.dat"|' \
             -e 's|%config_dir%|config/|' start.tpl > start.cfg
-        zip "platformer-${{ github.ref_name }}-${{ matrix.name }}.zip" \
+        tar czf "platformer-${{ github.ref_name }}-${{ matrix.name }}.tar.gz" \
           platformer game.dat start.cfg runtime.cfg README.md
 
     - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
-        files: platformer-${{ github.ref_name }}-${{ matrix.name }}.zip
+        files: platformer-${{ github.ref_name }}-${{ matrix.name }}.${{ matrix.ext }}
         body: |
           ## Установка
 
           1. Скачайте архив для вашей ОС:
              - Windows: `win64.zip`
-             - Linux: `linux-amd64.zip`
-             - macOS (Apple Silicon): `darwin-arm64.zip`
+             - Linux: `linux-amd64.tar.gz`
+             - macOS (Apple Silicon): `darwin-arm64.tar.gz`
           2. Распакуйте в любую папку
           3. Запустите `platformer` / `platformer.exe`
       env:

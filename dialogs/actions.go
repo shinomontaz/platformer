@@ -2,7 +2,7 @@ package dialogs
 
 import "platformer/actor"
 
-func runAction(code int, d *Dialog, a *actor.Actor) {
+func runAction(code int, data string, d *Dialog, a *actor.Actor) {
 	switch code {
 	case 1:
 		actionSetInteraction(a)
@@ -12,5 +12,7 @@ func runAction(code int, d *Dialog, a *actor.Actor) {
 		actionPayCoin()
 	case 4:
 		actionVictory(d)
+	case 5:
+		actionAllow(data)
 	}
 }

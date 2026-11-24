@@ -184,6 +184,26 @@
         ]
     },
     {
+        "type": "ancient",
+        "anim": "ancient",
+        "dir": -1,
+        "hp": 7,
+        "strength": 3,
+        "width": 72,
+        "height": 72,
+        "margin": 0,
+        "mass": 5,
+        "jump": 0,
+        "walk": 70,
+        "run": 50,
+        "body": "undead",
+        "hurt_reaction": "random",
+        "skills": [
+           "ancientbolt",
+           "boss_melee"
+        ]
+    },
+    {
         "type": "bigplant",
         "anim": "bigplant",
         "sound": "bigplant",
@@ -295,6 +315,15 @@
     {
         "type": "chest",
         "anim": "chest",
+        "dir": -1,
+        "width": 32,
+        "mass": 100,
+        "height": 32,
+        "margin": 0
+    },
+    {
+        "type": "bird",
+        "anim": "bird",
         "dir": -1,
         "width": 32,
         "mass": 100,

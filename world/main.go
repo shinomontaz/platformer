@@ -1,12 +1,14 @@
 package world
 
 import (
+	"fmt"
 	"image/color"
 	"sync"
 
 	"github.com/shinomontaz/pixel"
 
 	"platformer/actor"
+	"platformer/animation"
 	"platformer/common"
 	"platformer/common/quadtree"
 	"platformer/creatures"
@@ -54,6 +56,8 @@ type World struct {
 	objectTiles []*tmx.LayerTile
 	physobjs    []object
 
+	portals map[string]*Portal // key -> *Portal
+
 	tiles      []tile
 	imdrawrect *imdraw.IMDraw
 
@@ -100,6 +104,8 @@ func New(source string, rect pixel.Rect, opts ...Option) (*World, error) {
 		specobjs:     []object{},
 
 		objectTiles: []*tmx.LayerTile{},
+
+		portals: map[string]*Portal{},
 
 		visibleTiles: []tile{},
 		visiblePhys:  []common.O{},
@@ -179,6 +185,24 @@ func (w *World) init() {
 			if o.Class == "enemy" || o.Class == "npc" || o.Class == "coin" || o.Class == "object" {
 				o.Y = w.Height - o.Y
 				w.creaturesmeta = append(w.creaturesmeta, o)
+			}
+			if o.Class == "portal" {
+				rc := pixel.R(
+					float64(o.X),
+					w.Height-float64(o.Y)-float64(o.Height),
+					float64(o.X+o.Width),
+					w.Height-float64(o.Y),
+				)
+
+				fmt.Println(o.Properties.GetBool("allowed"))
+				w.portals[o.Name] = &Portal{
+					Name:        o.Name,
+					Rect:        rc,
+					Destination: o.Properties.GetString("destination"),
+					allow:       o.Properties.GetBool("allowed"),
+					anim:        animation.Get("portal"),
+				}
+				w.drawRectIfNeeded(o, rc) // виден, если в Tiled задано свойство color
 			}
 			if o.Class == "water" {
 				min := pixel.V(
@@ -354,6 +378,7 @@ func (w *World) Update(rect pixel.Rect, hpos pixel.Vec, dt float64) {
 	w.updatePhys()
 
 	w.UpdateCreatures(dt)
+	w.updatePortals(dt)
 	loot.Update(dt, w.visiblePhys)
 
 	collectedloot := loot.Collect(w.crtrs.GetHero())
@@ -510,6 +535,7 @@ func (w *World) Draw(t pixel.Target, hpos pixel.Vec, cam pixel.Vec, center pixel
 	particles.Draw(w.cnv2)
 	projectiles.Draw(w.cnv2)
 	objects.Draw(w.cnv2)
+	w.drawPortals(w.cnv2)
 
 	w.cnv2.Draw(w.cnv, pixel.IM.Moved(w.cnv.Bounds().Center()))
 	w.cnv.Draw(t, pixel.IM.Moved(center))

@@ -42,6 +42,7 @@ type DialogAnswer struct {
 	Goto      int    `json:"goto,omitempty"`
 	Code      int    `json:"code,omitempty"`
 	Condition int    `json:"condition,omitempty"`
+	Data      string `json:"data"`
 	Exit      bool   `json:"exit,omitempty"`
 	hidden    bool
 }
@@ -142,8 +143,10 @@ func (d *Dialog) Action() {
 	go_to := d.Variants[d.currVariant].Answers[d.currAnswer].Goto
 
 	code := d.Variants[d.currVariant].Answers[d.currAnswer].Code
+	data := d.Variants[d.currVariant].Answers[d.currAnswer].Data
+
 	if code > 0 {
-		runAction(code, d, d.a)
+		runAction(code, data, d, d.a)
 	}
 
 	exit := d.Variants[d.currVariant].Answers[d.currAnswer].Exit

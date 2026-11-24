@@ -55,6 +55,9 @@ type Actorer interface {
 	Hit(vec pixel.Vec, power int)
 	GetHp() int
 	GetMass() float64
+
+	Move(v pixel.Vec)   // телепорт порталом
+	SetVel(v pixel.Vec) // сброс инерции после телепорта
 }
 
 type O interface {

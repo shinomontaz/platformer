@@ -543,6 +543,76 @@
         ]
     },
     {
+        "type": "ancient",
+        "width": 72,
+        "height": 72,
+        "margin": 0,
+        "list":  [
+        {
+            "name": "stand",
+            "file":"bosses/ancient/Ancient.png",
+            "frames": [1, 0, 1]
+        },
+        {
+            "name": "walk",
+            "file":"bosses/ancient/Ancient_walk.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "idle",
+            "file":"bosses/ancient/Ancient_idle.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "sneer",
+            "file":"bosses/ancient/Ancient_sneer.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "hurt",
+            "file":"bosses/ancient/Ancient_hurt.png",
+            "frames": [2, 0, 2]
+        },
+        {
+            "name": "die",
+            "file":"bosses/ancient/Ancient_death.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "dead",
+            "file":"bosses/ancient/Ancient_death.png",
+            "frames": [4, 3, 4]
+        }
+        ],
+        "groups": [
+            {
+            "name": "melee",
+            "group": [
+                {
+                    "name": "attack1",
+                    "file":"bosses/ancient/Ancient_attack1.png",
+                    "frames": [4, 0, 4]
+                }
+            ]
+            },
+            {
+                "name": "ranged",
+                "group": [
+                    {
+                        "name": "attack1",
+                        "file":"bosses/ancient/Ancient_attack2.png",
+                        "frames": [6, 0, 6]
+                    },
+                    {
+                        "name": "attack2",
+                        "file":"bosses/ancient/Ancient_attack4.png",
+                        "frames": [4, 0, 4]
+                    }
+                ]
+            }
+        ]
+    },
+    {
         "type": "oldman",
         "width": 40,
         "height": 34,
@@ -991,6 +1061,18 @@
         ]
     },
     {
+        "type": "ancientbolt",
+        "width": 16,
+        "height": 16,
+        "list":  [
+            {
+                "name": "projectile",
+                "file":"projectiles/Ancientbolt.png",
+                "frames": [1, 0, 1]
+            }
+        ]
+    },
+    {
         "type": "scenery",
         "width": 64,
         "height": 64,
@@ -1087,5 +1169,37 @@
             "frames": [6, 0, 6]
         }
         ]
-    }
+    },
+    {
+        "type": "bird",
+        "width": 30,
+        "height": 30,
+        "margin": [8, 0, 8, 14],
+        "list":  [
+        {
+            "name": "stand",
+            "file":"animals/vulture/Idle.png",
+            "frames": [1, 0, 1]
+        },
+        {
+            "name": "idle",
+            "file":"animals/vulture/Idle.png",
+            "frames": [1, 0, 4]
+        },
+        {
+            "name": "walk",
+            "file":"animals/vulture/Walk.png",
+            "frames": [4, 0, 4]
+        }
+        ]
+    },
+    {
+    "type": "portal",
+    "width": 48,
+    "height": 48,
+    "margin": [0, 0, 0, 0],
+    "list": [
+        { "name": "idle",     "file": "effects/portal.png",     "frames": [4, 0, 4] }
+    ]
+}
 ]

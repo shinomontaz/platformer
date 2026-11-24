@@ -30,6 +30,9 @@ func AddProjectile(t string, strength float64, dir float64, owner common.Actorer
 	case "crossbow":
 		f = pixel.V(150*dir, 8+rand.Float64()*12)
 		g = grav / 9
+	case "ancientbolt":
+		f = pixel.V(80*dir, 0)
+		g = 0
 	case "deathbolt":
 		f = pixel.V(130*dir, 0)
 		g = grav / 1000

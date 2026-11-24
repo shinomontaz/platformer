@@ -14,12 +14,6 @@
                         "text": "I'm running, grandpa!",
                         "code": 1,
                         "exit": true
-                    },
-                    {
-                        "text": "Thanks!",
-                        "code": 4,
-                        "comment": "Victory screen! ( code 4 )",
-                        "exit": true
                     }
                 ]
             },
@@ -41,35 +35,28 @@
         "variants": [
             {
                 "idx": 1,
-                "text": "I did not touch you, but you are asking me! And you do it without a bit of a respect. My time is money, so you'd better give me a coin in sign of a respect.",
+                "text": "Hi! I heard you in search of special fishing hook for your grandpa? I know where the shop is, but short path guarded by an Ancient. If you could beat him, portal to fishing shop you can use.",
                 "answers": [
                     {
-                        "text": "Sure!",
-                        "comment": "give him a coin ( code 3 ), condition: have coins in inventory",
-                        "code": 3,
-                        "condition": 1,
+                        "text": "I need to think on it...",
+                        "comment": "postpone decision",
                         "exit": true
                     },
                     {
-                        "text": "Sorry, I have no coins for you. Step a side.",
-                        "comment": "make hostile - BigBloated",
-                        "code": 2,
-                        "exit": true
-                    },
-                    {
-                        "text": "OK!.",
-                        "goto": 4
+                        "text": "Where this Ancient bastard?",
+                        "goto": 2
                     }
                 ]
             },
             {
-                "idx": 4,
-                "text": "I had one here. Where is it... Ah, here. Take it, fair price. Stronger than whiskey, cheaper than dust.",
+                "idx": 2,
+                "text": "I've open a portal to cloud location for you. After Ancient defeated as I said exit portal will bring you close to fishing shop you need.",
                 "answers": [
                     {
-                        "text": "Thanks!",
-                        "code": 4,
-                        "comment": "Victory screen! ( code 4 )",
+                        "text": "Let's go!",
+                        "code": 5,
+                        "comment": "allow cloud portal to Ancient boss",
+                        "data": "portal_cloud_in",
                         "exit": true
                     }
                 ]
@@ -81,6 +68,7 @@
             {
                 "idx": 1,
                 "text": "How can I help you?",
+                "comment": "shopkeeper",
                 "answers": [
                     {
                         "text": "It's a fishing shop?",

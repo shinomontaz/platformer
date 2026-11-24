@@ -84,6 +84,15 @@
         "cooldown": 0.8
     },
     {
+        "type": "ranged",
+        "name": "ancientbolt",
+        "max": 200,
+        "min": 25,
+        "weight": 1,
+        "keys": ["ctrl"],
+        "cooldown": 1
+    },
+    {
         "type": "melee",
         "name": "boss_melee",
         "max": 35,

@@ -19,6 +19,7 @@ type Opener interface {
 type Loader struct {
 	opener Opener
 	root   string
+	lower  bool // zip-режим: имена в архиве lowercase
 }
 
 type Option func(*Loader)
@@ -30,6 +31,7 @@ func WithZip(name string) Option {
 			panic(fmt.Sprintf("cannot open assets zip %q: %v", name, err))
 		}
 		l.opener = zr
+		l.lower = true
 	}
 }
 
@@ -52,7 +54,11 @@ func NewLoader(root string, opts ...Option) *Loader {
 }
 
 func (l *Loader) Open(name string) (fs.File, error) {
-	return l.opener.Open(fmt.Sprintf("%s%s", l.root, name))
+	if l.lower {
+		name = strings.ToLower(name)
+	}
+
+	return l.opener.Open(l.root + name)
 }
 
 func (l *Loader) LoadPicture(name string) (pixel.Picture, error) {

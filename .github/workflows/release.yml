@@ -16,11 +16,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.24'
+
     - name: Create game.dat
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y zip
-        zip -r game.dat assets config
+      run: go run ./tools/makedat
 
     - name: Upload game.dat to Release
       uses: softprops/action-gh-release@v1
@@ -61,7 +63,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libgl1-mesa-dev libxcursor-dev libxrandr-dev \
-          libxinerama-dev libxi-dev libxxf86vm-dev libasound2-dev zip
+          libxinerama-dev libxi-dev libxxf86vm-dev libasound2-dev
 
     - name: Embed icon (Windows)
       if: runner.os == 'Windows'
@@ -81,7 +83,7 @@ jobs:
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        Compress-Archive -Path assets, config -DestinationPath game.dat
+        go run ./tools/makedat
         $cfg = (Get-Content start.tpl -Raw).
           Replace('%test_flag%', 'false').
           Replace('%assets_dir%', 'assets/').
@@ -94,7 +96,7 @@ jobs:
     - name: Package (Linux/macOS)
       if: runner.os != 'Windows'
       run: |
-        zip -r game.dat assets config
+        go run ./tools/makedat
         sed -e 's/%test_flag%/false/' \
             -e 's|%assets_dir%|assets/|' \
             -e 's|%zip_file%|"game.dat"|' \

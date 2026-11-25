@@ -18,6 +18,8 @@ func Machine(name string) *statemachine.Machine {
 		fallthrough
 	case "goblin_range2":
 		return newRanged()
+	case "ancient":
+		return newAncient()
 	default:
 		return newEnemy()
 	}
@@ -93,6 +95,7 @@ func newDeceased() *statemachine.Machine {
 	m.Set(state.CAST, statemachine.Transition{})
 	m.Set(state.MELEE, statemachine.Transition{})
 	m.Set(state.RANGED, statemachine.Transition{})
+	m.Set(state.SNEER, statemachine.Transition{})
 	m.Set(state.STAND, statemachine.Transition{
 		List: map[int]int{
 			events.CAST:   state.CAST,
@@ -121,6 +124,7 @@ func newMage() *statemachine.Machine {
 	m := statemachine.New()
 
 	m.Set(state.CAST, statemachine.Transition{})
+	m.Set(state.SNEER, statemachine.Transition{})
 	m.Set(state.STAND, statemachine.Transition{
 		List: map[int]int{
 			events.RANGED: state.CAST,
@@ -143,6 +147,7 @@ func newMage() *statemachine.Machine {
 func newRanged() *statemachine.Machine {
 	m := statemachine.New()
 
+	m.Set(state.SNEER, statemachine.Transition{})
 	m.Set(state.RANGED, statemachine.Transition{})
 	m.Set(state.STAND, statemachine.Transition{
 		List: map[int]int{
@@ -152,6 +157,36 @@ func newRanged() *statemachine.Machine {
 	m.Set(state.IDLE, statemachine.Transition{
 		List: map[int]int{
 			events.RANGED: state.RANGED,
+		},
+	})
+
+	return &m
+}
+
+func newAncient() *statemachine.Machine {
+	m := statemachine.New()
+
+	m.Set(state.SNEER, statemachine.Transition{})
+	m.Set(state.MELEE, statemachine.Transition{})
+	m.Set(state.RANGED, statemachine.Transition{})
+	m.Set(state.TELEPORT, statemachine.Transition{})
+	m.Set(state.STAND, statemachine.Transition{
+		List: map[int]int{
+			events.RANGED:   state.RANGED,
+			events.MELEE:    state.MELEE,
+			events.TELEPORT: state.TELEPORT,
+		},
+	})
+	m.Set(state.IDLE, statemachine.Transition{
+		List: map[int]int{
+			events.RANGED: state.RANGED,
+			events.MELEE:  state.MELEE,
+		},
+	})
+	m.Set(state.WALK, statemachine.Transition{
+		List: map[int]int{
+			events.MELEE:    state.MELEE,
+			events.TELEPORT: state.TELEPORT,
 		},
 	})
 

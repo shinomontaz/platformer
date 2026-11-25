@@ -257,6 +257,11 @@
             "frames": [4, 0, 4]
         },
         {
+            "name": "sneer",
+            "file":"enemies/goblin_range/Goblin_range_idle.png",
+            "frames": [4, 0, 4]
+        },
+        {
             "name": "hurt",
             "file":"enemies/goblin_range/Goblin_range_hurt.png",
             "frames": [2, 0, 2]
@@ -350,6 +355,11 @@
             "frames": [4, 0, 4]
         },
         {
+            "name": "sneer",
+            "file":"enemies/th_goblin_range/Goblin_range_idle.png",
+            "frames": [4, 0, 4]
+        },
+        {
             "name": "hurt",
             "file":"enemies/th_goblin_range/Goblin_range_hurt.png",
             "frames": [2, 0, 2]
@@ -389,6 +399,11 @@
         },
         {
             "name": "idle",
+            "file":"enemies/th_goblin_mage/Goblin_Mage_idle.png",
+            "frames": [4, 0, 4]
+        },
+        {
+            "name": "sneer",
             "file":"enemies/th_goblin_mage/Goblin_Mage_idle.png",
             "frames": [4, 0, 4]
         },
@@ -582,6 +597,11 @@
             "name": "dead",
             "file":"bosses/ancient/Ancient_death.png",
             "frames": [4, 3, 4]
+        },
+        {
+            "name": "ranged",
+            "file":"bosses/ancient/Ancient_attack2.png",
+            "frames": [6, 0, 6]
         }
         ],
         "groups": [
@@ -596,19 +616,14 @@
             ]
             },
             {
-                "name": "ranged",
-                "group": [
-                    {
-                        "name": "attack1",
-                        "file":"bosses/ancient/Ancient_attack2.png",
-                        "frames": [6, 0, 6]
-                    },
-                    {
-                        "name": "attack2",
-                        "file":"bosses/ancient/Ancient_attack4.png",
-                        "frames": [4, 0, 4]
-                    }
-                ]
+            "name": "meleedown",
+            "group": [
+                {
+                    "name": "attack2",
+                    "file":"bosses/ancient/Ancient_attack4.png",
+                    "frames": [4, 0, 4]
+                }
+            ]
             }
         ]
     },
@@ -1062,13 +1077,25 @@
     },
     {
         "type": "ancientbolt",
-        "width": 16,
-        "height": 16,
+        "width": 10,
+        "height": 10,
         "list":  [
             {
                 "name": "projectile",
-                "file":"projectiles/Ancientbolt.png",
+                "file":"projectiles/ancient_bolt.png",
                 "frames": [1, 0, 1]
+            }
+        ]
+    },
+    {
+        "type": "shamanbolt",
+        "width": 6,
+        "height": 6,
+        "list":  [
+            {
+                "name": "projectile",
+                "file":"projectiles/shaman_ball.png",
+                "frames": [2, 0, 2]
             }
         ]
     },
@@ -1172,8 +1199,8 @@
     },
     {
         "type": "bird",
-        "width": 30,
-        "height": 30,
+        "width": 48,
+        "height": 48,
         "margin": [8, 0, 8, 14],
         "list":  [
         {
@@ -1183,23 +1210,23 @@
         },
         {
             "name": "idle",
-            "file":"animals/vulture/Idle.png",
+            "file":"animals/vulture/idle.png",
             "frames": [1, 0, 4]
         },
         {
             "name": "walk",
-            "file":"animals/vulture/Walk.png",
+            "file":"animals/vulture/walk.png",
             "frames": [4, 0, 4]
         }
         ]
     },
     {
-    "type": "portal",
-    "width": 48,
-    "height": 48,
-    "margin": [0, 0, 0, 0],
-    "list": [
-        { "name": "idle",     "file": "effects/portal.png",     "frames": [4, 0, 4] }
-    ]
-}
+        "type": "portal",
+        "width": 48,
+        "height": 48,
+        "margin": [0, 0, 0, 0],
+        "list": [
+            { "name": "idle",     "file": "effects/portal.png",     "frames": [4, 0, 4] }
+        ]
+    }
 ]

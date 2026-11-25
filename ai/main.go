@@ -1,7 +1,9 @@
 package ai
 
 import (
+	"math"
 	"platformer/actor"
+	"platformer/bindings"
 	"platformer/events"
 
 	"github.com/shinomontaz/pixel"
@@ -23,6 +25,13 @@ type Ai struct {
 	attackskill *actor.Skill
 	homeState   AiState // состояние куда возвращаться после INVESTIGATE (IDLE, PATROL, ROAMING)
 	name        string
+
+	maxReach float64 // максимальный зазор, на котором есть хоть один навык
+	minGap   float64 // минимальный Min среди дальних навыков
+	hasMelee bool
+
+	debug     bool
+	debugTick float64
 }
 
 func parseReaction(s string) ReactionType {
@@ -46,6 +55,8 @@ func NewCalmEnemy(obj *actor.Actor, w Worlder) *Ai {
 		id:        counter,
 		homeState: IDLE,
 	}
+
+	a.initReach()
 
 	sIdle := NewIdle(a, a.w, true)
 	a.states[IDLE] = sIdle
@@ -80,6 +91,8 @@ func NewAgressiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 		id:        counter,
 		homeState: IDLE,
 	}
+
+	a.initReach()
 
 	sRoaming := NewRoaming(a, a.w, true)
 	a.states[ROAMING] = sRoaming
@@ -123,6 +136,8 @@ func NewActiveEnemy(obj *actor.Actor, w Worlder) *Ai {
 		homeState: ROAMING,
 	}
 
+	a.initReach()
+
 	sRoaming := NewRoaming(a, a.w, true)
 	a.states[ROAMING] = sRoaming
 
@@ -159,6 +174,8 @@ func NewPatrolEnemy(obj *actor.Actor, w Worlder, patrolRange float64) *Ai {
 		id:        counter,
 		homeState: PATROL,
 	}
+
+	a.initReach()
 
 	sPatrol := NewPatrol(a, a.w, patrolRange)
 	a.states[PATROL] = sPatrol
@@ -312,4 +329,94 @@ func (a *Ai) EventAction(e int) {
 	}
 
 	a.state.EventAction(e)
+}
+
+type target struct {
+	hero   *actor.Actor
+	hr     pixel.Rect
+	dx, dy float64 // от центра к центру; dx > 0 — герой справа
+	gap    float64 // зазор между краями по X, 0 при перекрытии
+}
+
+func sign(v float64) float64 {
+	if v < 0 {
+		return -1
+	}
+	return 1
+}
+
+func isMelee(t string) bool {
+	return t == "melee" || t == "meleedown" || t == "meleejump"
+}
+
+func (a *Ai) initReach() {
+	halfW := a.obj.GetRect().W() / 2
+	for _, sk := range a.obj.GetSkills() {
+		if sk.Name == "ancientbolt" {
+			a.debug = true
+		}
+
+		if sk.Weight <= 0 {
+			continue
+		}
+		if isMelee(sk.Type) {
+			a.hasMelee = true
+			a.maxReach = math.Max(a.maxReach, sk.Hitbox.Max.X-halfW)
+			continue
+		}
+		a.maxReach = math.Max(a.maxReach, sk.Max)
+		if a.minGap == 0 || sk.Min < a.minGap {
+			a.minGap = sk.Min
+		}
+	}
+}
+
+func (a *Ai) look() (target, bool) {
+	hero := a.obj.GetEnemy()
+	if hero == nil || hero.GetHp() <= 0 {
+		return target{}, false
+	}
+	r, hr := a.obj.GetRect(), hero.GetRect()
+	dx := hr.Center().X - r.Center().X
+	return target{
+		hero: hero,
+		hr:   hr,
+		dx:   dx,
+		dy:   hr.Center().Y - r.Center().Y,
+		gap:  math.Max(0, math.Abs(dx)-(r.W()+hr.W())/2),
+	}, true
+}
+
+func (a *Ai) facing(t target) bool {
+	return t.dx*float64(a.obj.GetDir()) > 0
+}
+
+func (a *Ai) sees(t target) bool {
+	return a.w.IsSee(a.obj.GetRect().Center(), t.hr.Center())
+}
+
+func (a *Ai) canUse(sk *actor.Skill, t target) bool {
+	if d := float64(sk.GetDir()); d*t.dx < 0 {
+		return false // направленный навык смотрит не туда
+	}
+	h := a.obj.GetRect().H()
+	switch {
+	case isMelee(sk.Type):
+		return a.obj.StrikeRect(sk, sign(t.dx)).Intersects(t.hr)
+	case sk.Type == "ranged":
+		return t.gap >= sk.Min && t.gap <= sk.Max && math.Abs(t.dy) <= h
+	default: // meleemove и прочее
+		return t.gap >= sk.Min && t.gap <= sk.Max && math.Abs(t.dy) <= h/2
+	}
+}
+
+func (a *Ai) step(dir float64) {
+	if a.obj.StepPrediction(events.WALK, pixel.V(dir, 0)) <= 0.5 {
+		return
+	}
+	key := bindings.KeyAction["right"]
+	if dir < 0 {
+		key = bindings.KeyAction["left"]
+	}
+	a.obj.KeyAction(bindings.Active.GetBinding(key))
 }

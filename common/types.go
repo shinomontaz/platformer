@@ -58,6 +58,7 @@ type Actorer interface {
 
 	Move(v pixel.Vec)   // телепорт порталом
 	SetVel(v pixel.Vec) // сброс инерции после телепорта
+	Teleport(to pixel.Vec)
 }
 
 type O interface {

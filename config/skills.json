@@ -54,7 +54,15 @@
         "hitbox": [10, -5, 20, 5],
         "keys": ["ctrl", "up", "right"]
     },
-
+    {
+        "type": "ranged",
+        "name": "shamanbolt",
+        "max": 250,
+        "min": 50,
+        "weight": 1,
+        "keys": ["ctrl"],
+        "cooldown": 1
+    },
     {
         "type": "ranged",
         "name": "deathbolt",
@@ -89,8 +97,10 @@
         "max": 200,
         "min": 25,
         "weight": 1,
-        "keys": ["ctrl"],
-        "cooldown": 1
+        "power": 1,
+        "spawn": [24, -18],
+        "keys": ["ctrl", "up"],
+        "cooldown": 1.5
     },
     {
         "type": "melee",
@@ -147,5 +157,14 @@
         "hitbox": [20, -5, 36, 10],
         "keys": ["ctrl", "right"],
         "cooldown": 1.5
+    },
+    {
+        "type": "teleport",
+        "name": "teleport",
+        "min": 50,
+        "max": 300,
+        "weight": 2,
+        "keys": ["ctrl", "up"],
+        "cooldown": 3
     }
 ]

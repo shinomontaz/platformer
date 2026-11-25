@@ -159,7 +159,7 @@
         "body": "human",
         "hurt_reaction": "flee",
         "skills": [
-            "deathbolt"
+            "shamanbolt"
         ]
     },
     {
@@ -188,7 +188,7 @@
         "anim": "ancient",
         "dir": -1,
         "hp": 7,
-        "strength": 3,
+        "strength": 2,
         "width": 72,
         "height": 72,
         "margin": 0,
@@ -200,7 +200,9 @@
         "hurt_reaction": "random",
         "skills": [
            "ancientbolt",
-           "boss_melee"
+           "boss_melee",
+           "boss_meleedown",
+           "teleport"
         ]
     },
     {
@@ -325,9 +327,9 @@
         "type": "bird",
         "anim": "bird",
         "dir": -1,
-        "width": 32,
+        "width": 30,
         "mass": 100,
-        "height": 32,
+        "height": 30,
         "margin": 0
     },
     {

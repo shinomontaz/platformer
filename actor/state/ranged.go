@@ -57,11 +57,8 @@ func (s *Ranged) Listen(e int, v *pixel.Vec) {
 
 func (s *Ranged) Update(dt float64) {
 	if (s.time > s.idleLimit) || (s.animSpriteNum > s.variants) {
-		if s.vel > 0 {
-			s.a.SetState(WALK)
-		} else {
-			s.a.SetState(STAND)
-		}
+		s.a.SetState(SNEER)
+
 		return
 	}
 

@@ -19,26 +19,35 @@ func Init(g float64) {
 	grav = g
 }
 
+type SkillData struct {
+	Name     string
+	Strength int
+	Pos      pixel.Vec
+}
+
 // AddProjectile adds a projectile of kind t, attached to owner and
 // in position of owner.GetRect().Center()
-func AddProjectile(t string, strength float64, dir float64, owner common.Actorer) {
+func AddProjectile(sd SkillData, dir float64, owner common.Actorer) {
 	var f pixel.Vec
 	g := grav
-	switch t {
+	switch sd.Name {
 	case "sling":
 		f = pixel.V(160*dir, 80+rand.Float64()*120)
 	case "crossbow":
 		f = pixel.V(150*dir, 8+rand.Float64()*12)
 		g = grav / 9
+	case "shamanbolt":
+		f = pixel.V(75*dir, 0)
+		g = grav / 1000
 	case "ancientbolt":
-		f = pixel.V(80*dir, 0)
-		g = 0
+		f = pixel.V(90*dir, 0)
+		g = grav / 1000
 	case "deathbolt":
 		f = pixel.V(130*dir, 0)
 		g = grav / 1000
 	}
 
-	pos := owner.GetRect().Center()
+	pos := owner.GetRect().Center().Add(pixel.V(sd.Pos.X*dir, sd.Pos.Y))
 	p := projectile{
 		pos:      pos,
 		force:    f,
@@ -46,16 +55,16 @@ func AddProjectile(t string, strength float64, dir float64, owner common.Actorer
 		rigidity: 0,
 		friction: 1,
 		dir:      dir,
-		anim:     animation.Get(t),
-		strength: strength,
+		anim:     animation.Get(sd.Name),
+		strength: float64(sd.Strength),
 		owner:    owner,
-		size:     8,
 	}
 	p.Init(g)
+
 	hb := activities.AddStrike(
 		owner,
 		p.rect,
-		int(strength),
+		sd.Strength,
 		pixel.ZV,
 		activities.WithTTL(-1),
 	)

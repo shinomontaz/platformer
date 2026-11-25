@@ -35,11 +35,17 @@ type Skill struct {
 	Event    int
 	Ttl      float64
 	Speed    float64
+	Power    int
 	Hitbox   pixel.Rect
 	Cooldown float64
+	KeySum   int
+	Spawn    pixel.Vec
 }
 
 func NewSkill(pr config.Skill) *Skill {
+	if pr.Power == 0 {
+		pr.Power = 1
+	}
 	s := &Skill{
 		Min:      pr.Min,
 		Max:      pr.Max,
@@ -51,6 +57,7 @@ func NewSkill(pr config.Skill) *Skill {
 		Speed:    pr.Speed,
 		Keys:     make([]int, 0),
 		Cooldown: pr.Cooldown,
+		Power:    pr.Power,
 	}
 
 	s.Event = ActionSkillMap[pr.Type]
@@ -63,6 +70,9 @@ func NewSkill(pr config.Skill) *Skill {
 
 	if pr.Ttl > 0 {
 		s.Ttl = pr.Ttl
+	}
+	if len(pr.Spawn) == 2 {
+		s.Spawn = pixel.V(pr.Spawn[0], pr.Spawn[1])
 	}
 
 	if len(pr.Hitbox) > 0 {

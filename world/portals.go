@@ -39,8 +39,9 @@ func (w *World) updatePortals(dt float64) {
 			log.Printf("[portal] %q: destination %q not found", p.Name, p.Destination)
 			continue
 		}
-		hero.Move(dst.Rect.Center().Sub(hr.Center()))
-		hero.SetVel(pixel.ZV) // иначе прилетит по инерции
+
+		hero.Teleport(dst.Rect.Center())
+
 		break
 	}
 }

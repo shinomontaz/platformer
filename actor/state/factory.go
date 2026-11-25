@@ -15,6 +15,8 @@ func New(code int, a Actor, an Animater) Stater {
 		st = NewRun(a, an)
 	case JUMP:
 		st = NewJump(a, an)
+	case SNEER:
+		st = NewSneer(a, an)
 	case FALL:
 		st = NewFall(a, an)
 	case SWIM:
@@ -43,6 +45,9 @@ func New(code int, a Actor, an Animater) Stater {
 		st = NewSit(a, an)
 	case DOUBLEJUMP:
 		st = NewDoubleJump(a, an)
+	case TELEPORT:
+		st = NewTeleport(a, an)
+
 	}
 
 	return st

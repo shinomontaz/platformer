@@ -29,6 +29,7 @@ const (
 	SWIM
 	ROLL
 	SIT
+	TELEPORT
 )
 
 type Stater interface {

@@ -114,6 +114,13 @@ func (p *Phys) Update(dt float64, objs []common.O) {
 	p.currObjs = objs
 	dt = math.Min(dt, 0.1)
 
+	// опора не запоминается, а проверяется: тело могли перенести не через скорость
+	if p.isground && !p.supported() {
+		p.isground = false
+		p.groundObj = nil
+		p.groundPhys = nil
+	}
+
 	// 1. Трение (для частиц и снарядов)
 	if p.friction > 0 && p.isground {
 		p.vel.X *= (1.0 - p.friction*dt*60)
@@ -264,4 +271,14 @@ func (p *Phys) Draw(t pixel.Target) {
 	}
 	imd.Rectangle(1)
 	imd.Draw(t)
+}
+
+// supported: под ногами действительно тот объект, на котором стоим
+func (p *Phys) supported() bool {
+	if p.groundObj == nil {
+		return false
+	}
+	r := p.groundObj.Rect()
+	return math.Abs(r.Max.Y-p.rect.Min.Y) < 2 &&
+		r.Min.X < p.rect.Max.X && r.Max.X > p.rect.Min.X
 }

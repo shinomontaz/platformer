@@ -20,7 +20,6 @@ type projectile struct {
 	vel      pixel.Vec
 	dir      float64
 	mass     float64
-	size     float64
 	rigidity float64
 	friction float64
 	time     float64
@@ -37,7 +36,10 @@ type projectile struct {
 }
 
 func (p *projectile) Init(g float64) {
-	p.rect = pixel.R(p.pos.X-p.size/2, p.pos.Y-p.size/2, p.pos.X+p.size/2, p.pos.Y+p.size/2)
+	_, fr := p.anim.GetSprite("projectile", 0)
+	w, h := fr.W(), fr.H()
+	p.rect = pixel.R(p.pos.X-w/2, p.pos.Y-h/2, p.pos.X+w/2, p.pos.Y+h/2)
+
 	p.phys = physics.New(p.rect,
 		physics.WithGravity(g),
 		physics.WithMass(p.mass),
@@ -64,6 +66,7 @@ func (p *projectile) update(dt float64, objs, spec []common.O) {
 		}
 
 		p.onkill(p.pos)
+
 		return
 	}
 
@@ -81,7 +84,7 @@ func (p *projectile) draw(t pixel.Target) {
 			rect.W()/p.sprite.Frame().W(),
 			rect.H()/p.sprite.Frame().H(),
 		)).
-		ScaledXY(pixel.ZV, pixel.V(-1*p.dir, 1)).
+		ScaledXY(pixel.ZV, pixel.V(p.dir, 1)).
 		Moved(rect.Center()),
 	)
 }

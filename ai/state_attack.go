@@ -1,6 +1,7 @@
 package ai
 
 import (
+	"log"
 	"platformer/bindings"
 
 	"platformer/events"
@@ -12,21 +13,14 @@ type StateAttack struct {
 	id            AiState
 	w             Worlder
 	ai            *Ai
-	timer         float64
-	nonseelimit   float64
 	lastpos       pixel.Vec
-	vec           pixel.Vec
 	isbusy        bool
+	used          bool
 	cooldownTimer float64
 }
 
 func NewAttack(ai *Ai, w Worlder) *StateAttack {
-	return &StateAttack{
-		id:          ATTACK,
-		ai:          ai,
-		w:           w,
-		nonseelimit: 1,
-	}
+	return &StateAttack{id: ATTACK, ai: ai, w: w}
 }
 
 func (s *StateAttack) Update(dt float64) {
@@ -34,82 +28,60 @@ func (s *StateAttack) Update(dt float64) {
 		return
 	}
 
-	if s.cooldownTimer > 0 {
+	if s.used { // ударили — ждём кулдаун и выбираем заново
 		s.cooldownTimer -= dt
+		if s.cooldownTimer <= 0 {
+			s.ai.SetState(CHOOSEATTACK, s.lastpos)
+		}
 		return
 	}
 
-	if s.ai.attackskill == nil {
+	sk := s.ai.attackskill
+	if sk == nil {
+		s.ai.SetState(CHOOSEATTACK, s.lastpos)
+
+		return
+	}
+
+	t, ok := s.ai.look()
+	if !ok {
+		s.ai.SetState(s.ai.homeState, s.lastpos)
+
+		return
+	}
+	s.lastpos = t.hero.GetPos()
+	if !s.ai.canUse(sk, t) { // герой успел сместиться
 		s.ai.SetState(CHOOSEATTACK, s.lastpos)
 		return
 	}
 
-	hero := s.ai.obj.GetEnemy()
-	if hero == nil {
-		return
-	}
+	s.ai.obj.SetDir(sign(t.dx))
 
-	herohp := hero.GetHp()
-	if herohp <= 0 {
-		s.ai.SetState(s.ai.homeState, s.lastpos)
-		return
-	}
-	heropos := hero.GetPos()
-	s.lastpos = heropos
-
-	pos := s.ai.obj.GetPos()
-	dir := s.ai.obj.GetDir()
-	var isSee bool
-
-	// Проверяем видимость только если смотрим в сторону героя
-	if (heropos.X < pos.X && dir < 0) || (heropos.X > pos.X && dir > 0) {
-		isSee = s.w.IsSee(pos, heropos)
-		if !isSee {
-			s.timer += dt
-			if s.timer > s.nonseelimit {
-				s.ai.SetState(INVESTIGATE, s.lastpos)
-			}
-
+	// стреляем только стоя: ждём, пока актёр затормозит и перейдёт в STAND
+	if sk.Type == "ranged" {
+		if v := s.ai.obj.GetVel(); v.X != 0 || !s.ai.obj.IsGround() {
 			return
 		}
-	} else { // мы не смотрим в сторону героя
-		s.timer = 0
-		s.ai.SetState(INVESTIGATE, s.lastpos)
-		return
 	}
 
-	s.vec = pixel.V(-1, 0)
-	if s.lastpos.X > pos.X {
-		s.vec = pixel.V(1, 0)
-	}
-	l := pixel.L(pos, heropos)
-	currDist := l.Len()
-	if currDist < s.ai.attackskill.Min {
-		s.ai.SetState(CHOOSEATTACK, s.lastpos)
-
-		return
-	}
-
-	if currDist > s.ai.attackskill.Max {
-		s.ai.SetState(INVESTIGATE, s.lastpos)
-
-		return
-	}
-
-	// we already check that we see target and all distances are ok
 	s.ai.obj.SetTarget(s.lastpos)
-	s.ai.obj.SetSkill(s.ai.attackskill)
-	for _, k := range s.ai.attackskill.Keys {
-		b := bindings.Active.GetBinding(k)
-		s.ai.obj.KeyAction(b)
+	s.ai.obj.SetSkill(sk)
+
+	if s.ai.debug {
+		log.Printf("[ancient] ATTACK use=%s keys=%v", sk.Name, sk.Keys)
 	}
 
-	s.cooldownTimer = s.ai.attackskill.Cooldown
+	for _, k := range sk.Keys {
+		s.ai.obj.KeyAction(bindings.Active.GetBinding(k))
+	}
+	s.used = true
+	s.cooldownTimer = 0.2
+	//	s.cooldownTimer = sk.Cooldown
 }
 
 func (s *StateAttack) Start(poi pixel.Vec) {
 	s.lastpos = poi
-	s.timer = 0
+	s.used = false
 	s.cooldownTimer = 0
 }
 

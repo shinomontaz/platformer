@@ -86,6 +86,9 @@ type Actor struct {
 	iswaterresistant bool
 
 	hurtReaction string
+
+	homePlat pixel.Rect
+	hasHome  bool
 }
 
 var loader *common.Loader
@@ -123,6 +126,7 @@ func New(w Worlder, anim common.Animater, rect pixel.Rect, opts ...Option) *Acto
 		for _, actionId := range sk.Keys {
 			sum += actionId
 		}
+		sk.KeySum = sum
 		a.skillmap[sum] = idx
 	}
 
@@ -151,6 +155,8 @@ func (a *Actor) initStates() {
 	sResurrect := state.New(state.RESURRECT, a, a.anim)
 	sFishing := state.New(state.FISHING, a, a.anim)
 	sSwim := state.New(state.SWIM, a, a.anim)
+	sTeleport := state.New(state.TELEPORT, a, a.anim)
+	sSneer := state.New(state.SNEER, a, a.anim)
 
 	a.states = map[int]Stater{
 		state.STAND:     sStand,
@@ -160,11 +166,13 @@ func (a *Actor) initStates() {
 		state.FALL:      sFall,
 		state.JUMP:      sJump,
 		state.HIT:       sHit,
+		state.SNEER:     sSneer,
 		state.DEAD:      sDead,
 		state.INTERACT:  sInteract,
 		state.RESURRECT: sResurrect,
 		state.FISHING:   sFishing,
 		state.SWIM:      sSwim,
+		state.TELEPORT:  sTeleport,
 	}
 
 	// apply state machine
@@ -283,6 +291,18 @@ func (a *Actor) Update(dt float64, objs []common.O) {
 	a.phys.SetRect(collisionRect)
 	a.phys.Update(dt, objs)
 
+	if !a.hasHome && a.phys.IsGround() {
+		feet := a.phys.GetRect()
+		for _, o := range objs {
+			pr := o.Rect()
+			if math.Abs(pr.Max.Y-feet.Min.Y) < 4 && pr.Min.X <= feet.Center().X && feet.Center().X <= pr.Max.X &&
+				pr.W() >= 3*feet.W() { // мелочь вроде веток площадкой не считаем
+				a.homePlat, a.hasHome = pr, true
+				break
+			}
+		}
+	}
+
 	vel := a.phys.GetVel()
 
 	// Установка скорости движения через keycombo
@@ -313,8 +333,21 @@ func (a *Actor) Update(dt float64, objs []common.O) {
 	}
 
 	if idx, ok := a.skillmap[a.keycombo]; ok {
-		a.SetSkill(a.skills[idx])
-		a.action = a.activeSkill.Event
+		if a.activeSkill == nil || a.activeSkill.KeySum != a.keycombo {
+			a.SetSkill(a.skills[idx])
+		}
+		if a.activeSkill.Type == "teleport" {
+			avoid := a.rect.Center()
+			if a.enemy != nil {
+				avoid = a.enemy.GetRect().Center()
+			}
+			if moved, ok := a.Blink(avoid, 2*a.rect.H()); ok {
+				oldMin = oldMin.Add(moved) // сдвиг уже применён Move — не считать его второй раз
+			}
+			a.action = 0
+		} else {
+			a.action = a.activeSkill.Event
+		}
 	} else if a.keycombo == bindings.ENTER {
 		a.action = events.INTERACT
 	}
@@ -398,6 +431,12 @@ func (a *Actor) SetDir(d float64) {
 }
 
 func (a *Actor) Draw(t pixel.Target) {
+	if d, ok := a.state.(state.Drawer); ok {
+		d.Draw(t, a.rect, a.animdir*a.dir)
+
+		return
+	}
+
 	a.sprite = a.state.GetSprite()
 	drawrect := a.rect
 	a.sprite.Draw(t, pixel.IM.
@@ -435,9 +474,23 @@ func (a *Actor) GetSkillAttr(attr string) (interface{}, error) {
 		return a.activeSkill.Max, nil
 	case "speed":
 		return a.activeSkill.Speed, nil
+	case "cooldown":
+		return a.activeSkill.Cooldown, nil
 	default:
 		return "", errors.New("unknown attribute")
 	}
+}
+
+func (a *Actor) StrikeRect(sk *Skill, dir float64) pixel.Rect {
+	w, h := sk.Hitbox.W(), sk.Hitbox.H()
+	c := a.rect.Center()
+	minx := c.X + sk.Hitbox.Min.X
+	if dir < 0 {
+		minx = c.X - sk.Hitbox.Min.X - w
+	}
+	miny := c.Y + sk.Hitbox.Min.Y
+
+	return pixel.R(minx, miny, minx+w, miny+h)
 }
 
 func (a *Actor) Strike(ttl float64) {
@@ -451,17 +504,8 @@ func (a *Actor) Strike(ttl float64) {
 		}
 	}
 	if a.activeSkill.Type == "melee" || a.activeSkill.Type == "meleemove" || a.activeSkill.Type == "meleejump" {
-		power := a.strength
-		w := a.activeSkill.Hitbox.W()
-		h := a.activeSkill.Hitbox.H()
-		minx := a.rect.Center().X + a.activeSkill.Hitbox.Min.X
-		miny := a.rect.Center().Y + a.activeSkill.Hitbox.Min.Y
-		if a.dir < 0 {
-			minx = a.rect.Center().X - a.activeSkill.Hitbox.Min.X - w
-		}
-		rect := pixel.R(minx, miny, minx+w, miny+h)
-
-		activities.AddStrike(a, rect, power, a.phys.GetVel(), activities.WithTTL(ttl))
+		rect := a.StrikeRect(a.activeSkill, a.dir)
+		activities.AddStrike(a, rect, a.strength, a.phys.GetVel(), activities.WithTTL(ttl))
 	}
 }
 
@@ -473,8 +517,21 @@ func (a *Actor) UseSkill() {
 		a.w.AddSpell(a, a.target, a.activeSkill.Name, a.currObjs)
 	}
 	if a.activeSkill.Type == "ranged" {
-		projectiles.AddProjectile(a.activeSkill.Name, 1, a.dir, a)
+		projectiles.AddProjectile(projectiles.SkillData{
+			Name:     a.activeSkill.Name,
+			Strength: a.activeSkill.Power,
+			Pos:      a.activeSkill.Spawn,
+		}, a.dir, a)
 	}
+}
+
+func (a *Actor) hasSkill(name string) bool {
+	for _, sk := range a.skills {
+		if sk.Name == name {
+			return true
+		}
+	}
+	return false
 }
 
 func (a *Actor) SetSkill(s *Skill) {
@@ -536,7 +593,7 @@ func (a *Actor) Hit(vec pixel.Vec, power int) {
 		return
 	}
 
-	if a.state.GetId() == state.ROLL { // cannot hit in rolling state
+	if id := a.state.GetId(); id == state.ROLL || id == state.TELEPORT {
 		return
 	}
 
@@ -614,4 +671,10 @@ func (a *Actor) OnInteract() {
 
 func (a *Actor) GetId() int {
 	return a.id
+}
+
+func (a *Actor) Teleport(to pixel.Vec) {
+	a.Move(to.Sub(a.rect.Center()))
+	a.phys.SetVel(pixel.ZV)
+	a.SetState(state.TELEPORT)
 }

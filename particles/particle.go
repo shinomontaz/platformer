@@ -41,24 +41,3 @@ func (p *particle) update(dt float64, objs []common.O) {
 	p.phys.Update(dt, objs)
 	p.pos = p.phys.GetRect().Center()
 }
-
-//func (p *particle) draw(imd *imdraw.IMDraw) {
-// vertices := p.phys.GetRect().Vertices()
-// imd.Color = p.color
-// for _, v := range vertices {
-// 	imd.Push(v)
-// }
-// imd.Rectangle(1) // filled rectangle
-//}
-
-// func (p *particle) draw(t pixel.Target) {
-// 	imd := imdraw.New(nil)
-// 	r := p.phys.GetRect()
-// 	vertices := r.Vertices()
-// 	imd.Color = p.color
-// 	for _, v := range vertices {
-// 		imd.Push(v)
-// 	}
-// 	imd.Rectangle(1) // filled rectangle
-// 	imd.Draw(t)
-// }

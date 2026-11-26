@@ -40,6 +40,7 @@ type Skill struct {
 	Cooldown float64
 	KeySum   int
 	Spawn    pixel.Vec
+	Trace    float64
 }
 
 func NewSkill(pr config.Skill) *Skill {
@@ -58,6 +59,7 @@ func NewSkill(pr config.Skill) *Skill {
 		Keys:     make([]int, 0),
 		Cooldown: pr.Cooldown,
 		Power:    pr.Power,
+		Trace:    pr.Trace,
 	}
 
 	s.Event = ActionSkillMap[pr.Type]

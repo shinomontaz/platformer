@@ -77,6 +77,29 @@ func AddBlood(pos, f pixel.Vec) {
 	particles[idx] = p
 }
 
+func AddTrace(pos pixel.Vec, col uint32) {
+	addColorToBatch(col)
+
+	idx++
+	if idx >= len(particles) {
+		idx = 0
+	}
+
+	p := particle{
+		active:   true,
+		color:    col,
+		pos:      pos,
+		ttl:      0.5 + 0.3*rand.Float64(),
+		force:    pixel.V(rand.Float64()*100-50, rand.Float64()*100-50),
+		size:     1 + 5*rand.Float64(),
+		mass:     0,
+		rigidity: 0.1,
+		friction: 1,
+	}
+	p.Init()
+	particles[idx] = p
+}
+
 func Update(dt float64, objs []common.O) {
 	batch.Clear()
 	sprite := pixel.NewSprite(canvas, pixel.R(0, 0, 1, 1))
@@ -99,11 +122,4 @@ func Update(dt float64, objs []common.O) {
 
 func Draw(t pixel.Target) {
 	batch.Draw(t)
-	// imd := imdraw.New(nil)
-	// for i := range particles {
-	// 	if particles[i].active {
-	// 		particles[i].draw(imd)
-	// 	}
-	// }
-	// imd.Draw(t)
 }

@@ -1041,13 +1041,13 @@
     },
     {
         "type": "deathbolt",
-        "width": 8,
-        "height": 6,
+        "width": 48,
+        "height": 48,
         "list":  [
             {
                 "name": "projectile",
-                "file":"projectiles/deceased_ball.png",
-                "frames": [1, 0, 1]
+                "file":"projectiles/paralysis.png",
+                "frames": [4, 0, 4]
             }
         ]
     },

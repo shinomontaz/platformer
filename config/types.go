@@ -58,6 +58,7 @@ type Skill struct {
 	Cooldown float64   `json:"cooldown"`
 	Power    int       `json:"power"`
 	Spawn    []float64 `json:"spawn"`
+	Trace    float64   `json:"trace"`
 }
 
 type profileRaw struct {

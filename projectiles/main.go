@@ -23,6 +23,8 @@ type SkillData struct {
 	Name     string
 	Strength int
 	Pos      pixel.Vec
+	Ttl      float64
+	Trace    float64
 }
 
 // AddProjectile adds a projectile of kind t, attached to owner and
@@ -58,6 +60,8 @@ func AddProjectile(sd SkillData, dir float64, owner common.Actorer) {
 		anim:     animation.Get(sd.Name),
 		strength: float64(sd.Strength),
 		owner:    owner,
+		ttl:      sd.Ttl,
+		trace:    sd.Trace,
 	}
 	p.Init(g)
 

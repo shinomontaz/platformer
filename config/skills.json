@@ -89,6 +89,7 @@
         "min": 25,
         "weight": 1,
         "keys": ["ctrl"],
+        "trace": 0.1,
         "cooldown": 0.8
     },
     {
@@ -100,7 +101,21 @@
         "power": 1,
         "spawn": [24, -18],
         "keys": ["ctrl", "up"],
-        "cooldown": 1.5
+        "trace": 0.01,
+        "cooldown": 1.5,
+        "ttl": 3
+    },
+    {
+        "type": "ranged",
+        "name": "bloatbolt",
+        "max": 200,
+        "min": 50,
+        "weight": 1,
+        "power": 1,
+        "keys": ["ctrl", "up"],
+        "cooldown": 1.5,
+        "trace": 0.2,
+        "ttl": 3
     },
     {
         "type": "melee",

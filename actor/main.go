@@ -476,6 +476,8 @@ func (a *Actor) GetSkillAttr(attr string) (interface{}, error) {
 		return a.activeSkill.Speed, nil
 	case "cooldown":
 		return a.activeSkill.Cooldown, nil
+	case "trace":
+		return a.activeSkill.Trace, nil
 	default:
 		return "", errors.New("unknown attribute")
 	}
@@ -521,6 +523,8 @@ func (a *Actor) UseSkill() {
 			Name:     a.activeSkill.Name,
 			Strength: a.activeSkill.Power,
 			Pos:      a.activeSkill.Spawn,
+			Ttl:      a.activeSkill.Ttl,
+			Trace:    a.activeSkill.Trace,
 		}, a.dir, a)
 	}
 }
